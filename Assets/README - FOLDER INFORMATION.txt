@@ -18,7 +18,7 @@ Folder Structure:
         	- Models
             		- Characters
             		- Enviroment
-            		- Vheicles
+            		- Vehicles
         	- Scenes
 				- Levels
 				- Other
