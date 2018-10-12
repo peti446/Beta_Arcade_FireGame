@@ -54,12 +54,28 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
             _instance = null;
     }
 
+    public void Disconect()
+    {
+        state = ENetworkState.IDLE;
+        StopMatchMaker();
+    }
+
+    public void StartUnityMatchmaking()
+    {
+        if(state != ENetworkState.IDLE)
+        {
+            Debug.Log("Can only connect to the Unity Matchmaking server if not already connected to one");
+        }
+
+        state = ENetworkState.InLobby;
+        StartMatchMaker();
+    }
+
     public void CreateUnityMatchmakingMatch(string name, Action<bool, string, MatchInfo> onMatchCreatedCallback)
     {
         if(state != ENetworkState.IDLE)
         {
             Debug.Log("State is not IDLE, so we are soppoused to be in some kind of game or lobby (?)");
-            throw new Exception("State is not IDLE, this means we should be in some kind of game or lobby.");
         }
 
         state = ENetworkState.JoiningMatch;
