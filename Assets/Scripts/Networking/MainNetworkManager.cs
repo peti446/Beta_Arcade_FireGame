@@ -11,6 +11,8 @@ public enum ENetworkState
 
 public class MainNetworkManager : UnityEngine.Networking.NetworkManager
 {
+    //https://docs.unity3d.com/ScriptReference/Networking.NetworkManager.html
+
     //Variables
     public ENetworkState state
     {
@@ -18,12 +20,16 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
         private set;
     }
 
+    //Actions
+    private Action<bool, string, MatchInfo> m_OnMatchCreateCallback;
+    private Action<bool, string, MatchInfo> m_OnMatchcJoinedCallback;
+
 
     //Static instance variable
     public static MainNetworkManager _instance
     {
         get;
-        protected set;
+        private set;
     }
 
     void Awake()
@@ -48,7 +54,7 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
             _instance = null;
     }
 
-    public void CreateUnityMatchmakingMatch(string name)
+    public void CreateUnityMatchmakingMatch(string name, Action<bool, string, MatchInfo> onMatchCreatedCallback)
     {
         if(state != ENetworkState.IDLE)
         {
@@ -57,6 +63,7 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
         }
 
         state = ENetworkState.JoiningMatch;
+        m_OnMatchCreateCallback = onMatchCreatedCallback;
 
         StartMatchMaker();
 
@@ -68,16 +75,22 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
         base.OnMatchCreate(success, info, matchInfo);
 
         state = success ? ENetworkState.InMatchLobby : ENetworkState.IDLE;
+        if(m_OnMatchCreateCallback != null)
+        {
+            m_OnMatchCreateCallback.Invoke(success, info, matchInfo);
+            m_OnMatchCreateCallback = null;
+        }
     }
 
-    public void JoinUnityMatchmakingMatch(UnityEngine.Networking.Types.NetworkID netID)
+    public void JoinUnityMatchmakingMatch(UnityEngine.Networking.Types.NetworkID netID, Action<bool, string, MatchInfo> onMatchJoinedCallback)
     {
         if(state != ENetworkState.InLobby)
         {
-            Debug.Log("");
+            Debug.Log("Not connected to server, connect first");
         }
 
         state = ENetworkState.JoiningMatch;
+        m_OnMatchcJoinedCallback = onMatchJoinedCallback;
 
         matchMaker.JoinMatch(netID, string.Empty, string.Empty, string.Empty, 0, 0, OnMatchJoined);
     }
@@ -87,5 +100,11 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
         base.OnMatchJoined(success, extendedInfo, matchInfo);
 
         state = success ? ENetworkState.InMatchLobby : ENetworkState.InLobby;
+
+        if(m_OnMatchcJoinedCallback != null)
+        {
+            m_OnMatchcJoinedCallback.Invoke(success, extendedInfo, matchInfo);
+            m_OnMatchcJoinedCallback = null;
+        }
     }
 }
