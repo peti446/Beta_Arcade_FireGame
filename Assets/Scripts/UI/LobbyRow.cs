@@ -5,7 +5,7 @@ using UnityEngine.Networking.Match;
 using UnityEngine.Networking.Types;
 using UnityEngine.UI;
 
-public class LobbyMatchRow : MonoBehaviour {
+public class LobbyRow : MonoBehaviour {
 
     [SerializeField]
     private Text m_matchName;

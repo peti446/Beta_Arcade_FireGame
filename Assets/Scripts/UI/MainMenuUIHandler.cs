@@ -9,6 +9,10 @@ public class MainMenuUIHandler : MonoBehaviour {
     private Canvas m_MatchListLobby;
     [SerializeField]
     private Canvas m_MatchCreation;
+    [SerializeField]
+    private Canvas m_MainMenu;
+    [SerializeField]
+    private Canvas m_MatchLobby;
 
     private Canvas m_currentActiveCanvas;
 
@@ -40,8 +44,12 @@ public class MainMenuUIHandler : MonoBehaviour {
 
     private void OnEnable()
     {
-        //Debuging for now
-        ShowMatchListUI();
+        //Make sure eveything is disabled
+        foreach(Transform t in gameObject.transform)
+        {
+            t.gameObject.SetActive(false);
+        }
+        ShowPanel(m_MainMenu);
     }
 
 
@@ -74,5 +82,16 @@ public class MainMenuUIHandler : MonoBehaviour {
             MainNetworkManager._instance.Disconect();
         }
         ShowPanel(m_MatchListLobby);
+    }
+
+    public void ShowMainMenu()
+    {
+        MainNetworkManager._instance.Disconect();
+        ShowPanel(m_MainMenu);
+    }
+
+    public void ShowMatchLobby()
+    {
+        ShowPanel(m_MatchLobby);
     }
 }
