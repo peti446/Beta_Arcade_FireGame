@@ -13,4 +13,9 @@ public class MatchLobbyPlayer : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    public void InitForPlayer(NetworkPlayer player)
+    {
+
+    }
 }

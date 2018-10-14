@@ -10,9 +10,10 @@ public enum ENetworkState
     IDLE, InLobby, JoiningMatch, InMatchLobby, Playing, EndGame
 }
 
-public class MainNetworkManager : UnityEngine.Networking.NetworkManager
+public class MainNetworkManager : NetworkManager
 {
     //https://docs.unity3d.com/ScriptReference/Networking.NetworkManager.html
+    //https://docs.unity3d.com/Manual/NetworkManagerCallbacks.html
 
 
     #region DATA
@@ -41,6 +42,22 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
         }
     }
 
+    public int NumberOfPlayers
+    {
+        get
+        {
+            return Is_Server ? numPlayers : PlayersConnected.Count;
+        }
+    }
+
+    public bool CanMatchStart
+    {
+        get
+        {
+            return NumberOfPlayers > 2;
+        }
+    }
+
     //Events
     public event Action ServerStarted;
     public event Action ClientShutdown;
@@ -55,6 +72,7 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
     public event Action<NetworkConnection, int> ClientErrorHappend;
     public event Action<NetworkConnection, int> ServerErrorHappend;
     public event Action<bool, string, MatchInfo> MatchCreated;
+    public event Action ServerAllPlayersGotReady;
 
 
     //Actions
@@ -167,10 +185,18 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
     public void AddNetPlayer(NetworkPlayer player)
     {
         PlayersConnected.Add(player);
-        
+        player.PlayerBecameReady += NetPlayerGotReady;
+
         if(Is_Server)
         {
             UpdatePlayers_ID();
+        }
+
+        //TODO: Check where the player is to instanciate the correct prefab
+
+        if (NetworkPlayerAdded != null)
+        {
+            NetworkPlayerAdded.Invoke(player);
         }
     }
 
@@ -178,7 +204,41 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
     {
         PlayersConnected.Remove(player);
         UpdatePlayers_ID();
+
+        if(NetworkPlayerRemoved != null)
+        {
+            NetworkPlayerRemoved.Invoke(player);
+        }
+
+        if(player != null)
+        {
+            player.PlayerBecameReady -= NetPlayerGotReady;
+        }
         
+    }
+
+    public bool AreAllPlayersReady()
+    {
+        if (!CanMatchStart)
+        {
+            return false;
+        }
+
+        foreach(NetworkPlayer p in PlayersConnected)
+        {
+            if (!p.Is_ready)
+                return false;
+        }
+
+        return true;
+    }
+
+    public void NetPlayerGotReady(NetworkPlayer p)
+    {
+        if(AreAllPlayersReady() && ServerAllPlayersGotReady != null)
+        {
+            ServerAllPlayersGotReady.Invoke();
+        }
     }
 
     public void UpdatePlayers_ID()
@@ -187,6 +247,12 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
             return;
         for (int i = 0; i < PlayersConnected.Count; i++)
             PlayersConnected[i].SetID(i);
+    }
+
+    public void ClearAllPlayersReadyStatus()
+    {
+        foreach (NetworkPlayer p in PlayersConnected)
+            p.ClearReadyStatus();
     }
 
     public void StartUnityMatchmaking()
@@ -353,6 +419,8 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
         else
         {
             //Clear players ready status
+            if (State == ENetworkState.InMatchLobby)
+                ClearAllPlayersReadyStatus();
         }
         base.OnServerConnect(conn);
     }
@@ -363,7 +431,9 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
 
         if (State == ENetworkState.InMatchLobby)
         {
-            //Clear player ready statu
+            //Clear player ready status
+            if (State == ENetworkState.InMatchLobby)
+                ClearAllPlayersReadyStatus();
         }
 
         if (ClientDisconnectedServer != null)

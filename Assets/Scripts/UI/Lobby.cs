@@ -21,11 +21,13 @@ public class Lobby : MonoBehaviour {
     private const int m_MatchesPerPage = 11;
     private int m_currentPage = 0;
     private int m_previusPage = 0;
+    private int m_PageToProcess = 0;
 
     private void OnEnable()
     {
         m_prevButton.interactable = false;
         m_nextButton.interactable = false;
+        MainNetworkManager._instance.
         StartCoroutine(CoroutineUtilities.DelaySeconds(() => { RefreshMachesList(); }, 2));
     }
 
@@ -35,14 +37,13 @@ public class Lobby : MonoBehaviour {
         {
             m_lookingForText.text = "Looking for servers...";
             m_lookingForText.enabled = true;
-            MainNetworkManager._instance.matchMaker.ListMatches(m_currentPage, m_MatchesPerPage, string.Empty, false, 0, 0, OnMatchListRecived);
+            MainNetworkManager._instance.matchMaker.ListMatches(m_PageToProcess, m_MatchesPerPage, string.Empty, false, 0, 0, OnMatchListRecived);
         }
     }
 
     public void OnNextPress()
     {
-        m_previusPage = m_currentPage;
-        m_currentPage++;
+        m_PageToProcess++;
         m_prevButton.interactable = false;
         m_nextButton.interactable = false;
         RefreshMachesList();
@@ -50,55 +51,46 @@ public class Lobby : MonoBehaviour {
 
     public void OnPreviusPress()
     {
-        if(m_currentPage > 0)
-        {
-            m_previusPage = m_currentPage;
-            m_currentPage--;
-            m_nextButton.interactable = false;
-            RefreshMachesList();
-        }
+        m_PageToProcess = Mathf.Max(0, m_PageToProcess--);
+        m_nextButton.interactable = false;
         m_prevButton.interactable = false;
+        RefreshMachesList();
     }
 
     public void OnMatchListRecived(bool flag, string info, List<MatchInfoSnapshot> matchList)
     {
-        m_lookingForText.text = "No server found...";
-        m_lookingForText.enabled = true;
         if (matchList == null)
             return;
 
-        foreach(Transform t in m_ServerListLivingObject)
+        m_lookingForText.text = "No server found...";
+        m_lookingForText.enabled = true;
+        m_prevButton.interactable = false;
+        m_nextButton.interactable = false;
+        m_previusPage = m_currentPage;
+        m_currentPage = m_PageToProcess;
+
+        foreach (Transform t in m_ServerListLivingObject)
         {
             Destroy(t.gameObject);
         }
 
-        if (m_currentPage == 0)
-            m_prevButton.interactable = false;
-
         if(matchList.Count == 0)
         {
-            m_nextButton.interactable = false;
-            if (m_currentPage == m_previusPage)
+            if (m_currentPage <= 0)
             {
-                if (m_currentPage > 0)
-                {
-                    m_previusPage = --m_currentPage;
-                    RefreshMachesList();
-                    return;
-                }
-            }
-            else
-            {
-                m_currentPage = m_previusPage;
-                RefreshMachesList();
+                m_currentPage = 0;
+                m_previusPage = 0;
+                m_PageToProcess = 0;
                 return;
             }
+
+            m_currentPage = m_previusPage;
+            RefreshMachesList();
+            return;
         }
 
         m_lookingForText.enabled = false;
-
-        if (matchList.Count == m_MatchesPerPage)
-            m_nextButton.interactable = true;
+        m_nextButton.interactable = matchList.Count == m_MatchesPerPage;
 
         for(int i = 0; i < matchList.Count; i++)
         {
