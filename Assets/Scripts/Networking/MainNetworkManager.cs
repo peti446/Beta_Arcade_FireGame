@@ -46,6 +46,8 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
     public event Action ClientShutdown;
     public event Action ServerShutdown;
     public event Action ClientDisconnectedServer;
+    public event Action HostStarted;
+    public event Action HostShutdown;
     public event Action<NetworkPlayer> NetworkPlayerAdded;
     public event Action<NetworkPlayer> NetworkPlayerRemoved;
     public event Action<NetworkConnection> ClientDisconected;
@@ -260,20 +262,16 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
         }
     }
 
-    public override void OnStopClient()
+    public override void OnClientConnect(NetworkConnection conn)
     {
-        base.OnStopClient();
-        foreach(NetworkPlayer p in PlayersConnected)
-        {
-            if (p != null)
-                Destroy(p.gameObject);
-        }
-        PlayersConnected.Clear();
+        ClientScene.Ready(conn);
+        ClientScene.AddPlayer(0);
 
-        if(ClientShutdown != null)
+        if(ClientConnected != null)
         {
-            ClientShutdown.Invoke();
+            ClientConnected.Invoke(conn);
         }
+
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
@@ -287,6 +285,41 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
         }
     }
 
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        foreach (NetworkPlayer p in PlayersConnected)
+        {
+            if (p != null)
+                Destroy(p.gameObject);
+        }
+        PlayersConnected.Clear();
+
+        if (ClientShutdown != null)
+        {
+            ClientShutdown.Invoke();
+        }
+    }
+
+    public override void OnClientError(NetworkConnection conn, int errorCode)
+    {
+        base.OnClientError(conn, errorCode);
+        if(ClientErrorHappend != null)
+        {
+            ClientErrorHappend.Invoke(conn, errorCode);
+        }
+    }
+
+    public override void OnServerError(NetworkConnection conn, int errorCode)
+    {
+        base.OnClientDisconnect(conn);
+
+        if(ServerErrorHappend != null)
+        {
+            ServerErrorHappend.Invoke(conn, errorCode);
+        }
+    }
+
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
         //Lets add a new player
@@ -297,6 +330,94 @@ public class MainNetworkManager : UnityEngine.Networking.NetworkManager
 
         DontDestroyOnLoad(p);
         NetworkServer.AddPlayerForConnection(conn, o, playerControllerId);
+    }
+
+    public override void OnServerRemovePlayer(NetworkConnection conn, PlayerController player)
+    {
+        base.OnServerRemovePlayer(conn, player);
+
+        NetworkPlayer p = conn.playerControllers[0].gameObject.GetComponent<NetworkPlayer>();
+        if(p != null)
+        {
+            Destroy(p.gameObject);
+            PlayersConnected.Remove(p);
+        }
+    }
+
+    public override void OnServerConnect(NetworkConnection conn)
+    {
+        if (numPlayers >= m_MaxPlayersPerMatch || State != ENetworkState.InMatchLobby)
+        {
+            conn.Disconnect();
+        }
+        else
+        {
+            //Clear players ready status
+        }
+        base.OnServerConnect(conn);
+    }
+
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        base.OnServerDisconnect(conn);
+
+        if (State == ENetworkState.InMatchLobby)
+        {
+            //Clear player ready statu
+        }
+
+        if (ClientDisconnectedServer != null)
+        {
+            ClientDisconnectedServer.Invoke();
+        }
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        networkSceneName = string.Empty;
+
+        if(ServerStarted != null)
+        {
+            ServerStarted.Invoke();
+        }
+    }
+
+    public override void OnStopServer()
+    {
+        base.OnStopServer();
+        foreach (NetworkPlayer p in PlayersConnected)
+        {
+            if (p != null)
+                Destroy(p.gameObject);
+        }
+        PlayersConnected.Clear();
+        networkSceneName = string.Empty;
+
+        if (ServerShutdown != null)
+        {
+            ServerShutdown.Invoke();
+        }
+    }
+
+    public override void OnStartHost()
+    {
+        base.OnStartHost();
+
+        if(HostStarted  != null)
+        {
+            HostStarted.Invoke();
+        }
+    }
+
+    public override void OnStopHost()
+    {
+        base.OnStopHost();
+
+        if(HostShutdown != null)
+        {
+            HostShutdown.Invoke();
+        }
     }
     #endregion
 }
