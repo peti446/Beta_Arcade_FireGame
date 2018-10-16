@@ -25,6 +25,7 @@ public class MatchLobbyPlayer : MonoBehaviour {
 
         m_NetworkPlayer = player;
         m_NetworkPlayer.NetworkPlayerDataUpdated += OnPlayerDataUpdated;
+        m_NetworkPlayer.PlayerBecameReady += OnPlayerBecameReady;
         MainNetworkManager._instance.NetworkPlayerAdded += PlayerJoined;
         MainNetworkManager._instance.NetworkPlayerRemoved += PlayerLeft;
 
@@ -61,7 +62,13 @@ public class MatchLobbyPlayer : MonoBehaviour {
         m_readyButton.interactable = MainNetworkManager._instance.CanMatchStart && m_NetworkPlayer.hasAuthority;
     }
 
-    private void OnPlayerDataUpdated(NetworkPlayer p)
+    private void OnPlayerBecameReady(NetworkPlayer _)
+    {
+        m_ready_Text.gameObject.SetActive(m_NetworkPlayer.Is_ready);
+        m_waiting_Text.gameObject.SetActive(!m_NetworkPlayer.Is_ready);
+    }
+
+    private void OnPlayerDataUpdated(NetworkPlayer _)
     {
         UpdateData();
     }
