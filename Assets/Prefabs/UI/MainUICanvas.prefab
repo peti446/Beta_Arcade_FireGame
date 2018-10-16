@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 114280871988160128}
   - component: {fileID: 114752139583937866}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: Leave Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -147,7 +147,7 @@ GameObject:
   - component: {fileID: 114370207873640888}
   - component: {fileID: 114288018393801356}
   m_Layer: 5
-  m_Name: Button (3)
+  m_Name: Exit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -301,7 +301,7 @@ GameObject:
   - component: {fileID: 114145238957649104}
   - component: {fileID: 114359678173960792}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Ready_Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -318,7 +318,7 @@ GameObject:
   - component: {fileID: 222972606594171696}
   - component: {fileID: 114672235748762390}
   m_Layer: 5
-  m_Name: Title (1)
+  m_Name: Server_Search_status
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -370,7 +370,7 @@ GameObject:
   - component: {fileID: 114909288728863782}
   - component: {fileID: 114063744877899338}
   m_Layer: 5
-  m_Name: InputField
+  m_Name: Match_Name_Input
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -405,7 +405,7 @@ GameObject:
   - component: {fileID: 222403393610925590}
   - component: {fileID: 114664759380197860}
   m_Layer: 5
-  m_Name: Text
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -456,7 +456,7 @@ GameObject:
   - component: {fileID: 222085057036087302}
   - component: {fileID: 114177584810056006}
   m_Layer: 5
-  m_Name: Text (1)
+  m_Name: Team_1_Name
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -474,7 +474,7 @@ GameObject:
   - component: {fileID: 114841862788768960}
   - component: {fileID: 114957853285557838}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Create_Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -561,7 +561,7 @@ GameObject:
   - component: {fileID: 114354878731920260}
   - component: {fileID: 114816589734548700}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: Back_Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -579,7 +579,7 @@ GameObject:
   - component: {fileID: 114768340451389838}
   - component: {fileID: 114370802496328106}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Find_Match
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -619,7 +619,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1772705891973970
 GameObject:
   m_ObjectHideFlags: 1
@@ -649,7 +649,7 @@ GameObject:
   - component: {fileID: 114024192169618800}
   - component: {fileID: 114044800318248970}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: Create_Match
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -690,7 +690,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1844882517550770
 GameObject:
   m_ObjectHideFlags: 1
@@ -719,7 +719,7 @@ GameObject:
   - component: {fileID: 222300009419175308}
   - component: {fileID: 114677582755152320}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: Teams_Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -737,7 +737,7 @@ GameObject:
   - component: {fileID: 114408122543328906}
   - component: {fileID: 114783878529553710}
   m_Layer: 5
-  m_Name: Button (2)
+  m_Name: Options
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -790,7 +790,7 @@ GameObject:
   - component: {fileID: 222206931282610848}
   - component: {fileID: 114750499814270914}
   m_Layer: 5
-  m_Name: Text
+  m_Name: Team_2_Name
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2464,7 +2464,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 114280871988160128}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 114252791401819016}
+        m_MethodName: OnLeaveClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &114768098314587394
@@ -3495,16 +3506,16 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1206374517966206}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 224938152161949614}
+  m_Father: {fileID: 224572805765274636}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0055257, y: 130}
+  m_AnchoredPosition: {x: -0.01606394, y: -128.20003}
   m_SizeDelta: {x: 1038.6, y: 204.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224283237591582466
@@ -3683,9 +3694,10 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 224919786930921818}
   m_Father: {fileID: 224938152161949614}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3738,9 +3750,10 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 224216807091093578}
   m_Father: {fileID: 224938152161949614}
-  m_RootOrder: 3
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4037,16 +4050,16 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1725987320173544}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 224938152161949614}
-  m_RootOrder: 1
+  m_Father: {fileID: 224485790270891220}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0055742, y: -177.8}
+  m_AnchoredPosition: {x: -0.01275634, y: -152.79999}
   m_SizeDelta: {x: 1038.6, y: 229.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224938152161949614
@@ -4059,10 +4072,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 224216807091093578}
-  - {fileID: 224919786930921818}
-  - {fileID: 224485790270891220}
   - {fileID: 224572805765274636}
+  - {fileID: 224485790270891220}
   m_Father: {fileID: 224150715413449368}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

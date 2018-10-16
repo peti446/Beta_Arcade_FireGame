@@ -54,7 +54,7 @@ public class MainNetworkManager : NetworkManager
     {
         get
         {
-            return NumberOfPlayers > 2;
+            return NumberOfPlayers >= 2;
         }
     }
 

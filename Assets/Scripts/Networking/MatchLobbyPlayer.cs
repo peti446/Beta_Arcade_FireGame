@@ -25,6 +25,8 @@ public class MatchLobbyPlayer : MonoBehaviour {
 
         m_NetworkPlayer = player;
         m_NetworkPlayer.NetworkPlayerDataUpdated += OnPlayerDataUpdated;
+        MainNetworkManager._instance.NetworkPlayerAdded += PlayerJoined;
+        MainNetworkManager._instance.NetworkPlayerRemoved += PlayerLeft;
 
         m_ready_Text.gameObject.SetActive(false);
 
@@ -36,19 +38,31 @@ public class MatchLobbyPlayer : MonoBehaviour {
     public void SetReadyButtonReference(Button readyB)
     {
         m_readyButton = readyB;
+        m_readyButton.onClick.RemoveAllListeners();
+        m_readyButton.onClick.AddListener(m_NetworkPlayer.CmdReady);
+        m_readyButton.interactable = MainNetworkManager._instance.CanMatchStart && m_NetworkPlayer.hasAuthority;
+    }
+
+    private void PlayerJoined(NetworkPlayer p)
+    {
+        m_readyButton.interactable = MainNetworkManager._instance.CanMatchStart && m_NetworkPlayer.hasAuthority;
+    }
+    
+    private void PlayerLeft(NetworkPlayer p)
+    {
         m_readyButton.interactable = MainNetworkManager._instance.CanMatchStart && m_NetworkPlayer.hasAuthority;
     }
 
     private void UpdateData()
     {
-        m_name.text = m_NetworkPlayer.name;
+        m_name.text = m_NetworkPlayer.Player_Name;
+        m_ready_Text.gameObject.SetActive(m_NetworkPlayer.Is_ready);
+        m_waiting_Text.gameObject.SetActive(!m_NetworkPlayer.Is_ready);
+        m_readyButton.interactable = MainNetworkManager._instance.CanMatchStart && m_NetworkPlayer.hasAuthority;
     }
 
     private void OnPlayerDataUpdated(NetworkPlayer p)
     {
-        if (p != m_NetworkPlayer)
-            return;
-
         UpdateData();
     }
 }

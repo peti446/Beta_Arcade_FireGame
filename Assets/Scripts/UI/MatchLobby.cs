@@ -29,4 +29,10 @@ public class MatchLobby : MonoBehaviour {
         }
         player.transform.SetParent(m_PayerList_Team2, false);
     }
+
+    public void OnLeaveClick()
+    {
+        MainNetworkManager._instance.Disconect();
+        MainMenuUIHandler._instance.ShowMatchListUI();
+    }
 }

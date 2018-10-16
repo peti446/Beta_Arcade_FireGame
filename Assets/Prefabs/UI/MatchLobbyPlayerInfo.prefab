@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 222709759532007840}
   - component: {fileID: 114547656655654650}
   m_Layer: 5
-  m_Name: Text
+  m_Name: Name Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56,7 +56,7 @@ GameObject:
   - component: {fileID: 222391815940856122}
   - component: {fileID: 114429987370121496}
   m_Layer: 5
-  m_Name: Text (2)
+  m_Name: NotReadyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 222995828921716056}
   - component: {fileID: 114380706586126588}
   m_Layer: 5
-  m_Name: Text (1)
+  m_Name: ReadyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -266,8 +266,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -423, y: 0}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -85.7, y: 0}
+  m_SizeDelta: {x: 834.7, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224359767132275350
 RectTransform:

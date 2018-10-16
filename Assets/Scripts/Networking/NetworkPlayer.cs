@@ -27,6 +27,11 @@ public class NetworkPlayer : NetworkBehaviour {
     {
         get { return m_ready; }
     }
+    public string Player_Name
+    {
+        get { return m_Name; }
+    }
+
 
     public event Action<NetworkPlayer> NetworkPlayerDataUpdated;
     public event Action<NetworkPlayer> PlayerBecameReady;
@@ -35,7 +40,8 @@ public class NetworkPlayer : NetworkBehaviour {
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
-        CmdSetUpPlayer(Guid.NewGuid().ToString("N"));
+        String s = Guid.NewGuid().ToString("N");
+        CmdSetUpPlayer(s);
     }
 
     [Client]
@@ -50,13 +56,22 @@ public class NetworkPlayer : NetworkBehaviour {
     public override void OnNetworkDestroy()
     {
         base.OnNetworkDestroy();
+        if(m_matchLobbyPlayer != null)
+        {
+            Destroy(m_matchLobbyPlayer.gameObject);
+        }
+
+        if (MainNetworkManager._instance != null)
+        {
+            MainNetworkManager._instance.RemoveNetPlayer(this);
+        }
     }
 
     public void OnDestroy()
     {
-        if (MainNetworkManager._instance != null)
+        if (m_matchLobbyPlayer != null)
         {
-            MainNetworkManager._instance.RemoveNetPlayer(this);
+            Destroy(m_matchLobbyPlayer.gameObject);
         }
     }
 
