@@ -36,7 +36,7 @@ public class Lobby : MonoBehaviour {
         if(MainNetworkManager._instance != null)
         {
             m_lookingForText.text = "Looking for servers...";
-            m_lookingForText.enabled = true;
+            m_lookingForText.gameObject.SetActive(true);
             MainNetworkManager._instance.matchMaker.ListMatches(m_PageToProcess, m_MatchesPerPage, string.Empty, false, 0, 0, OnMatchListRecived);
         }
     }
@@ -63,7 +63,7 @@ public class Lobby : MonoBehaviour {
             return;
 
         m_lookingForText.text = "No server found...";
-        m_lookingForText.enabled = true;
+        m_lookingForText.gameObject.SetActive(true);
         m_prevButton.interactable = false;
         m_nextButton.interactable = false;
         m_previusPage = m_currentPage;
@@ -89,7 +89,7 @@ public class Lobby : MonoBehaviour {
             return;
         }
 
-        m_lookingForText.enabled = false;
+        m_lookingForText.gameObject.SetActive(false);
         m_nextButton.interactable = matchList.Count == m_MatchesPerPage;
 
         for(int i = 0; i < matchList.Count; i++)

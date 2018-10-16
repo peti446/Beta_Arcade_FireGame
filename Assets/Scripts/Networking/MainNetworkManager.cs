@@ -193,6 +193,10 @@ public class MainNetworkManager : NetworkManager
         }
 
         //TODO: Check where the player is to instanciate the correct prefab
+        if(MainMenuUIHandler._instance != null)
+        {
+           player.LobbyLoaded();
+        }
 
         if (NetworkPlayerAdded != null)
         {

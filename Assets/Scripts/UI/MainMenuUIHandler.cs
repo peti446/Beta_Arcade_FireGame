@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainMenuUIHandler : MonoBehaviour {
 
@@ -52,6 +53,15 @@ public class MainMenuUIHandler : MonoBehaviour {
         ShowPanel(m_MainMenu);
     }
 
+
+    public void AddPlayerToLobby(MatchLobbyPlayer p)
+    {
+        MatchLobby script = m_MatchLobby.GetComponent<MatchLobby>();
+        if(script != null)
+        {
+            script.AddLobbyPlayer(p);
+        }
+    }
 
     private void ShowPanel(Canvas canvas)
     {

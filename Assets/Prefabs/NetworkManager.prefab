@@ -124,3 +124,4 @@ MonoBehaviour:
   matchMaker: {fileID: 0}
   m_NetworkPlayerPrefab: {fileID: 1276727471650550, guid: e99bd4e5f94c6fc418e786e50692862d,
     type: 2}
+  m_MaxPlayersPerMatch: 6

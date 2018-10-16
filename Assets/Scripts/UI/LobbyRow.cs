@@ -45,6 +45,7 @@ public class LobbyRow : MonoBehaviour {
             if(success)
             {
                 Debug.Log("Connected");
+                MainMenuUIHandler._instance.ShowMatchLobby();
             }
             else
             {

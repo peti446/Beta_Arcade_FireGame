@@ -515,7 +515,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1701003244777928
 GameObject:
   m_ObjectHideFlags: 1
@@ -683,13 +683,14 @@ GameObject:
   - component: {fileID: 223807810323033936}
   - component: {fileID: 114247953226815336}
   - component: {fileID: 114574244658426872}
+  - component: {fileID: 114252791401819016}
   m_Layer: 5
   m_Name: MatchLobbyCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1844882517550770
 GameObject:
   m_ObjectHideFlags: 1
@@ -1396,7 +1397,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ServerListLivingObject: {fileID: 224419420328910734}
-  m_LobbyRowPrefab: {fileID: 0}
+  m_LobbyRowPrefab: {fileID: 1037829620968770, guid: 38551d56e1fa59445b8da16e96e67f78,
+    type: 2}
   m_nextButton: {fileID: 114611065614590616}
   m_prevButton: {fileID: 114369691054630264}
   m_lookingForText: {fileID: 114672235748762390}
@@ -1473,6 +1475,21 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+--- !u!114 &114252791401819016
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1811080161430632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fa65dcc87cbfcc41a978dee5c40338a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PayerList_Team1: {fileID: 224216807091093578}
+  m_PayerList_Team2: {fileID: 224919786930921818}
+  m_readyButton: {fileID: 114359678173960792}
+  m_leaveButton: {fileID: 114752139583937866}
 --- !u!114 &114280871988160128
 MonoBehaviour:
   m_ObjectHideFlags: 1

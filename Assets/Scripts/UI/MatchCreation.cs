@@ -20,6 +20,7 @@ public class MatchCreation : MonoBehaviour {
             if(succes)
             {
                 Debug.Log("Game created");
+                MainMenuUIHandler._instance.ShowMatchLobby();
             } else
             {
                 Debug.Log("Error generating game");

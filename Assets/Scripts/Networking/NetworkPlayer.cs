@@ -25,7 +25,7 @@ public class NetworkPlayer : NetworkBehaviour {
     private MatchLobbyPlayer m_matchLobbyPlayer;
     public bool Is_ready
     {
-        get { return m_ready }
+        get { return m_ready; }
     }
 
     public event Action<NetworkPlayer> NetworkPlayerDataUpdated;
@@ -58,6 +58,13 @@ public class NetworkPlayer : NetworkBehaviour {
         {
             MainNetworkManager._instance.RemoveNetPlayer(this);
         }
+    }
+
+    [Client]
+    public void LobbyLoaded()
+    {
+        if (m_Initialized && m_matchLobbyPlayer == null)
+            CreateLobbyPlayer();
     }
 
     #region Server side execution only
@@ -122,8 +129,7 @@ public class NetworkPlayer : NetworkBehaviour {
         if (!m_Initialized && newStatus)
         {
             m_Initialized = newStatus;
-            m_matchLobbyPlayer = Instantiate(m_LobbyPlayerPref).GetComponent<MatchLobbyPlayer>();
-            m_matchLobbyPlayer.InitForPlayer(this);
+            CreateLobbyPlayer();
         }
     }
     #endregion
@@ -134,4 +140,10 @@ public class NetworkPlayer : NetworkBehaviour {
             NetworkPlayerDataUpdated.Invoke(this);
 
     }
+    private void CreateLobbyPlayer()
+    {
+        m_matchLobbyPlayer = Instantiate(m_LobbyPlayerPref).GetComponent<MatchLobbyPlayer>();
+        m_matchLobbyPlayer.InitForPlayer(this);
+    }
+
 }
