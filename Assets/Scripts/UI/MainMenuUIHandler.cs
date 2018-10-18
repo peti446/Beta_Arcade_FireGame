@@ -90,6 +90,7 @@ public class MainMenuUIHandler : MonoBehaviour {
         } else
         {
             MainNetworkManager._instance.Disconect();
+            MainNetworkManager._instance.StartUnityMatchmaking();
         }
         ShowPanel(m_MatchListLobby);
     }

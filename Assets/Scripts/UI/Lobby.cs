@@ -27,17 +27,24 @@ public class Lobby : MonoBehaviour {
     {
         m_prevButton.interactable = false;
         m_nextButton.interactable = false;
-        MainNetworkManager._instance.
-        StartCoroutine(CoroutineUtilities.DelaySeconds(() => { RefreshMachesList(); }, 2));
+        foreach (Transform t in m_ServerListLivingObject)
+        {
+            Destroy(t.gameObject);
+        }
+        StartCoroutine(CoroutineUtilities.DelaySeconds(() => { RefreshMachesList(); }, .5f));
     }
 
     public void RefreshMachesList()
     {
-        if(MainNetworkManager._instance != null)
+        if(MainNetworkManager._instance != null && MainNetworkManager._instance.State == ENetworkState.InLobby)
         {
             m_lookingForText.text = "Looking for servers...";
             m_lookingForText.gameObject.SetActive(true);
             MainNetworkManager._instance.matchMaker.ListMatches(m_PageToProcess, m_MatchesPerPage, string.Empty, false, 0, 0, OnMatchListRecived);
+        } else
+        {
+            m_lookingForText.text = "Error occured trying to find servers, either you are in a different status or there is no network isntance...";
+            m_lookingForText.gameObject.SetActive(true);
         }
     }
 

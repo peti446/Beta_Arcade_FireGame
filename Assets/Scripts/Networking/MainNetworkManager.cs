@@ -65,6 +65,7 @@ public class MainNetworkManager : NetworkManager
     public event Action ClientDisconnectedServer;
     public event Action HostStarted;
     public event Action HostShutdown;
+    public event Action ConnectionDroped;
     public event Action<NetworkPlayer> NetworkPlayerAdded;
     public event Action<NetworkPlayer> NetworkPlayerRemoved;
     public event Action<NetworkConnection> ClientDisconected;
@@ -122,6 +123,7 @@ public class MainNetworkManager : NetworkManager
                 if (Is_Server)
                     return;
                 StopMatchMaker();
+                State = ENetworkState.IDLE;
                 break;
             case ENetworkState.JoiningMatch:
                 StopMatchMaker();
@@ -130,6 +132,7 @@ public class MainNetworkManager : NetworkManager
                 else
                     StopClient();
                 matchInfo = null;
+                State = ENetworkState.IDLE;
                 break;
             case ENetworkState.InMatchLobby:
             case ENetworkState.Playing:
@@ -147,6 +150,7 @@ public class MainNetworkManager : NetworkManager
                             StopHost();
 
                             matchInfo = null;
+                            State = ENetworkState.IDLE;
                         });
                     }
                     else
@@ -154,6 +158,7 @@ public class MainNetworkManager : NetworkManager
                         StopMatchMaker();
                         StopHost();
                         matchInfo = null;
+                        State = ENetworkState.IDLE;
                     }
                 }
                 else
@@ -169,6 +174,7 @@ public class MainNetworkManager : NetworkManager
                             StopMatchMaker();
                             StopClient();
                             matchInfo = null;
+                            State = ENetworkState.IDLE;
                         });
                     }
                     else
@@ -176,6 +182,7 @@ public class MainNetworkManager : NetworkManager
                         StopMatchMaker();
                         StopClient();
                         matchInfo = null;
+                        State = ENetworkState.IDLE;
                     }
                 }
                 break;
@@ -247,8 +254,6 @@ public class MainNetworkManager : NetworkManager
 
     public void UpdatePlayers_ID()
     {
-        if (!Is_Server)
-            return;
         for (int i = 0; i < PlayersConnected.Count; i++)
             PlayersConnected[i].SetID(i);
     }
@@ -329,6 +334,15 @@ public class MainNetworkManager : NetworkManager
         {
             m_OnMatchcJoinedCallback.Invoke(success, extendedInfo, matchInfo);
             m_OnMatchcJoinedCallback = null;
+        }
+    }
+
+    public override void OnDropConnection(bool sucess, string extraInfo)
+    {
+        base.OnDropConnection(sucess, extraInfo);
+        if(ConnectionDroped != null)
+        {
+            ConnectionDroped.Invoke();
         }
     }
 
@@ -463,7 +477,7 @@ public class MainNetworkManager : NetworkManager
         foreach (NetworkPlayer p in PlayersConnected)
         {
             if (p != null)
-                Destroy(p.gameObject);
+                NetworkServer.Destroy(p.gameObject);
         }
         PlayersConnected.Clear();
         networkSceneName = string.Empty;

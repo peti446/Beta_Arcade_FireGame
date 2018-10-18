@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class MatchLobby : MonoBehaviour {
@@ -17,6 +18,18 @@ public class MatchLobby : MonoBehaviour {
     private void OnEnable()
     {
         m_readyButton.interactable = false;
+        MainNetworkManager._instance.ClientErrorHappend += OnClientErrorHappened;
+        MainNetworkManager._instance.ServerErrorHappend += OnServerErrorHappened;
+        MainNetworkManager._instance.ClientDisconected += OnClientDisconected;
+        MainNetworkManager._instance.ConnectionDroped += OnConnectionDropped;
+    }
+
+    private void OnDisable()
+    {
+        MainNetworkManager._instance.ClientErrorHappend -= OnClientErrorHappened;
+        MainNetworkManager._instance.ServerErrorHappend -= OnServerErrorHappened;
+        MainNetworkManager._instance.ClientDisconected -= OnClientDisconected;
+        MainNetworkManager._instance.ConnectionDroped -= OnConnectionDropped;
     }
 
     public void AddLobbyPlayer(MatchLobbyPlayer player)
@@ -31,6 +44,31 @@ public class MatchLobby : MonoBehaviour {
     }
 
     public void OnLeaveClick()
+    {
+        MainNetworkManager._instance.Disconect();
+        MainMenuUIHandler._instance.ShowMatchListUI();
+    }
+
+    private void OnClientErrorHappened(NetworkConnection con, int errorCode)
+    {
+        MainNetworkManager._instance.Disconect();
+        MainMenuUIHandler._instance.ShowMatchListUI();
+    }
+
+
+    private void OnServerErrorHappened(NetworkConnection con, int errorCode)
+    {
+        MainNetworkManager._instance.Disconect();
+        MainMenuUIHandler._instance.ShowMatchListUI();
+    }
+
+    private void OnClientDisconected(NetworkConnection conn)
+    {
+        MainNetworkManager._instance.Disconect();
+        MainMenuUIHandler._instance.ShowMatchListUI();
+    }
+
+    private void OnConnectionDropped()
     {
         MainNetworkManager._instance.Disconect();
         MainMenuUIHandler._instance.ShowMatchListUI();

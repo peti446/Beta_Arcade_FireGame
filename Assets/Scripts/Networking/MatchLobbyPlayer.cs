@@ -15,6 +15,16 @@ public class MatchLobbyPlayer : MonoBehaviour {
 
     private NetworkPlayer m_NetworkPlayer;
 
+    private void OnDestroy()
+    {
+        if (m_NetworkPlayer != null)
+        {
+            m_NetworkPlayer.NetworkPlayerDataUpdated -= OnPlayerDataUpdated;
+        }
+        MainNetworkManager._instance.NetworkPlayerAdded -= PlayerJoined;
+        MainNetworkManager._instance.NetworkPlayerRemoved -= PlayerLeft;
+    }
+
     public void InitForPlayer(NetworkPlayer player)
     {
         if (player == null)
@@ -25,7 +35,6 @@ public class MatchLobbyPlayer : MonoBehaviour {
 
         m_NetworkPlayer = player;
         m_NetworkPlayer.NetworkPlayerDataUpdated += OnPlayerDataUpdated;
-        m_NetworkPlayer.PlayerBecameReady += OnPlayerBecameReady;
         MainNetworkManager._instance.NetworkPlayerAdded += PlayerJoined;
         MainNetworkManager._instance.NetworkPlayerRemoved += PlayerLeft;
 
@@ -38,20 +47,23 @@ public class MatchLobbyPlayer : MonoBehaviour {
 
     public void SetReadyButtonReference(Button readyB)
     {
+        if (!m_NetworkPlayer.hasAuthority)
+        {
+            return;
+        }
+        Debug.Log("SetreadyButton");
         m_readyButton = readyB;
-        m_readyButton.onClick.RemoveAllListeners();
-        m_readyButton.onClick.AddListener(m_NetworkPlayer.CmdReady);
-        m_readyButton.interactable = MainNetworkManager._instance.CanMatchStart && m_NetworkPlayer.hasAuthority;
+        UpdateButtonState();
     }
 
     private void PlayerJoined(NetworkPlayer p)
     {
-        m_readyButton.interactable = MainNetworkManager._instance.CanMatchStart && m_NetworkPlayer.hasAuthority;
+        UpdateButtonState();
     }
     
     private void PlayerLeft(NetworkPlayer p)
     {
-        m_readyButton.interactable = MainNetworkManager._instance.CanMatchStart && m_NetworkPlayer.hasAuthority;
+        UpdateButtonState();
     }
 
     private void UpdateData()
@@ -59,13 +71,36 @@ public class MatchLobbyPlayer : MonoBehaviour {
         m_name.text = m_NetworkPlayer.Player_Name;
         m_ready_Text.gameObject.SetActive(m_NetworkPlayer.Is_ready);
         m_waiting_Text.gameObject.SetActive(!m_NetworkPlayer.Is_ready);
-        m_readyButton.interactable = MainNetworkManager._instance.CanMatchStart && m_NetworkPlayer.hasAuthority;
+        UpdateButtonState();
+    }
+
+    private void UpdateButtonState()
+    {
+        if (m_readyButton != null )
+        {
+            m_readyButton.interactable = MainNetworkManager._instance.CanMatchStart;
+            m_readyButton.onClick.RemoveAllListeners();
+            if (m_NetworkPlayer.Is_ready)
+            {
+                m_readyButton.onClick.AddListener(() => { m_NetworkPlayer.CmdReady(); });
+                m_readyButton.transform.GetChild(0).GetComponent<Text>().text = "UnReady";
+            } 
+            else
+            {
+                m_readyButton.onClick.AddListener(() => { m_NetworkPlayer.CmdReady();});
+                m_readyButton.transform.GetChild(0).GetComponent<Text>().text = "Ready";
+            }
+        }
     }
 
     private void OnPlayerBecameReady(NetworkPlayer _)
     {
-        m_ready_Text.gameObject.SetActive(m_NetworkPlayer.Is_ready);
-        m_waiting_Text.gameObject.SetActive(!m_NetworkPlayer.Is_ready);
+        UpdateData();
+    }
+
+    private void OnPlayerBecameUnready(NetworkPlayer _)
+    {
+        UpdateData();
     }
 
     private void OnPlayerDataUpdated(NetworkPlayer _)

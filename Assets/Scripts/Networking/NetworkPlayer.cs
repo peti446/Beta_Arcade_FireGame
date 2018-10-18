@@ -35,6 +35,7 @@ public class NetworkPlayer : NetworkBehaviour {
 
     public event Action<NetworkPlayer> NetworkPlayerDataUpdated;
     public event Action<NetworkPlayer> PlayerBecameReady;
+    public event Action<NetworkPlayer> PlayerBecameUnReady;
 
     [Client]
     public override void OnStartLocalPlayer()
@@ -100,13 +101,25 @@ public class NetworkPlayer : NetworkBehaviour {
     [Command]
     public void CmdReady()
     {
+        Debug.Log("Ready CMD");
         if (MainNetworkManager._instance.CanMatchStart)
         {
+            Debug.Log("Ready CMD 2");
             m_ready = true;
             if (PlayerBecameReady != null)
             {
-                PlayerBecameReady(this);
+                PlayerBecameReady.Invoke(this);
             }
+        }
+    }
+
+    [Command]
+    public void CmdUnReady()
+    {
+        m_ready = false;
+        if (PlayerBecameUnReady != null)
+        {
+            PlayerBecameUnReady.Invoke(this);
         }
     }
 
@@ -135,6 +148,7 @@ public class NetworkPlayer : NetworkBehaviour {
 
     private void OnReadyStatusChanged(bool newStatus)
     {
+        Debug.Log("Ready Status Changed");
         m_ready = newStatus;
         OnNetworkPlayerDataUpdated();
     }
