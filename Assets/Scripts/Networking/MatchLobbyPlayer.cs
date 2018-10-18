@@ -82,7 +82,7 @@ public class MatchLobbyPlayer : MonoBehaviour {
             m_readyButton.onClick.RemoveAllListeners();
             if (m_NetworkPlayer.Is_ready)
             {
-                m_readyButton.onClick.AddListener(() => { m_NetworkPlayer.CmdReady(); });
+                m_readyButton.onClick.AddListener(() => { m_NetworkPlayer.CmdUnReady(); });
                 m_readyButton.transform.GetChild(0).GetComponent<Text>().text = "UnReady";
             } 
             else
