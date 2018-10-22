@@ -1,7 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
+public enum eMainMenuScreens
+{
+    LoadingScreen, MainMenu, MatchCreation, Lobby, MatchLobby
+}
 
 public class MainMenuUIHandler : MonoBehaviour {
 
@@ -16,6 +22,8 @@ public class MainMenuUIHandler : MonoBehaviour {
     private Canvas m_MatchLobby;
 
     private Canvas m_currentActiveCanvas;
+    private eMainMenuScreens m_currentActiveScreen;
+    private Action m_DisconectedTask;
 
     public static MainMenuUIHandler _instance
     {
@@ -51,9 +59,11 @@ public class MainMenuUIHandler : MonoBehaviour {
             t.gameObject.SetActive(false);
         }
         ShowPanel(m_MainMenu);
+
+        MainNetworkManager._instance.ClientShutdown += OnClientStopped;
     }
 
-
+    
     public void AddPlayerToLobby(MatchLobbyPlayer p)
     {
         MatchLobby script = m_MatchLobby.GetComponent<MatchLobby>();
@@ -61,6 +71,75 @@ public class MainMenuUIHandler : MonoBehaviour {
         {
             script.AddLobbyPlayer(p);
         }
+    }
+
+    public void ShowPanel(eMainMenuScreens screenToShow)
+    {
+        switch(screenToShow)
+        {
+            case eMainMenuScreens.LoadingScreen:
+                break;
+            case eMainMenuScreens.MainMenu:
+                if (MainNetworkManager._instance.isNetworkActive)
+                {
+                    m_DisconectedTask = () => {
+                        ShowPanel(m_MainMenu);
+                    };
+                    MainNetworkManager._instance.Disconect();
+                }
+                else
+                {
+                    ShowPanel(m_MainMenu);
+                }
+                break;
+            case eMainMenuScreens.MatchCreation:
+                if(!MainNetworkManager._instance.isNetworkActive)
+                {
+                    MainNetworkManager._instance.StartUnityMatchmaking();
+                }
+                ShowPanel(m_MatchCreation);
+                break;
+            case eMainMenuScreens.Lobby:
+                if(MainNetworkManager._instance.isNetworkActive)
+                {
+                    m_DisconectedTask = () => {
+                        MainNetworkManager._instance.StartUnityMatchmaking();
+                        ShowPanel(m_MatchListLobby);
+                    };
+                    MainNetworkManager._instance.Disconect();
+                }
+                else
+                {
+                    MainNetworkManager._instance.StartUnityMatchmaking();
+                    ShowPanel(m_MatchListLobby);
+                }
+                break;
+            case eMainMenuScreens.MatchLobby:
+                if (MainNetworkManager._instance.isNetworkActive)
+                {
+                    ShowPanel(m_MatchLobby);
+                }
+                else
+                {
+                    Debug.LogError("Error cannot enter match lobby without and active network connection");
+                }
+                break;
+        }
+    }
+
+    public void ShowMatchListUI()
+    {
+        ShowPanel(eMainMenuScreens.Lobby);
+    }
+
+    public void ShowCreateMatchUI()
+    {
+        ShowPanel(eMainMenuScreens.MatchCreation);
+    }
+    
+    public void ShowMainMenu()
+    {
+        ShowPanel(eMainMenuScreens.MainMenu);
     }
 
     private void ShowPanel(Canvas canvas)
@@ -73,36 +152,12 @@ public class MainMenuUIHandler : MonoBehaviour {
             canvas.gameObject.SetActive(true);
     }
 
-    public void ShowCreateMachUI()
+    private void OnClientStopped()
     {
-        if (!MainNetworkManager._instance.isNetworkActive)
+        if(m_DisconectedTask != null)
         {
-            MainNetworkManager._instance.Disconect();
+            m_DisconectedTask.Invoke();
+            m_DisconectedTask = null;
         }
-        ShowPanel(m_MatchCreation);
-    }
-
-    public void ShowMatchListUI()
-    {
-        if (!MainNetworkManager._instance.isNetworkActive)
-        {
-            MainNetworkManager._instance.StartUnityMatchmaking();
-        } else
-        {
-            MainNetworkManager._instance.Disconect();
-            MainNetworkManager._instance.StartUnityMatchmaking();
-        }
-        ShowPanel(m_MatchListLobby);
-    }
-
-    public void ShowMainMenu()
-    {
-        MainNetworkManager._instance.Disconect();
-        ShowPanel(m_MainMenu);
-    }
-
-    public void ShowMatchLobby()
-    {
-        ShowPanel(m_MatchLobby);
     }
 }

@@ -54,4 +54,20 @@ public static class CoroutineUtilities
         yield return 0;
     }
 
+
+    ///<summary>
+    ///Coroutine function wrapper for a function to be executed on the next frame
+    ///</summary>
+    ///<param name="action">
+    ///The action in question, can be lambda, delegates, a functioncall itself...
+    ///</param>
+    ///<example>
+    ///StartCoroutine(CoroutineUtils.DoOnNextFrame(() => Debug.Log("executed in a corroutine in the next frame"));
+    ///</example>
+    public static IEnumerator DoOnNextFrame(Action action)
+    {
+        yield return 0;
+        action();
+        yield return 0;
+    }
 }
