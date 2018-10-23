@@ -123,7 +123,6 @@ public class MainNetworkManager : NetworkManager
                 if (Is_Server)
                     return;
                 StopMatchMaker();
-                State = ENetworkState.IDLE;
                 break;
             case ENetworkState.JoiningMatch:
                 StopMatchMaker();
@@ -132,7 +131,6 @@ public class MainNetworkManager : NetworkManager
                 else
                     StopClient();
                 matchInfo = null;
-                State = ENetworkState.IDLE;
                 break;
             case ENetworkState.InMatchLobby:
             case ENetworkState.Playing:
@@ -150,7 +148,6 @@ public class MainNetworkManager : NetworkManager
                             StopHost();
 
                             matchInfo = null;
-                            State = ENetworkState.IDLE;
                         });
                     }
                     else
@@ -158,7 +155,6 @@ public class MainNetworkManager : NetworkManager
                         StopMatchMaker();
                         StopHost();
                         matchInfo = null;
-                        State = ENetworkState.IDLE;
                     }
                 }
                 else
@@ -174,7 +170,6 @@ public class MainNetworkManager : NetworkManager
                             StopMatchMaker();
                             StopClient();
                             matchInfo = null;
-                            State = ENetworkState.IDLE;
                         });
                     }
                     else
@@ -182,11 +177,11 @@ public class MainNetworkManager : NetworkManager
                         StopMatchMaker();
                         StopClient();
                         matchInfo = null;
-                        State = ENetworkState.IDLE;
                     }
                 }
                 break;
         }
+        State = ENetworkState.IDLE;
     }
 
     public void AddNetPlayer(NetworkPlayer player)
@@ -474,8 +469,9 @@ public class MainNetworkManager : NetworkManager
     public override void OnStopServer()
     {
         base.OnStopServer();
-        foreach (NetworkPlayer p in PlayersConnected)
+        for (int i = 0; i < PlayersConnected.Count; i++)
         {
+            NetworkPlayer p = PlayersConnected[i];
             if (p != null)
                 NetworkServer.Destroy(p.gameObject);
         }

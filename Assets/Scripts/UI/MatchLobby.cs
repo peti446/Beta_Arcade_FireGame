@@ -45,32 +45,27 @@ public class MatchLobby : MonoBehaviour {
 
     public void OnLeaveClick()
     {
-        MainNetworkManager._instance.Disconect();
-        MainMenuUIHandler._instance.ShowMatchListUI();
+        MainMenuUIHandler._instance.ShowPanel(eMainMenuScreens.Lobby);
     }
 
     private void OnClientErrorHappened(NetworkConnection con, int errorCode)
     {
-        MainNetworkManager._instance.Disconect();
-        MainMenuUIHandler._instance.ShowMatchListUI();
+        MainMenuUIHandler._instance.ShowPanel(eMainMenuScreens.Lobby);
     }
 
 
     private void OnServerErrorHappened(NetworkConnection con, int errorCode)
     {
-        MainNetworkManager._instance.Disconect();
-        MainMenuUIHandler._instance.ShowMatchListUI();
+        MainMenuUIHandler._instance.ShowPanel(eMainMenuScreens.Lobby);
     }
 
     private void OnClientDisconected(NetworkConnection conn)
     {
-        MainNetworkManager._instance.Disconect();
-        MainMenuUIHandler._instance.ShowMatchListUI();
+        MainMenuUIHandler._instance.ShowPanel(eMainMenuScreens.Lobby);
     }
 
     private void OnConnectionDropped()
     {
-        MainNetworkManager._instance.Disconect();
-        MainMenuUIHandler._instance.ShowMatchListUI();
+        MainMenuUIHandler._instance.ShowPanel(eMainMenuScreens.Lobby);
     }
 }
