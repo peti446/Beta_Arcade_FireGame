@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Character))]
 public class PlayerInputs : MonoBehaviour {
 
     [SerializeField]
@@ -10,6 +11,12 @@ public class PlayerInputs : MonoBehaviour {
     [SerializeField]
     private float playerTurn;
 
+    private Character m_character;
+
+    private void Awake()
+    {
+        m_character = GetComponent<Character>();
+    }
 
     private Rigidbody playerRigibody;
 
