@@ -5,93 +5,123 @@ using UnityEngine.UI;
 
 public class BuildingStatus : MonoBehaviour
 {
+    private float building_health;
+    private float building_max_health;
 
-    public GameObject building_state_1;
-    public GameObject building_state_2;
-    public GameObject building_state_3;
-    public GameObject building_state_4;
-    private int building_health;
-    private int building_max_health;
-    private Image health_bar;
-    public Image fire_bar;
-    public Image fire_barBG;
-    public int BuildingHealth { get { return building_health; } }
+    //Building burn amount/health bars
+    public Image health_bar;
+    public Image health_bar_bg;
 
+    //Fire setting bars
     public Image setting_bar_bg;
     public Image setting_bar;
+
+    //Time it takes to light building on fire
     public float fire_start_time = 7.0f;
     float time_left;
-    public GameObject fire_started_text;
 
+    public GameObject fire_started_text;
+    public GameObject damp_building_text;
+    bool on_fire = false;
+    bool dampening = false;
+    public float damp_time = 7.0f;
 
     private void Start()
     {
         building_health = 100;
         building_max_health = 100;
-        //health_bar = transform.Find("BuildingCanvas").Find("HealthBG").Find("Health").GetComponent<Image>();
         time_left = fire_start_time;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-    }
-
-    public void Hit()
-    {
-        if (building_health > 0)
+        //if building is on fire, trigger burning
+        if(on_fire == true)
         {
-            building_health = building_health - 10;
-            health_bar.fillAmount = (float)building_health / (float)building_max_health;
-            Debug.Log(building_health);
-        }
-        else
-        {
-            Debug.Log("Building Dead");
+            BurningPhase();
         }
     }
-    public void WaterHit()
-    {
-        if (building_health < building_max_health)
-        {
-            building_health = building_health + 10;
-            health_bar.fillAmount = (float)building_health / (float)building_max_health;
-            Debug.Log(building_health);
-        }
-        else
-        {
-            Debug.Log("Max health");
-        }
-    }
-   /* public void FireStart()
-    {
-        fire_barBG.gameObject.SetActive(true);
-        Debug.Log("Fire");
-        while (fire_bar.fillAmount > 0)
-        {
-            fire_bar.fillAmount -= (Time.deltaTime);
-        }
-        if (fire_bar.fillAmount <= 0)
-        {
-            fire_bar.gameObject.SetActive(false);
-        }
-    }*/
 
     public void StartingFire()
     {
-        //time_left = 7.0f;
-        setting_bar_bg.gameObject.SetActive(true);
-        setting_bar.gameObject.SetActive(true);
-        if (time_left > 0.0f)
+        if(dampening == false)
         {
+            damp_time = 7.0f;
+            damp_building_text.SetActive(false);
+            //Activate fire starting bars
+            setting_bar_bg.gameObject.SetActive(true);
+            setting_bar.gameObject.SetActive(true);
+
             time_left -= Time.deltaTime;
             setting_bar.fillAmount = time_left / fire_start_time;
+
+            //if time depletes
+            if (time_left < 0)
+            {
+                //display fire text
+                fire_started_text.SetActive(true);
+                //disable fire starting bars
+                setting_bar_bg.gameObject.SetActive(false);
+                setting_bar.gameObject.SetActive(false);
+                //Set fire bool to true
+                on_fire = true;
+            }
         }
         else
         {
-            fire_started_text.SetActive(true);
-            setting_bar_bg.gameObject.SetActive(false);
+            damp_building_text.SetActive(true);
+        }
+    }
+
+    public void BurningPhase()
+    {
+        //Activate building health/burn amount bars
+        health_bar.gameObject.SetActive(true);
+        health_bar_bg.gameObject.SetActive(true);
+
+        building_health -= Time.deltaTime;
+        health_bar.fillAmount = building_health / building_max_health;
+
+        //If building health is between 66 and 33
+        if(building_health < 66 && building_health > 33)
+        {
+            //Change building
+            gameObject.transform.localScale = new Vector3(1.5f, 8.5f, 1.5f);
+        }
+        //If building health is between 33 and 0
+        if(building_health < 33 && building_health > 0)
+        {
+            //Change building
+            gameObject.transform.localScale = new Vector3(1.5f, 7.0f, 1.5f);
+        }
+        //If building health depletes
+        if(building_health <= 0)
+        {
+            //Destroy building & deactivate health bars
+            gameObject.transform.localScale = new Vector3(1.5f, 5.5f, 1.5f);
+            health_bar.gameObject.SetActive(false);
+            health_bar_bg.gameObject.SetActive(false);
+        }
+    }
+
+    public void Extinguish()
+    {
+        //set on fire to false
+        on_fire = false;
+        //Deactivate health bars
+        health_bar.gameObject.SetActive(false);
+        health_bar_bg.gameObject.SetActive(false);
+        //Reset fire lighting timer
+        time_left = 7;
+        damp_time -= Time.deltaTime;
+        if(damp_time > 0)
+        {
+            dampening = true;
+        }
+        else
+        {
+            dampening = false;
         }
     }
 }

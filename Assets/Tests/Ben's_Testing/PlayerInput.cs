@@ -24,40 +24,17 @@ public class PlayerInput : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonUp("Fire1"))
+        //If player presses F
+        if(Input.GetKey(KeyCode.F))
         {
-            ShootWater();
+            //Start Fire on building
+            building.gameObject.GetComponent<BuildingStatus>().StartingFire();
         }
-        if(coll == true)
+        //If player presses E
+        if(Input.GetKey(KeyCode.E))
         {
-            
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                Debug.Log("Holding E");
-                building.gameObject.GetComponent<BuildingStatus>().StartingFire();
-
-            }
-        }
-
-    }
-
-    void ShootWater()
-    {
-        Instantiate(water_prefab, bullet_spawn.position, bullet_spawn.rotation);
-    }
-
-    private void OnCollisionEnter(Collision col)
-    {
-        if (col.gameObject.tag == "Building")
-        {
-            coll = true;
-            Debug.Log("Collided");
-            //col.gameObject.GetComponent<BuildingStatus>().FireStart();
-        }
-        else
-        {
-            coll = false;
+            //Extinguish fire on building
+            building.gameObject.GetComponent<BuildingStatus>().Extinguish();
         }
     }
-
 }

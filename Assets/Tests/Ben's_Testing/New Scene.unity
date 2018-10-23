@@ -284,6 +284,8 @@ MonoBehaviour:
   building_state_2: {fileID: 0}
   building_state_3: {fileID: 0}
   building_state_4: {fileID: 0}
+  health_bar: {fileID: 1631330094}
+  health_bar_bg: {fileID: 1781434126}
   fire_bar: {fileID: 1631330094}
   fire_barBG: {fileID: 1781434126}
   setting_bar_bg: {fileID: 1940915930}
@@ -367,7 +369,7 @@ Transform:
   m_GameObject: {fileID: 238283711}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.19, y: 0.48457122, z: 4.05074}
-  m_LocalScale: {x: 1.5625868, y: 9.441562, z: 1.5625874}
+  m_LocalScale: {x: 1.5, y: 10, z: 1.5}
   m_Children:
   - {fileID: 2068969443}
   m_Father: {fileID: 0}
