@@ -24,13 +24,15 @@ public class PlayerInput : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //If player presses F
+        //If player presses/holds F
         if(Input.GetKey(KeyCode.F))
         {
             //Start Fire on building
             building.gameObject.GetComponent<BuildingStatus>().StartingFire();
         }
-        //If player presses E
+
+
+        //If player presses/holds E
         if(Input.GetKey(KeyCode.E))
         {
             //Extinguish fire on building

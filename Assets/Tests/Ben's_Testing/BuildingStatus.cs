@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class BuildingStatus : MonoBehaviour
 {
@@ -11,10 +12,12 @@ public class BuildingStatus : MonoBehaviour
     //Building burn amount/health bars
     public Image health_bar;
     public Image health_bar_bg;
+    public TextMeshProUGUI health_counter;
 
     //Fire setting bars
     public Image setting_bar_bg;
     public Image setting_bar;
+    public TextMeshProUGUI fire_setting_coutner;
 
     //Time it takes to light building on fire
     public float fire_start_time = 7.0f;
@@ -24,7 +27,9 @@ public class BuildingStatus : MonoBehaviour
     public GameObject damp_building_text;
     bool on_fire = false;
     bool dampening = false;
+    bool planting = false;
     public float damp_time = 7.0f;
+    public int setting_percent;
 
     private void Start()
     {
@@ -53,8 +58,11 @@ public class BuildingStatus : MonoBehaviour
             setting_bar_bg.gameObject.SetActive(true);
             setting_bar.gameObject.SetActive(true);
 
+            //setting_percent = ((int)time_left / (int)fire_start_time) * 100;
+            fire_setting_coutner.gameObject.GetComponent<TextMeshProUGUI>().SetText("Lighting fire in: " + (int)time_left);
             time_left -= Time.deltaTime;
             setting_bar.fillAmount = time_left / fire_start_time;
+
 
             //if time depletes
             if (time_left < 0)
@@ -68,9 +76,14 @@ public class BuildingStatus : MonoBehaviour
                 on_fire = true;
             }
         }
-        else
+        if(dampening == true)
         {
             damp_building_text.SetActive(true);
+            damp_time -= Time.deltaTime;
+            if(damp_time < 0)
+            {
+                dampening = false;
+            }
         }
     }
 
@@ -82,6 +95,7 @@ public class BuildingStatus : MonoBehaviour
 
         building_health -= Time.deltaTime;
         health_bar.fillAmount = building_health / building_max_health;
+        health_counter.GetComponent<TextMeshProUGUI>().SetText("Health: " + (int)building_health + "%");
 
         //If building health is between 66 and 33
         if(building_health < 66 && building_health > 33)
