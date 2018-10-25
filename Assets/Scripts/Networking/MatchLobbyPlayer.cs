@@ -8,12 +8,21 @@ public class MatchLobbyPlayer : MonoBehaviour {
     [SerializeField]
     private Text m_name;
     [SerializeField]
-    private Text m_ready_Text;
+    private Text m_readyText;
     [SerializeField]
-    private Text m_waiting_Text;
+    private Text m_waitingText;
     private Button m_readyButton;
+    private Button m_switchButton;
 
     private NetworkPlayer m_NetworkPlayer;
+
+    public ETeams Team
+    {
+        get
+        {
+            return m_NetworkPlayer.Player_Team;
+        }
+    }
 
     private void OnDestroy()
     {
@@ -38,11 +47,25 @@ public class MatchLobbyPlayer : MonoBehaviour {
         MainNetworkManager._instance.NetworkPlayerAdded += PlayerJoined;
         MainNetworkManager._instance.NetworkPlayerRemoved += PlayerLeft;
 
-        m_ready_Text.gameObject.SetActive(false);
+        m_readyText.gameObject.SetActive(false);
 
-        MainMenuUIHandler._instance.AddPlayerToLobby(this);
+        if (MainMenuUIHandler._instance.MatchLobbyScritp)
+            MainMenuUIHandler._instance.MatchLobbyScritp.AddLobbyPlayer(this);
 
         UpdateData();
+    }
+
+    public void SetSwitchTeamButton(Button switchTeam)
+    {
+        if (!m_NetworkPlayer.hasAuthority)
+        {
+            return;
+        }
+        m_switchButton = switchTeam;
+        m_switchButton.onClick.RemoveAllListeners();
+        m_switchButton.onClick.AddListener(() => { m_NetworkPlayer.CmdSwitchTeam(); });
+        m_switchButton.interactable = false;
+        UpdateButtonState();
     }
 
     public void SetReadyButtonReference(Button readyB)
@@ -51,8 +74,8 @@ public class MatchLobbyPlayer : MonoBehaviour {
         {
             return;
         }
-        Debug.Log("SetreadyButton");
         m_readyButton = readyB;
+        m_readyButton.interactable = false;
         UpdateButtonState();
     }
 
@@ -69,8 +92,9 @@ public class MatchLobbyPlayer : MonoBehaviour {
     private void UpdateData()
     {
         m_name.text = m_NetworkPlayer.Player_Name;
-        m_ready_Text.gameObject.SetActive(m_NetworkPlayer.Is_ready);
-        m_waiting_Text.gameObject.SetActive(!m_NetworkPlayer.Is_ready);
+        m_readyText.gameObject.SetActive(m_NetworkPlayer.Is_ready);
+        m_waitingText.gameObject.SetActive(!m_NetworkPlayer.Is_ready);
+        MainMenuUIHandler._instance.MatchLobbyScritp.SwitchLobbyPlayerTeamPanel(this);
         UpdateButtonState();
     }
 
@@ -90,6 +114,11 @@ public class MatchLobbyPlayer : MonoBehaviour {
                 m_readyButton.onClick.AddListener(() => { m_NetworkPlayer.CmdReady();});
                 m_readyButton.transform.GetChild(0).GetComponent<Text>().text = "Ready";
             }
+        }
+
+        if (m_switchButton != null)
+        {
+            m_switchButton.interactable = MatchSettings._instance.CanSwitchTeam(m_NetworkPlayer.Player_Team);
         }
     }
 

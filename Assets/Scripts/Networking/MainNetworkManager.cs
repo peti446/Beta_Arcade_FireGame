@@ -100,6 +100,8 @@ public class MainNetworkManager : NetworkManager
 
         //Create a new instance of the instance
         _instance = this;
+        //Dont destroy the object on load
+        DontDestroyOnLoad(gameObject);
         //Set state
         State = ENetworkState.IDLE;
         PlayersConnected = new List<NetworkPlayer>();

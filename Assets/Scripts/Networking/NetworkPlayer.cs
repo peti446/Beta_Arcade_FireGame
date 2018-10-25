@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+public enum ETeams
+{
+    FireFighters, CrazyPeople
+}
+
 public class NetworkPlayer : NetworkBehaviour {
 
     [SerializeField]
@@ -17,12 +22,16 @@ public class NetworkPlayer : NetworkBehaviour {
     private string m_Name = "";
     [SyncVar(hook = "OnReadyStatusChanged")]
     private bool m_ready = false;
+    [SyncVar(hook = "OnTeamChanged")]
+    private ETeams m_team = ETeams.FireFighters;
     [SyncVar(hook = "OnInitStatusChanged")]
     private bool m_Initialized = false;
     [SyncVar]
     private int m_ID;
 
     private MatchLobbyPlayer m_matchLobbyPlayer;
+
+    //Public getters
     public bool Is_ready
     {
         get { return m_ready; }
@@ -31,8 +40,16 @@ public class NetworkPlayer : NetworkBehaviour {
     {
         get { return m_Name; }
     }
+    public ETeams Player_Team
+    {
+        get { return m_team; }
+    }
+    public int ID
+    {
+        get { return m_ID; }
+    }
 
-
+    //Events
     public event Action<NetworkPlayer> NetworkPlayerDataUpdated;
     public event Action<NetworkPlayer> PlayerBecameReady;
     public event Action<NetworkPlayer> PlayerBecameUnReady;
@@ -101,10 +118,8 @@ public class NetworkPlayer : NetworkBehaviour {
     [Command]
     public void CmdReady()
     {
-        Debug.Log("Ready CMD");
         if (MainNetworkManager._instance.CanMatchStart)
         {
-            Debug.Log("Ready CMD 2");
             m_ready = true;
             if (PlayerBecameReady != null)
             {
@@ -127,7 +142,9 @@ public class NetworkPlayer : NetworkBehaviour {
     private void CmdSetUpPlayer(string name)
     {
         m_Name = name;
+        m_team = MatchSettings._instance.TryToAddPlayerToTeam(this, MatchSettings._instance.GetNewPlayerStartingTeam());
         m_Initialized = true;
+        RpcTaemSizesUpdate(MatchSettings._instance.GetTeamMembersId(ETeams.CrazyPeople), MatchSettings._instance.GetTeamMembersId(ETeams.FireFighters));
     }
 
 
@@ -136,8 +153,31 @@ public class NetworkPlayer : NetworkBehaviour {
     {
         m_Name = newName;
     }
+
+    [Command]
+    public void CmdSwitchTeam()
+    {
+        switch(m_team)
+        {
+            case ETeams.CrazyPeople:
+                    m_team = MatchSettings._instance.TryToAddPlayerToTeam(this, ETeams.FireFighters);
+                break;
+            case ETeams.FireFighters:
+                    m_team = MatchSettings._instance.TryToAddPlayerToTeam(this, ETeams.CrazyPeople);
+                break;
+        }
+        RpcTaemSizesUpdate(MatchSettings._instance.GetTeamMembersId(ETeams.CrazyPeople), MatchSettings._instance.GetTeamMembersId(ETeams.FireFighters));
+    }
     #endregion
 
+    #region Client Rpc
+    [ClientRpc]
+    public void RpcTaemSizesUpdate(int[] teamPlayersId1, int[] teamPlayersId2)
+    {
+        MatchSettings._instance.SetTeamFromIds(teamPlayersId1, ETeams.CrazyPeople);
+        MatchSettings._instance.SetTeamFromIds(teamPlayersId2, ETeams.FireFighters);
+    }
+    #endregion
 
     #region Sync var changed functions
     private void OnNameChanged(string name)
@@ -150,6 +190,12 @@ public class NetworkPlayer : NetworkBehaviour {
     {
         Debug.Log("Ready Status Changed");
         m_ready = newStatus;
+        OnNetworkPlayerDataUpdated();
+    }
+
+    private void OnTeamChanged(ETeams newTeam)
+    {
+        m_team = newTeam;
         OnNetworkPlayerDataUpdated();
     }
 

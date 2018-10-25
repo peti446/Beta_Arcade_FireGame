@@ -25,6 +25,14 @@ public class MainMenuUIHandler : MonoBehaviour {
     private eMainMenuScreens m_currentActiveScreen;
     private Action m_DisconectedTask;
 
+    public MatchLobby MatchLobbyScritp
+    {
+        get
+        {
+            return m_MatchLobby.GetComponent<MatchLobby>();
+        }
+    }
+
     public static MainMenuUIHandler _instance
     {
         get;
@@ -61,16 +69,6 @@ public class MainMenuUIHandler : MonoBehaviour {
         ShowPanel(m_MainMenu);
 
         MainNetworkManager._instance.ClientShutdown += OnClientStopped;
-    }
-
-    
-    public void AddPlayerToLobby(MatchLobbyPlayer p)
-    {
-        MatchLobby script = m_MatchLobby.GetComponent<MatchLobby>();
-        if(script != null)
-        {
-            script.AddLobbyPlayer(p);
-        }
     }
 
     public void ShowPanel(eMainMenuScreens screenToShow)
