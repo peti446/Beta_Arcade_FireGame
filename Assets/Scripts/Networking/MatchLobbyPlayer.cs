@@ -13,15 +13,14 @@ public class MatchLobbyPlayer : MonoBehaviour {
     private Text m_waitingText;
     private Button m_readyButton;
     private Button m_switchButton;
+    private InputField m_inputField;
+    private Text m_inputError;
 
     private NetworkPlayer m_NetworkPlayer;
 
     public ETeams Team
     {
-        get
-        {
-            return m_NetworkPlayer.Player_Team;
-        }
+        get { return m_NetworkPlayer.Player_Team; }
     }
 
     private void OnDestroy()
@@ -52,6 +51,9 @@ public class MatchLobbyPlayer : MonoBehaviour {
         if (MainMenuUIHandler._instance.MatchLobbyScritp)
             MainMenuUIHandler._instance.MatchLobbyScritp.AddLobbyPlayer(this);
 
+        if (m_NetworkPlayer.hasAuthority)
+            m_name.color = new Color(0.42f, 0.64f, 1.0f, 1.0f);
+
         UpdateData();
     }
 
@@ -66,6 +68,30 @@ public class MatchLobbyPlayer : MonoBehaviour {
         m_switchButton.onClick.AddListener(() => { m_NetworkPlayer.CmdSwitchTeam(); });
         m_switchButton.interactable = false;
         UpdateButtonState();
+    }
+
+    public void SetChangeNameFiled(InputField field, Text error)
+    {
+        if (!m_NetworkPlayer.hasAuthority)
+        {
+            return;
+        }
+        m_inputField = field;
+        m_inputError = error;
+        m_inputField.onEndEdit.RemoveAllListeners();
+        m_inputField.onEndEdit.AddListener((name) => { m_NetworkPlayer.CmdChangeName(name); });
+    }
+
+    public void DisplayUsernameError(string error)
+    {
+        if (m_inputField != null && m_inputError != null)
+        {
+            m_inputError.gameObject.SetActive(true);
+            m_inputError.text = string.Format("Name {0} is already taken...", error);
+            m_inputField.text = m_NetworkPlayer.Player_Name;
+            m_inputField.gameObject.SetActive(false);
+            CoroutineUtilities.DelaySeconds(() => { m_inputError.gameObject.SetActive(false); }, 2.5f);
+        }
     }
 
     public void SetReadyButtonReference(Button readyB)
@@ -95,6 +121,12 @@ public class MatchLobbyPlayer : MonoBehaviour {
         m_readyText.gameObject.SetActive(m_NetworkPlayer.Is_ready);
         m_waitingText.gameObject.SetActive(!m_NetworkPlayer.Is_ready);
         MainMenuUIHandler._instance.MatchLobbyScritp.SwitchLobbyPlayerTeamPanel(this);
+        if (m_inputField != null)
+        {
+            m_inputField.text = m_name.text;
+            m_inputField.gameObject.SetActive(false);
+            m_inputError.gameObject.SetActive(false);
+        }
         UpdateButtonState();
     }
 
@@ -118,7 +150,7 @@ public class MatchLobbyPlayer : MonoBehaviour {
 
         if (m_switchButton != null)
         {
-            m_switchButton.interactable = MatchSettings._instance.CanSwitchTeam(m_NetworkPlayer.Player_Team);
+            m_switchButton.interactable = MatchSettings._instance.CanSwitchToTeam(m_NetworkPlayer.Player_Team == ETeams.CrazyPeople ? ETeams.FireFighters : ETeams.CrazyPeople);
         }
     }
 

@@ -151,6 +151,15 @@ public class NetworkPlayer : NetworkBehaviour {
     [Command]
     public void CmdChangeName(string newName)
     {
+        foreach(NetworkPlayer p in MainNetworkManager._instance.PlayersConnected)
+        {
+            if(p.Player_Name == newName)
+            {
+                TargetUsernameChangeError(connectionToClient, newName);
+                return;
+            }
+        }
+
         m_Name = newName;
     }
 
@@ -172,10 +181,21 @@ public class NetworkPlayer : NetworkBehaviour {
 
     #region Client Rpc
     [ClientRpc]
-    public void RpcTaemSizesUpdate(int[] teamPlayersId1, int[] teamPlayersId2)
+    private void RpcTaemSizesUpdate(int[] teamPlayersId1, int[] teamPlayersId2)
     {
         MatchSettings._instance.SetTeamFromIds(teamPlayersId1, ETeams.CrazyPeople);
         MatchSettings._instance.SetTeamFromIds(teamPlayersId2, ETeams.FireFighters);
+    }
+    #endregion
+
+    #region Target Client RPC
+    [TargetRpc]
+    private void TargetUsernameChangeError(NetworkConnection target, string newUsername)
+    {
+        if(m_matchLobbyPlayer != null)
+        {
+            m_matchLobbyPlayer.DisplayUsernameError(newUsername);
+        }
     }
     #endregion
 

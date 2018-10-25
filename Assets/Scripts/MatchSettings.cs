@@ -53,17 +53,16 @@ public class MatchSettings : MonoBehaviour {
         return ETeams.CrazyPeople;
     }
 
-    public bool CanSwitchTeam(ETeams currentTeam)
+    public bool CanSwitchToTeam(ETeams newTeam)
     {
-        if(currentTeam == ETeams.CrazyPeople)
-            return FirefightersTeamSize < 2;
-
-        return CrazyTeamSize < 4;
+        if(newTeam == ETeams.CrazyPeople)
+            return CrazyTeamSize < 4;
+        return FirefightersTeamSize < 2;
     }
 
     public ETeams TryToAddPlayerToTeam(NetworkPlayer p, ETeams newTeam)
     {
-        if(CanSwitchTeam(newTeam))
+        if(CanSwitchToTeam(newTeam))
         {
             m_crazyPeopleTeam.Remove(p);
             m_fireFigthersTeam.Remove(p);

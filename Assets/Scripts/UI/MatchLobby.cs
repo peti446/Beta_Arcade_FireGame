@@ -13,13 +13,18 @@ public class MatchLobby : MonoBehaviour {
     [SerializeField]
     private Button m_readyButton;
     [SerializeField]
-    private Button m_leaveButton;
-    [SerializeField]
     private Button m_switchTeam;
+    [SerializeField]
+    private InputField m_nameInputField;
+    [SerializeField]
+    private Text m_nameChangeError;
 
     private void OnEnable()
     {
         m_readyButton.interactable = false;
+        m_switchTeam.interactable = false;
+        m_nameInputField.gameObject.SetActive(false);
+        m_nameChangeError.gameObject.SetActive(false);
         MainNetworkManager._instance.ClientErrorHappend += OnClientErrorHappened;
         MainNetworkManager._instance.ServerErrorHappend += OnServerErrorHappened;
         MainNetworkManager._instance.ClientDisconected += OnClientDisconected;
@@ -38,6 +43,7 @@ public class MatchLobby : MonoBehaviour {
     {
         player.SetReadyButtonReference(m_readyButton);
         player.SetSwitchTeamButton(m_switchTeam);
+        player.SetChangeNameFiled(m_nameInputField, m_nameChangeError);
         switch(player.Team)
         {
             case ETeams.CrazyPeople:
@@ -83,6 +89,21 @@ public class MatchLobby : MonoBehaviour {
             }
         }
         return false;
+    }
+
+    public void OnChangeNameClicked()
+    {
+        if(!m_nameInputField.gameObject.activeSelf)
+        {
+            m_nameInputField.gameObject.SetActive(true);
+            m_nameChangeError.gameObject.SetActive(false);
+        }
+        else
+        {
+            m_nameInputField.gameObject.SetActive(false);
+            m_nameChangeError.gameObject.SetActive(false);
+            m_nameInputField.onEndEdit.Invoke(m_nameInputField.text);
+        }
     }
 
     private void OnClientErrorHappened(NetworkConnection con, int errorCode)
