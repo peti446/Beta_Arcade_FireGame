@@ -16,14 +16,14 @@ public class LobbyRow : MonoBehaviour {
     [SerializeField]
     private Button m_joinButton;
 
-    private NetworkID m_netID;
+    private ulong m_netID;
 
     public void SetMatchInfoData(MatchInfoSnapshot info, bool is_odd)
     {
         m_matchName.text = info.name;
         m_playerCount.text = string.Format("{0}/{1}", info.currentSize, info.maxSize);
 
-        m_netID = info.networkId;
+        m_netID = (ulong)info.networkId;
         if(is_odd)
         {
             gameObject.GetComponent<Image>().color = new Color(255, 137, 137, 100);
@@ -40,7 +40,7 @@ public class LobbyRow : MonoBehaviour {
 
     public void JoinMatch()
     {
-        MainNetworkManager._instance.JoinUnityMatchmakingMatch(m_netID, (success, extraData, matchInfo) =>
+        MainNetworkManager._instance.JoinUnityMatchmakingMatch((NetworkID)m_netID, (success, extraData, matchInfo) =>
         {
             if(success)
             {
