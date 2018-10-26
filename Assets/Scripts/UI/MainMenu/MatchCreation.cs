@@ -31,6 +31,6 @@ public class MatchCreation : MonoBehaviour {
 
     public void OnCancelPress()
     {
-
+        MainMenuUIHandler._instance.ShowPanel(eMainMenuScreens.MainMenu);
     }
 }

@@ -7,24 +7,26 @@ using UnityEngine.UI;
 public class MatchLobby : MonoBehaviour {
 
     [SerializeField]
+    private Text m_MatchTitle;
+    [SerializeField]
     private RectTransform m_PayerList_Team1;
     [SerializeField]
     private RectTransform m_PayerList_Team2;
     [SerializeField]
     private Button m_readyButton;
-    [SerializeField]
-    private Button m_switchTeam;
-    [SerializeField]
-    private InputField m_nameInputField;
-    [SerializeField]
-    private Text m_nameChangeError;
 
     private void OnEnable()
     {
         m_readyButton.interactable = false;
-        m_switchTeam.interactable = false;
-        m_nameInputField.gameObject.SetActive(false);
-        m_nameChangeError.gameObject.SetActive(false);
+        foreach(RectTransform c in m_PayerList_Team1)
+        {
+            Destroy(c.gameObject);
+        }
+        foreach (RectTransform c in m_PayerList_Team2)
+        {
+            Destroy(c.gameObject);
+        }
+        m_MatchTitle.text = MainNetworkManager._instance.matchName;
         MainNetworkManager._instance.ClientErrorHappend += OnClientErrorHappened;
         MainNetworkManager._instance.ServerErrorHappend += OnServerErrorHappened;
         MainNetworkManager._instance.ClientDisconected += OnClientDisconected;
@@ -87,21 +89,6 @@ public class MatchLobby : MonoBehaviour {
             }
         }
         return false;
-    }
-
-    public void OnChangeNameClicked()
-    {
-        if(!m_nameInputField.gameObject.activeSelf)
-        {
-            m_nameInputField.gameObject.SetActive(true);
-            m_nameChangeError.gameObject.SetActive(false);
-        }
-        else
-        {
-            m_nameInputField.gameObject.SetActive(false);
-            m_nameChangeError.gameObject.SetActive(false);
-            m_nameInputField.onEndEdit.Invoke(m_nameInputField.text);
-        }
     }
 
     private void OnClientErrorHappened(NetworkConnection con, int errorCode)

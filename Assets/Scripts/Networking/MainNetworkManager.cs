@@ -241,7 +241,7 @@ public class MainNetworkManager : NetworkManager
         return true;
     }
 
-    public void NetPlayerGotReady(NetworkPlayer p)
+    private void NetPlayerGotReady(NetworkPlayer p)
     {
         if(AreAllPlayersReady() && ServerAllPlayersGotReady != null)
         {
@@ -284,7 +284,7 @@ public class MainNetworkManager : NetworkManager
 
         State = ENetworkState.JoiningMatch;
         m_OnMatchCreateCallback = onMatchCreatedCallback;
-
+        matchName = name;
         matchMaker.CreateMatch(name, m_MaxPlayersPerMatch, true, string.Empty, string.Empty, string.Empty, 0, 0, OnMatchCreate);
     }
 
@@ -297,7 +297,6 @@ public class MainNetworkManager : NetworkManager
 
         State = ENetworkState.JoiningMatch;
         m_OnMatchcJoinedCallback = onMatchJoinedCallback;
-
         matchMaker.JoinMatch(netID, string.Empty, string.Empty, string.Empty, 0, 0, OnMatchJoined);
     }
     #endregion
@@ -309,6 +308,7 @@ public class MainNetworkManager : NetworkManager
         base.OnMatchCreate(success, info, matchInfo);
 
         State = success ? ENetworkState.InMatchLobby : ENetworkState.IDLE;
+
         if(m_OnMatchCreateCallback != null)
         {
             m_OnMatchCreateCallback.Invoke(success, info, matchInfo);

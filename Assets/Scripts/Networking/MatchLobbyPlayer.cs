@@ -17,6 +17,8 @@ public class MatchLobbyPlayer : MonoBehaviour {
     private Button m_ShowChangeNameButton;
     [SerializeField]
     private InputField m_nameInputfield;
+    [SerializeField]
+    private Text m_nameErrorMsgText;
 
     private Button m_readyButton;
 
@@ -60,6 +62,7 @@ public class MatchLobbyPlayer : MonoBehaviour {
         m_switchTeamButton.gameObject.SetActive(false);
         m_ShowChangeNameButton.gameObject.SetActive(false);
         m_nameInputfield.gameObject.SetActive(false);
+        m_nameErrorMsgText.gameObject.SetActive(false);
         m_switchTeamButton.onClick.RemoveAllListeners();
         m_ShowChangeNameButton.onClick.RemoveAllListeners();
         m_nameInputfield.onEndEdit.RemoveAllListeners();
@@ -85,16 +88,12 @@ public class MatchLobbyPlayer : MonoBehaviour {
     }
 
 
-    public void DisplayUsernameError(string error)
+    public void DisplayUsernameError(string name)
     {
-       // if (m_inputField != null && m_inputError != null)
-        {
-          //  m_inputError.gameObject.SetActive(true);
-          //  m_inputError.text = string.Format("Name {0} is already taken...", error);
-          //  m_inputField.text = m_NetworkPlayer.Player_Name;
-          //  m_inputField.gameObject.SetActive(false);
-          //  CoroutineUtilities.DelaySeconds(() => { m_inputError.gameObject.SetActive(false); }, 2.5f);
-        }
+        m_nameInputfield.gameObject.SetActive(false);
+        m_nameErrorMsgText.gameObject.SetActive(true);
+        m_nameErrorMsgText.text = string.Format("Name {0} is already taken...", name);
+        CoroutineUtilities.DelaySeconds(() => { m_nameErrorMsgText.gameObject.SetActive(false); }, 2.5f);
     }
 
     public void SetReadyButtonReference(Button readyB)
@@ -128,7 +127,8 @@ public class MatchLobbyPlayer : MonoBehaviour {
 
     private void OnEndEditChangeName(string text)
     {
-        m_NetworkPlayer.CmdChangeName(text);
+        if(text != string.Empty && text != m_name.text)
+            m_NetworkPlayer.CmdChangeName(text);
     }
 
     private void PlayerJoined(NetworkPlayer p)
