@@ -23,6 +23,7 @@ Folder Structure:
 				- Levels
 				- Other
         	- Sounds
+			- Materials
         	- Textures
 				- UI
 	- Tests
