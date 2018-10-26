@@ -42,8 +42,6 @@ public class MatchLobby : MonoBehaviour {
     public void AddLobbyPlayer(MatchLobbyPlayer player)
     {
         player.SetReadyButtonReference(m_readyButton);
-        player.SetSwitchTeamButton(m_switchTeam);
-        player.SetChangeNameFiled(m_nameInputField, m_nameChangeError);
         switch(player.Team)
         {
             case ETeams.CrazyPeople:

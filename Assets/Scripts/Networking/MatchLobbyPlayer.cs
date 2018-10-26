@@ -11,10 +11,14 @@ public class MatchLobbyPlayer : MonoBehaviour {
     private Text m_readyText;
     [SerializeField]
     private Text m_waitingText;
+    [SerializeField]
+    private Button m_switchTeamButton;
+    [SerializeField]
+    private Button m_ShowChangeNameButton;
+    [SerializeField]
+    private InputField m_nameInputfield;
+
     private Button m_readyButton;
-    private Button m_switchButton;
-    private InputField m_inputField;
-    private Text m_inputError;
 
     private NetworkPlayer m_NetworkPlayer;
 
@@ -29,8 +33,12 @@ public class MatchLobbyPlayer : MonoBehaviour {
         {
             m_NetworkPlayer.NetworkPlayerDataUpdated -= OnPlayerDataUpdated;
         }
-        MainNetworkManager._instance.NetworkPlayerAdded -= PlayerJoined;
-        MainNetworkManager._instance.NetworkPlayerRemoved -= PlayerLeft;
+
+        if(MainNetworkManager._instance != null)
+        {
+            MainNetworkManager._instance.NetworkPlayerAdded -= PlayerJoined;
+            MainNetworkManager._instance.NetworkPlayerRemoved -= PlayerLeft;
+        }
     }
 
     public void InitForPlayer(NetworkPlayer player)
@@ -41,56 +49,51 @@ public class MatchLobbyPlayer : MonoBehaviour {
             return;
         }
 
+        //Set events
         m_NetworkPlayer = player;
         m_NetworkPlayer.NetworkPlayerDataUpdated += OnPlayerDataUpdated;
         MainNetworkManager._instance.NetworkPlayerAdded += PlayerJoined;
         MainNetworkManager._instance.NetworkPlayerRemoved += PlayerLeft;
 
+        //By default the player is not the local one
         m_readyText.gameObject.SetActive(false);
+        m_switchTeamButton.gameObject.SetActive(false);
+        m_ShowChangeNameButton.gameObject.SetActive(false);
+        m_nameInputfield.gameObject.SetActive(false);
+        m_switchTeamButton.onClick.RemoveAllListeners();
+        m_ShowChangeNameButton.onClick.RemoveAllListeners();
+        m_nameInputfield.onEndEdit.RemoveAllListeners();
 
+        //Add the player to the UI
         if (MainMenuUIHandler._instance.MatchLobbyScritp)
             MainMenuUIHandler._instance.MatchLobbyScritp.AddLobbyPlayer(this);
 
+        //If it is the local player enable buttons to chage their players data
         if (m_NetworkPlayer.hasAuthority)
-            m_name.color = new Color(0.42f, 0.64f, 1.0f, 1.0f);
+        {
+            m_name.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+            m_switchTeamButton.onClick.AddListener(OnSwitchTeamClicked);
+            m_ShowChangeNameButton.onClick.AddListener(OnShowNameInputClicked);
+            m_nameInputfield.onEndEdit.AddListener(OnEndEditChangeName);
+            m_switchTeamButton.gameObject.SetActive(true);
+            m_ShowChangeNameButton.gameObject.SetActive(true);
+            m_nameInputfield.gameObject.SetActive(false);
+        }
 
+        //Update the data of the player
         UpdateData();
     }
 
-    public void SetSwitchTeamButton(Button switchTeam)
-    {
-        if (!m_NetworkPlayer.hasAuthority)
-        {
-            return;
-        }
-        m_switchButton = switchTeam;
-        m_switchButton.onClick.RemoveAllListeners();
-        m_switchButton.onClick.AddListener(() => { m_NetworkPlayer.CmdSwitchTeam(); });
-        m_switchButton.interactable = false;
-        UpdateButtonState();
-    }
-
-    public void SetChangeNameFiled(InputField field, Text error)
-    {
-        if (!m_NetworkPlayer.hasAuthority)
-        {
-            return;
-        }
-        m_inputField = field;
-        m_inputError = error;
-        m_inputField.onEndEdit.RemoveAllListeners();
-        m_inputField.onEndEdit.AddListener((name) => { m_NetworkPlayer.CmdChangeName(name); });
-    }
 
     public void DisplayUsernameError(string error)
     {
-        if (m_inputField != null && m_inputError != null)
+       // if (m_inputField != null && m_inputError != null)
         {
-            m_inputError.gameObject.SetActive(true);
-            m_inputError.text = string.Format("Name {0} is already taken...", error);
-            m_inputField.text = m_NetworkPlayer.Player_Name;
-            m_inputField.gameObject.SetActive(false);
-            CoroutineUtilities.DelaySeconds(() => { m_inputError.gameObject.SetActive(false); }, 2.5f);
+          //  m_inputError.gameObject.SetActive(true);
+          //  m_inputError.text = string.Format("Name {0} is already taken...", error);
+          //  m_inputField.text = m_NetworkPlayer.Player_Name;
+          //  m_inputField.gameObject.SetActive(false);
+          //  CoroutineUtilities.DelaySeconds(() => { m_inputError.gameObject.SetActive(false); }, 2.5f);
         }
     }
 
@@ -103,6 +106,29 @@ public class MatchLobbyPlayer : MonoBehaviour {
         m_readyButton = readyB;
         m_readyButton.interactable = false;
         UpdateButtonState();
+    }
+
+    private void OnSwitchTeamClicked()
+    {
+        m_NetworkPlayer.CmdSwitchTeam();
+    }
+
+    private void OnShowNameInputClicked()
+    {
+        if(!m_nameInputfield.gameObject.activeSelf)
+        {
+            m_nameInputfield.gameObject.SetActive(true);
+        }
+        else
+        {
+            m_nameInputfield.gameObject.SetActive(false);
+            m_nameInputfield.onEndEdit.Invoke(m_nameInputfield.text);
+        }
+    }
+
+    private void OnEndEditChangeName(string text)
+    {
+        m_NetworkPlayer.CmdChangeName(text);
     }
 
     private void PlayerJoined(NetworkPlayer p)
@@ -121,12 +147,6 @@ public class MatchLobbyPlayer : MonoBehaviour {
         m_readyText.gameObject.SetActive(m_NetworkPlayer.Is_ready);
         m_waitingText.gameObject.SetActive(!m_NetworkPlayer.Is_ready);
         MainMenuUIHandler._instance.MatchLobbyScritp.SwitchLobbyPlayerTeamPanel(this);
-        if (m_inputField != null)
-        {
-            m_inputField.text = m_name.text;
-            m_inputField.gameObject.SetActive(false);
-            m_inputError.gameObject.SetActive(false);
-        }
         UpdateButtonState();
     }
 
@@ -148,20 +168,10 @@ public class MatchLobbyPlayer : MonoBehaviour {
             }
         }
 
-        if (m_switchButton != null)
+        if (m_NetworkPlayer.hasAuthority)
         {
-            m_switchButton.interactable = MatchSettings._instance.CanSwitchToTeam(m_NetworkPlayer.Player_Team == ETeams.CrazyPeople ? ETeams.FireFighters : ETeams.CrazyPeople);
+            m_switchTeamButton.interactable = MatchSettings._instance.CanSwitchToTeam(m_NetworkPlayer.Player_Team == ETeams.CrazyPeople ? ETeams.FireFighters : ETeams.CrazyPeople);
         }
-    }
-
-    private void OnPlayerBecameReady(NetworkPlayer _)
-    {
-        UpdateData();
-    }
-
-    private void OnPlayerBecameUnready(NetworkPlayer _)
-    {
-        UpdateData();
     }
 
     private void OnPlayerDataUpdated(NetworkPlayer _)
