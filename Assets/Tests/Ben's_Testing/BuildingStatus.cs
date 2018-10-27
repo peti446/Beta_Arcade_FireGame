@@ -42,18 +42,31 @@ public class BuildingStatus : MonoBehaviour
     void Update()
     {
         //if building is on fire, trigger burning
-        if(on_fire == true)
+        if (on_fire == true)
         {
             BurningPhase();
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            Debug.Log("Status Script Working.");
+            planting = true;
+        }
+        if (Input.GetKeyUp(KeyCode.F))
+        {
+            Debug.Log("F released");
+            planting = false;
+        }
+        if(dampening == true)
+        {
+            damp_time -= Time.deltaTime;
         }
     }
 
     public void StartingFire()
     {
-        if(dampening == false)
+        if (dampening == false)
         {
             damp_time = 7.0f;
-            damp_building_text.SetActive(false);
             //Activate fire starting bars
             setting_bar_bg.gameObject.SetActive(true);
             setting_bar.gameObject.SetActive(true);
@@ -76,15 +89,16 @@ public class BuildingStatus : MonoBehaviour
                 on_fire = true;
             }
         }
-        if(dampening == true)
+        if (dampening == true)
         {
             damp_building_text.SetActive(true);
-            damp_time -= Time.deltaTime;
-            if(damp_time < 0)
+            if (damp_time < 0)
             {
+                damp_building_text.SetActive(false);
                 dampening = false;
             }
         }
+
     }
 
     public void BurningPhase()
@@ -98,19 +112,19 @@ public class BuildingStatus : MonoBehaviour
         health_counter.GetComponent<TextMeshProUGUI>().SetText("Health: " + (int)building_health + "%");
 
         //If building health is between 66 and 33
-        if(building_health < 66 && building_health > 33)
+        if (building_health < 66 && building_health > 33)
         {
             //Change building
             gameObject.transform.localScale = new Vector3(1.5f, 8.5f, 1.5f);
         }
         //If building health is between 33 and 0
-        if(building_health < 33 && building_health > 0)
+        if (building_health < 33 && building_health > 0)
         {
             //Change building
             gameObject.transform.localScale = new Vector3(1.5f, 7.0f, 1.5f);
         }
         //If building health depletes
-        if(building_health <= 0)
+        if (building_health <= 0)
         {
             //Destroy building & deactivate health bars
             gameObject.transform.localScale = new Vector3(1.5f, 5.5f, 1.5f);
@@ -129,7 +143,7 @@ public class BuildingStatus : MonoBehaviour
         //Reset fire lighting timer
         time_left = 7;
         damp_time -= Time.deltaTime;
-        if(damp_time > 0)
+        if (damp_time > 0)
         {
             dampening = true;
         }
@@ -137,5 +151,12 @@ public class BuildingStatus : MonoBehaviour
         {
             dampening = false;
         }
+    }
+
+    public void StopLighting()
+    {
+        setting_bar.gameObject.SetActive(false);
+        setting_bar_bg.gameObject.SetActive(false);
+        time_left = 7.0f;
     }
 }

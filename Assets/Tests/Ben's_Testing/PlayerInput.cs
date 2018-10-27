@@ -28,7 +28,12 @@ public class PlayerInput : MonoBehaviour
         if(Input.GetKey(KeyCode.F))
         {
             //Start Fire on building
-            building.gameObject.GetComponent<BuildingStatus>().StartingFire();
+            building.gameObject.GetComponent<BuildingStatus>().StartCoroutine("StartingFire");
+        }
+        else
+        {
+            building.gameObject.GetComponent<BuildingStatus>().StopCoroutine("StartingFire");
+            building.gameObject.GetComponent<BuildingStatus>().StopLighting();
         }
 
 
