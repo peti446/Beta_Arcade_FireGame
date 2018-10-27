@@ -11,6 +11,7 @@ public enum ETeams
 
 public class NetworkPlayer : NetworkBehaviour {
 
+    //Prefabs to instanciate and to be controlled by the player
     [SerializeField]
     private GameObject m_LobbyPlayerPref;
     [SerializeField]
@@ -18,6 +19,7 @@ public class NetworkPlayer : NetworkBehaviour {
     [SerializeField]
     private GameObject m_FiremanPrefab;
 
+    //Sync vars that get replciated over the network
     [SyncVar(hook = "OnNameChanged")]
     private string m_Name = "";
     [SyncVar(hook = "OnReadyStatusChanged")]
@@ -29,62 +31,97 @@ public class NetworkPlayer : NetworkBehaviour {
     [SyncVar]
     private int m_ID;
 
+    //Instances of the playeable objects
+    //The lobby object that allows to customise you player and lets you 
     private MatchLobbyPlayer m_matchLobbyPlayer;
 
-    //Public getters
+    /// <summary>
+    /// Return the players ready status
+    /// </summary>
     public bool Is_ready
     {
         get { return m_ready; }
     }
+    /// <summary>
+    /// Returns the current player name
+    /// </summary>
     public string Player_Name
     {
         get { return m_Name; }
     }
+    /// <summary>
+    /// Returns the team the player is currently one. It might not match the UI if the UI has not been updated it. You should never use the UI to check for a players team.
+    /// </summary>
     public ETeams Player_Team
     {
         get { return m_team; }
     }
+    /// <summary>
+    /// The ID imposed by the server for this client
+    /// </summary>
     public int ID
     {
         get { return m_ID; }
     }
 
-    //Events
+    /// <summary>
+    /// Invoked when any of the data of the player instance changed
+    /// </summary>
     public event Action<NetworkPlayer> NetworkPlayerDataUpdated;
+    /// <summary>
+    /// Invoked when the player changed it status to be ready. Only on the server
+    /// </summary>
     public event Action<NetworkPlayer> PlayerBecameReady;
+    /// <summary>
+    /// Invoked when the player changed it status to not be ready. Only on the server
+    /// </summary>
     public event Action<NetworkPlayer> PlayerBecameUnReady;
 
+    //Local player setup
     [Client]
     public override void OnStartLocalPlayer()
     {
+        //Call the base start for local player
         base.OnStartLocalPlayer();
+        //TODO: Proper automatic name generation
+        //Generate random name and send the server information aobut ourselves, the name might change on the server.
         String s = Guid.NewGuid().ToString("N");
         CmdSetUpPlayer(s);
     }
 
+    //Set up on all clients once the server got it setup
     [Client]
     public override void OnStartClient()
     {
+        //When the client start on any game make sure its not destroyed on load
         DontDestroyOnLoad(this);
+        //Execute base
         base.OnStartClient();
 
+        //Add it to the list o players connected/ and set everything up
         MainNetworkManager._instance.AddNetPlayer(this);
     }
 
+    //Destroys the client
     public override void OnNetworkDestroy()
     {
+        //Base destoy
         base.OnNetworkDestroy();
+
+        //Check if there is any playeable object if so destroy it
         if(m_matchLobbyPlayer != null)
         {
             Destroy(m_matchLobbyPlayer.gameObject);
         }
 
+        //Remove the player from the players list if the network manager still exists
         if (MainNetworkManager._instance != null)
         {
             MainNetworkManager._instance.RemoveNetPlayer(this);
         }
     }
 
+    //Normal object destroy after the network connection has been destroyed
     public void OnDestroy()
     {
         if (m_matchLobbyPlayer != null)
@@ -93,20 +130,32 @@ public class NetworkPlayer : NetworkBehaviour {
         }
     }
 
+    /// <summary>
+    /// Creates a playeable lobby object and inits it. This can only happend if there is nor already a lobby object for this players and the current player is initalized.
+    /// </summary>
     [Client]
     public void LobbyLoaded()
     {
+        //Check if we can create a lobby object for this player. (Dont have one already and be setted upon the server)
         if (m_Initialized && m_matchLobbyPlayer == null)
             CreateLobbyPlayer();
     }
 
     #region Server side execution only
+
+    /// <summary>
+    /// Sets the ID of player. Can only be run on the server
+    /// </summary>
+    /// <param name="newID">New ID for the player</param>
     [Server]
     public void SetID(int newID)
     {
         m_ID = newID;
     }
 
+    /// <summary>
+    /// Changes the  ready status of the client to false. Can only be run on the server.
+    /// </summary>
     [Server]
     public void ClearReadyStatus()
     {
@@ -114,12 +163,18 @@ public class NetworkPlayer : NetworkBehaviour {
     }
     #endregion
 
-    #region Commands
+    #region Commands, Called on the client and executed on the server
+
+    /// <summary>
+    /// Notifies the server that the players wants to set its flag to ready
+    /// </summary>
     [Command]
     public void CmdReady()
     {
+        //Check if we can start the match, as if we cant we do not change the player status
         if (MainNetworkManager._instance.CanMatchStart)
         {
+            //Set ready flag and execute event
             m_ready = true;
             if (PlayerBecameReady != null)
             {
@@ -128,9 +183,13 @@ public class NetworkPlayer : NetworkBehaviour {
         }
     }
 
+    /// <summary>
+    /// Notifies the server that the players wants to set its flag to not ready
+    /// </summary>
     [Command]
     public void CmdUnReady()
     {
+        //Update the flag and invoke event
         m_ready = false;
         if (PlayerBecameUnReady != null)
         {
@@ -138,19 +197,29 @@ public class NetworkPlayer : NetworkBehaviour {
         }
     }
 
+    /// <summary>
+    /// Set up the player with all the nececary data
+    /// </summary>
+    /// <param name="name">The initial players username</param>
     [Command]
     private void CmdSetUpPlayer(string name)
     {
+        //Set all the data and initialize it
         m_Name = name;
         m_team = MatchSettings._instance.TryToAddPlayerToTeam(this, MatchSettings._instance.GetNewPlayerStartingTeam());
         m_Initialized = true;
+        ///Send team size info to the player
         RpcTaemSizesUpdate(MatchSettings._instance.GetTeamMembersId(ETeams.CrazyPeople), MatchSettings._instance.GetTeamMembersId(ETeams.FireFighters));
     }
 
-
+    /// <summary>
+    /// Changes the usernamename of the player, if it has not been taken
+    /// </summary>
+    /// <param name="newName">The new username</param>
     [Command]
     public void CmdChangeName(string newName)
     {
+        //Check if there is any player already with the same name
         foreach(NetworkPlayer p in MainNetworkManager._instance.PlayersConnected)
         {
             if(p.Player_Name == newName)
@@ -159,13 +228,17 @@ public class NetworkPlayer : NetworkBehaviour {
                 return;
             }
         }
-
+        //No other player with this name so update
         m_Name = newName;
     }
 
+    /// <summary>
+    /// Switches the players team if possible
+    /// </summary>
     [Command]
     public void CmdSwitchTeam()
     {
+        //Update the team of the player if possible
         switch(m_team)
         {
             case ETeams.CrazyPeople:
@@ -175,23 +248,36 @@ public class NetworkPlayer : NetworkBehaviour {
                     m_team = MatchSettings._instance.TryToAddPlayerToTeam(this, ETeams.CrazyPeople);
                 break;
         }
+        //Send the new data to all clients
         RpcTaemSizesUpdate(MatchSettings._instance.GetTeamMembersId(ETeams.CrazyPeople), MatchSettings._instance.GetTeamMembersId(ETeams.FireFighters));
     }
     #endregion
 
     #region Client Rpc
+    /// <summary>
+    /// Update the local players match settings teams list
+    /// </summary>
+    /// <param name="teamPlayersId1">players id in team one</param>
+    /// <param name="teamPlayersId2">players id in team two</param>
     [ClientRpc]
     private void RpcTaemSizesUpdate(int[] teamPlayersId1, int[] teamPlayersId2)
     {
+        //Update both teams
         MatchSettings._instance.SetTeamFromIds(teamPlayersId1, ETeams.CrazyPeople);
         MatchSettings._instance.SetTeamFromIds(teamPlayersId2, ETeams.FireFighters);
     }
     #endregion
 
     #region Target Client RPC
+    /// <summary>
+    /// Displays an error on the client that the username is already taken
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="newUsername"></param>
     [TargetRpc]
     private void TargetUsernameChangeError(NetworkConnection target, string newUsername)
     {
+        //Check if there is a lobby player before showing the erro
         if(m_matchLobbyPlayer != null)
         {
             m_matchLobbyPlayer.DisplayUsernameError(newUsername);
@@ -200,6 +286,7 @@ public class NetworkPlayer : NetworkBehaviour {
     #endregion
 
     #region Sync var changed functions
+    //All functions are called on the clients with reference to this object when the servers variable change, so in effect its only a setter but over the network
     private void OnNameChanged(string name)
     {
         m_Name = name;
@@ -208,7 +295,6 @@ public class NetworkPlayer : NetworkBehaviour {
 
     private void OnReadyStatusChanged(bool newStatus)
     {
-        Debug.Log("Ready Status Changed");
         m_ready = newStatus;
         OnNetworkPlayerDataUpdated();
     }
@@ -221,6 +307,8 @@ public class NetworkPlayer : NetworkBehaviour {
 
     private void OnInitStatusChanged(bool newStatus)
     {
+        //Only initialize the player if it has not been initialized yet
+        //De-initialization cannot occur
         if (!m_Initialized && newStatus)
         {
             m_Initialized = newStatus;
@@ -229,12 +317,15 @@ public class NetworkPlayer : NetworkBehaviour {
     }
     #endregion
 
+    //Helper to invoke the network player changed data event
     private void OnNetworkPlayerDataUpdated()
     {
         if (NetworkPlayerDataUpdated != null)
             NetworkPlayerDataUpdated.Invoke(this);
 
     }
+
+    //Helper to instantiate a lobby player and init it
     private void CreateLobbyPlayer()
     {
         m_matchLobbyPlayer = Instantiate(m_LobbyPlayerPref).GetComponent<MatchLobbyPlayer>();

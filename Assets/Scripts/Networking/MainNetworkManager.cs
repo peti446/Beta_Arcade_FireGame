@@ -20,7 +20,7 @@ public class MainNetworkManager : NetworkManager
     [SerializeField]
     private uint m_MaxPlayersPerMatch = 6;
 
-    //Properties
+    #region Properties
     /// <summary>
     /// Current state of the network manager.
     /// </summary>
@@ -71,6 +71,7 @@ public class MainNetworkManager : NetworkManager
             return NumberOfPlayers >= 2;
         }
     }
+    #endregion
 
     #region Events
     /// <summary>
@@ -139,7 +140,6 @@ public class MainNetworkManager : NetworkManager
     public event Action ServerAllPlayersGotReady;
     #endregion
 
-
     //Actions callback to use when creating or joining a server, used monstly for UI porpuses
     private Action<bool, string, MatchInfo> m_OnMatchCreateCallback;
     private Action<bool, string, MatchInfo> m_OnMatchcJoinedCallback;
@@ -180,7 +180,6 @@ public class MainNetworkManager : NetworkManager
             _instance = null;
     }
     #endregion
-
 
     #region Public Fnctions
     /// <summary>
@@ -340,47 +339,6 @@ public class MainNetworkManager : NetworkManager
 
         return true;
     }
-
-    //Function that will be fired when a player get ready
-    private void NetPlayerGotReady(NetworkPlayer p)
-    {
-        if(AreAllPlayersReady() && ServerAllPlayersGotReady != null)
-        {
-            ServerAllPlayersGotReady.Invoke();
-        }
-    }
-
-    //Update Ids function easier as to use copy pasto so in case we need to edit it
-    private void UpdatePlayers_ID()
-    {
-        //Just set the ID based on their position in the array
-        for (int i = 0; i < PlayersConnected.Count; i++)
-            PlayersConnected[i].SetID(i);
-    }
-
-    //Resets the ready status for all players
-    private void ClearAllPlayersReadyStatus()
-    {
-        foreach (NetworkPlayer p in PlayersConnected)
-            p.ClearReadyStatus();
-    }
-
-    /// <summary>
-    /// Connects to unity matchmaking server, nececarry to retrive matches info.
-    /// </summary>
-    public void StartUnityMatchmaking()
-    {
-        //If we are not in IDLE the matchmaker should already be started or is not needed so dont do anything
-        if(State != ENetworkState.IDLE)
-        {
-            Debug.Log("Can only connect to the Unity Matchmaking server if not already connected to one");
-            return;
-        }
-
-        State = ENetworkState.InLobby;
-        StartMatchMaker();
-    }
-
     /// <summary>
     /// Sends a request to creates a new match, once processed the provided callback will be executed.
     /// </summary>
@@ -389,7 +347,7 @@ public class MainNetworkManager : NetworkManager
     public void CreateUnityMatchmakingMatch(string name, Action<bool, string, MatchInfo> onMatchCreatedCallback)
     {
         //Check if are in the correct state and are not already in a match
-        if(State != ENetworkState.IDLE && State != ENetworkState.InLobby)
+        if (State != ENetworkState.IDLE && State != ENetworkState.InLobby)
         {
             Debug.Log("State is not IDLE, so we are soppoused to be in some kind of game or lobby (?)");
             return;
@@ -430,6 +388,47 @@ public class MainNetworkManager : NetworkManager
     }
     #endregion
 
+    #region Private helpers function
+    //Function that will be fired when a player get ready
+    private void NetPlayerGotReady(NetworkPlayer p)
+    {
+        if(AreAllPlayersReady() && ServerAllPlayersGotReady != null)
+        {
+            ServerAllPlayersGotReady.Invoke();
+        }
+    }
+
+    //Update Ids function easier as to use copy pasto so in case we need to edit it
+    private void UpdatePlayers_ID()
+    {
+        //Just set the ID based on their position in the array
+        for (int i = 0; i < PlayersConnected.Count; i++)
+            PlayersConnected[i].SetID(i);
+    }
+
+    //Resets the ready status for all players
+    private void ClearAllPlayersReadyStatus()
+    {
+        foreach (NetworkPlayer p in PlayersConnected)
+            p.ClearReadyStatus();
+    }
+
+    /// <summary>
+    /// Connects to unity matchmaking server, nececarry to retrive matches info.
+    /// </summary>
+    public void StartUnityMatchmaking()
+    {
+        //If we are not in IDLE the matchmaker should already be started or is not needed so dont do anything
+        if (State != ENetworkState.IDLE)
+        {
+            Debug.Log("Can only connect to the Unity Matchmaking server if not already connected to one");
+            return;
+        }
+
+        State = ENetworkState.InLobby;
+        StartMatchMaker();
+    }
+    #endregion
 
     #region Overrides from superclas
     public override void OnMatchCreate(bool success, string info, MatchInfo matchInfo)
