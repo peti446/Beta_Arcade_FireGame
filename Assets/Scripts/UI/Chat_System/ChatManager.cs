@@ -64,12 +64,12 @@ public class ChatManager : NetworkBehaviour {
 
     private void OnEnable()
     {
-       NetworkServer.RegisterHandler(100, ReceivedMessage);
+       //NetworkServer.RegisterHandler(100, ReceivedMessage);
     }
 
     private void OnDisable()
     {
-        NetworkServer.UnregisterHandler(100);
+        //NetworkServer.UnregisterHandler(100);
     }
 
     /// <summary>
