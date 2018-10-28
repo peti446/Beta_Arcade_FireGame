@@ -88,6 +88,10 @@ public class MainNetworkManager : NetworkManager
     /// </summary>
     public event Action ServerStarted;
     /// <summary>
+    /// Invoked when the client started.
+    /// </summary>
+    public event Action ClientStarted;
+    /// <summary>
     /// Invoked when the client is stopped.
     /// </summary>
     public event Action ClientShutdown;
@@ -694,6 +698,16 @@ public class MainNetworkManager : NetworkManager
         if(HostShutdown != null)
         {
             HostShutdown.Invoke();
+        }
+    }
+
+    public override void OnStartClient(NetworkClient client)
+    {
+        //Case handling
+        base.OnStartClient(client);
+        if (ClientStarted != null)
+        {
+            ClientStarted.Invoke();
         }
     }
     #endregion

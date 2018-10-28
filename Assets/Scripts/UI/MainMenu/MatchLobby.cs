@@ -43,10 +43,13 @@ public class MatchLobby : MonoBehaviour {
     private void OnDisable()
     {
         //Clean up references to events
-        MainNetworkManager._instance.ClientErrorHappend -= OnClientErrorHappened;
-        MainNetworkManager._instance.ServerErrorHappend -= OnServerErrorHappened;
-        MainNetworkManager._instance.ClientDisconected -= OnClientDisconected;
-        MainNetworkManager._instance.ConnectionDroped -= OnConnectionDropped;
+        if (MainNetworkManager._instance != null)
+        {
+            MainNetworkManager._instance.ClientErrorHappend -= OnClientErrorHappened;
+            MainNetworkManager._instance.ServerErrorHappend -= OnServerErrorHappened;
+            MainNetworkManager._instance.ClientDisconected -= OnClientDisconected;
+            MainNetworkManager._instance.ConnectionDroped -= OnConnectionDropped;
+        }
     }
 
 

@@ -97,7 +97,7 @@ public class MainMenuUIHandler : MonoBehaviour {
                 break;
             case eMainMenuScreens.MainMenu:
                 //We want to go to tje main menu so make sure everyhing is disconected before we switch
-                if (MainNetworkManager._instance.isNetworkActive)
+                if (MainNetworkManager._instance.isNetworkActive || MainNetworkManager._instance.matchMaker != null)
                 {
                     m_DisconectedTask = () => {
                         ShowPanel(m_MainMenu);
@@ -111,7 +111,7 @@ public class MainMenuUIHandler : MonoBehaviour {
                 break;
             case eMainMenuScreens.MatchCreation:
                 //Before we show the match creation need to make sure the network manager is on
-                if(!MainNetworkManager._instance.isNetworkActive)
+                if(!MainNetworkManager._instance.isNetworkActive || MainNetworkManager._instance.matchMaker != null)
                 {
                     MainNetworkManager._instance.StartUnityMatchmaking();
                 }
@@ -119,7 +119,7 @@ public class MainMenuUIHandler : MonoBehaviour {
                 break;
             case eMainMenuScreens.Lobby:
                 //If we want to show the lobby first disconect everything as we dont know ecactly the state we are in then start the manager again.
-                if(MainNetworkManager._instance.isNetworkActive)
+                if(MainNetworkManager._instance.isNetworkActive || MainNetworkManager._instance.matchMaker != null)
                 {
                     m_DisconectedTask = () => {
                         MainNetworkManager._instance.StartUnityMatchmaking();

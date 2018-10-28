@@ -27,6 +27,11 @@ public class ChatMessage : MonoBehaviour {
             m_sender.PlayerNameChanged -= OnPlayerChangedName;
     }
 
+    /// <summary>
+    /// Sets the message info and updates its ui
+    /// </summary>
+    /// <param name="playerID">The player id who sended the message</param>
+    /// <param name="message">The message in question</param>
     public void InitMessage(int playerID, string message)
     {
         //Find the network player instance

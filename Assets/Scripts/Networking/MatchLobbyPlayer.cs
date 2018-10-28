@@ -77,7 +77,9 @@ public class MatchLobbyPlayer : MonoBehaviour {
 
         //Add the player to the UI
         if (MainMenuUIHandler._instance.MatchLobbyScritp)
+        {
             MainMenuUIHandler._instance.MatchLobbyScritp.AddLobbyPlayer(this);
+        }
 
         //If it is the local player enable buttons to chage their players data
         if (m_NetworkPlayer.hasAuthority)
@@ -139,9 +141,11 @@ public class MatchLobbyPlayer : MonoBehaviour {
         if(!m_nameInputfield.gameObject.activeSelf)
         {
             m_nameInputfield.gameObject.SetActive(true);
+            m_nameErrorMsgText.gameObject.SetActive(false);
         }
         else
         {
+            m_nameErrorMsgText.gameObject.SetActive(false);
             m_nameInputfield.gameObject.SetActive(false);
             m_nameInputfield.onEndEdit.Invoke(m_nameInputfield.text);
         }

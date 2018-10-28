@@ -120,6 +120,10 @@ public class NetworkPlayer : NetworkBehaviour {
             Destroy(m_matchLobbyPlayer.gameObject);
         }
 
+        //Remove the player from the team
+        if(MatchSettings._instance != null)
+            MatchSettings._instance.RemovePlayer(this);
+
         //Remove the player from the players list if the network manager still exists
         if (MainNetworkManager._instance != null)
         {
@@ -134,6 +138,8 @@ public class NetworkPlayer : NetworkBehaviour {
         {
             Destroy(m_matchLobbyPlayer.gameObject);
         }
+        if (MatchSettings._instance != null)
+            MatchSettings._instance.RemovePlayer(this);
     }
 
     /// <summary>

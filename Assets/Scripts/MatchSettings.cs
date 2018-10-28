@@ -189,4 +189,15 @@ public class MatchSettings : MonoBehaviour {
                 break;
         }
     }
+
+    /// <summary>
+    /// Removes a player from all teams, usefull to handle disconnections
+    /// </summary>
+    /// <param name="p">The player to remove</param>
+    public void RemovePlayer(NetworkPlayer p)
+    {
+        //Remove the player form all team as he needs to be in one of them
+        m_crazyPeopleTeam.Remove(p);
+        m_fireFigthersTeam.Remove(p);
+    }
 }
