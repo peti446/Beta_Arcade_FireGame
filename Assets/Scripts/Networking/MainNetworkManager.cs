@@ -31,6 +31,15 @@ public class MainNetworkManager : NetworkManager
     }
 
     /// <summary>
+    /// The local network player for the current name. Might be null if there isent any(If there is not any, then we are either in the lobby or main menu).
+    /// </summary>
+    public NetworkPlayer LocalPlayer
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
     /// List of all player currently connected.
     /// </summary>
     public IList<NetworkPlayer> PlayersConnected
@@ -262,6 +271,18 @@ public class MainNetworkManager : NetworkManager
         }
         //Set the state to IDLE
         State = ENetworkState.IDLE;
+    }
+
+    /// <summary>
+    /// Sets the local player reference to the manager
+    /// </summary>
+    /// <param name="p">The network player object</param>
+    public void SetLocalPlayerRef(NetworkPlayer p)
+    {
+        if(p.isLocalPlayer)
+        {
+            LocalPlayer = p;
+        }
     }
 
     /// <summary>

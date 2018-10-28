@@ -65,7 +65,7 @@ public class NetworkPlayer : NetworkBehaviour {
     }
 
     /// <summary>
-    /// Invoked when any of the data of the player instance changed
+    /// Invoked when any of the data of the player instance changed on a client
     /// </summary>
     public event Action<NetworkPlayer> NetworkPlayerDataUpdated;
     /// <summary>
@@ -76,6 +76,10 @@ public class NetworkPlayer : NetworkBehaviour {
     /// Invoked when the player changed it status to not be ready. Only on the server
     /// </summary>
     public event Action<NetworkPlayer> PlayerBecameUnReady;
+    /// <summary>
+    /// Invoked when the player name is updated on the client
+    /// </summary>
+    public event Action<NetworkPlayer> PlayerNameChanged;
 
     //Local player setup
     [Client]
@@ -87,6 +91,8 @@ public class NetworkPlayer : NetworkBehaviour {
         //Generate random name and send the server information aobut ourselves, the name might change on the server.
         String s = Guid.NewGuid().ToString("N");
         CmdSetUpPlayer(s);
+        //Set the local player on the manager
+        MainNetworkManager._instance.SetLocalPlayerRef(this);
     }
 
     //Set up on all clients once the server got it setup
@@ -291,6 +297,8 @@ public class NetworkPlayer : NetworkBehaviour {
     {
         m_Name = name;
         OnNetworkPlayerDataUpdated();
+        if (PlayerNameChanged != null)
+            PlayerNameChanged.Invoke(this);
     }
 
     private void OnReadyStatusChanged(bool newStatus)
