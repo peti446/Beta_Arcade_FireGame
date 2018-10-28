@@ -75,7 +75,7 @@ public class ChatManager : NetworkBehaviour {
     public void SendChatMessage(string msg)
     {
         //If the chat system is not ready wtf?
-        if (!m_isChatSetup)
+        if (!m_isChatSetup || string.IsNullOrEmpty(msg))
             return;
 
         //Creates a new Chat message and sends it to the server
