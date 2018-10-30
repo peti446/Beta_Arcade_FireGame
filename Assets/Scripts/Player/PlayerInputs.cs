@@ -4,28 +4,24 @@ using UnityEngine;
 
 [RequireComponent(typeof(Character))]
 public class PlayerInputs : MonoBehaviour {
-
-    [SerializeField]
-    private float playerSpeed;
-
-    [SerializeField]
-    private float playerTurn;
-
+       
     private Character m_character;
-
-    private void Awake()
-    {
-        m_character = GetComponent<Character>();
-    }
-
+    
     private Rigidbody playerRigibody;
 
     private float horizontalInput;
     private float verticalInput;
+
+
     // Use this for initialization
+    private void Awake()
+    {
+        m_character = GetComponent<Character>();
+        playerRigibody = GetComponent<Rigidbody>();
+    }
     void Start()
     {
-        playerRigibody = GetComponent<Rigidbody>();
+      
     }
 
     // Update is called once per frame
@@ -34,19 +30,18 @@ public class PlayerInputs : MonoBehaviour {
 
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
-        if (verticalInput == 0)
-        {
-            playerRigibody.velocity = new Vector3(playerRigibody.velocity.x * 0.80f, playerRigibody.velocity.y * 0.80f, playerRigibody.velocity.z * 0.80f);
-        }
+
+
+
     }
 
     private void FixedUpdate()
     {
-        playerRigibody.AddRelativeForce(0, 0, verticalInput * playerSpeed, ForceMode.Force);
-        //playerRigibody.AddRelativeForce(horizontalInput * playerSpeed, 0, 0,  ForceMode.Force);
-        transform.Rotate(0, playerTurn * horizontalInput, 0);
+        //playerRigibody.AddRelativeForce(0, 0, verticalInput * playerSpeed, ForceMode.Force);
+        ////playerRigibody.AddRelativeForce(horizontalInput * playerSpeed, 0, 0,  ForceMode.Force);
+        //transform.Rotate(0, playerTurn * horizontalInput, 0);
 
-
+        m_character.MovePlayer(verticalInput, horizontalInput);
 
 
     }
@@ -54,5 +49,9 @@ public class PlayerInputs : MonoBehaviour {
     protected void LateUpdate()
     {
         transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
+        if (verticalInput == 0)
+        {
+            playerRigibody.velocity = new Vector3(playerRigibody.velocity.x * 0.80f, playerRigibody.velocity.y * 0.80f, playerRigibody.velocity.z * 0.80f);
+        }
     }
 }

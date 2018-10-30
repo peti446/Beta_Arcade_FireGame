@@ -4,8 +4,20 @@ using UnityEngine;
 
 public class Character : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+    private Rigidbody playerRigibody;
+
+    [SerializeField]
+    private float playerSpeed;
+    [SerializeField]
+    private float playerTurn;
+
+
+    private void Awake()
+    {
+          playerRigibody = GetComponent<Rigidbody>();
+    }
+    // Use this for initialization
+    void Start () {
 		
 	}
 	
@@ -13,4 +25,30 @@ public class Character : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    public void MovePlayer(float verticalInput, float horizontalInput)
+    {
+        if (verticalInput == 0 && horizontalInput == 0)
+            return;
+        //playerRigibody.AddRelativeForce(0, 0, verticalInput * playerSpeed, ForceMode.Force);
+        //playerRigibody.AddRelativeForce(horizontalInput * playerSpeed, 0, 0,  ForceMode.Force);
+        //transform.Rotate(0, playerTurn * horizontalInput, 0);
+        if (verticalInput == 1)
+            playerRigibody.velocity = gameObject.transform.forward * playerSpeed;
+        else if (verticalInput == 0)
+            playerRigibody.velocity = new Vector3(0, 0, 0);
+        else
+            playerRigibody.velocity = gameObject.transform.forward * -playerSpeed;
+    }
+
+
+    /// <summary>
+    /// Sets the direction of the characters
+    /// </summary>
+    /// <param name="newDir"><c>Vector3</c> The new direciton of this characters</param>
+    public void SetDir(Vector3 newDir)
+    {
+        
+
+    }
 }

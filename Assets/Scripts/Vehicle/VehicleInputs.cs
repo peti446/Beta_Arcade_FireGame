@@ -4,49 +4,46 @@ using UnityEngine;
 
 public class VehicleInputs : MonoBehaviour {
 
-    [SerializeField]
-    private float speed;
-    [SerializeField]
-    private float carTurn;
+    private Vehicle m_vehicle;
 
     private Rigidbody vehicleRigibody;
 
-    private float horizontalMovement;
-    private float verticalMovement;
+    private float horizontalInput;
+    private float verticalInput;
 
-
+    private void Awake()
+    {
+        m_vehicle = GetComponent<Vehicle>();
+        vehicleRigibody = GetComponent<Rigidbody>();
+    }
     // Use this for initialization
     void Start()
     {
-        vehicleRigibody = GetComponent<Rigidbody>();
+        
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        horizontalMovement = Input.GetAxis("Horizontal");
-        verticalMovement = Input.GetAxis("Vertical");
+        horizontalInput = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxis("Vertical");
 
 
     }
 
     private void FixedUpdate()
     {
-        //vehicleRigibody.velocity = new Vector3(vehicleRigibody.velocity.x, vehicleRigibody.velocity.y, verticalMovement * speed);
-        //vehicleRigibody.AddForce(horizontalMovement * speed,0,verticalMovement*speed, ForceMode.Force);
-        vehicleRigibody.AddRelativeForce(0, 0, verticalMovement * speed, ForceMode.Force);
 
-        if (horizontalMovement != 0 && vehicleRigibody.velocity.z != 0)
-            transform.Rotate(0, carTurn * horizontalMovement, 0);
-
-        Debug.Log(vehicleRigibody.velocity.z);
-        //transform.Rotate(Vector3.right * Time.deltaTime);
-
+        m_vehicle.MoveVehicle(verticalInput, horizontalInput);
     }
 
     protected void LateUpdate()
     {
         transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
+        if (verticalInput == 0)
+        {
+            vehicleRigibody.velocity = new Vector3(vehicleRigibody.velocity.x * 0.80f, vehicleRigibody.velocity.y * 0.80f, vehicleRigibody.velocity.z * 0.80f);
+        }
     }
 }
