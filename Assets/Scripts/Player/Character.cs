@@ -17,9 +17,12 @@ public class Character : MonoBehaviour {
           playerRigibody = GetComponent<Rigidbody>();
     }
     // Use this for initialization
-    void Start () {
-		
-	}
+
+    private int Health;
+    private bool IsAlive;
+    void Start()
+    {
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -51,4 +54,11 @@ public class Character : MonoBehaviour {
         
 
     }
+    void ToggleHose()
+    {
+
+    }
+
+    
+
 }

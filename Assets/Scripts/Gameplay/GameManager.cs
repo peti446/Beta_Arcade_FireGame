@@ -4,16 +4,17 @@ using UnityEngine;
 
 public enum EGameState  
 {
-  InGame, InMenu, LoadingGame, InLobby, OnPauseScreen
+  InGame, InMainMenu, LoadingGame, InLobby, OnPauseScreen
 };
-
-
 
 public class GameManager : MonoBehaviour
 {
 
   public static GameManager instance = null;
-
+    /// <summary>
+    /// Keeps the GameManager object alive throughout the whole game
+    /// and prevents it from being duplicated
+    /// </summary>
   private void Awake()
   {
     if (instance == null)

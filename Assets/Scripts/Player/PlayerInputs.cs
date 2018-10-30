@@ -48,6 +48,7 @@ public class PlayerInputs : MonoBehaviour {
 
     protected void LateUpdate()
     {
+        //TODO call the character function instead of doing it directly here
         transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
         if (verticalInput == 0)
         {
