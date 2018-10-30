@@ -81,7 +81,7 @@ public class MatchLobbyPlayer : MonoBehaviour {
             MainMenuUIHandler._instance.MatchLobbyScritp.AddLobbyPlayer(this);
         }
 
-        //If it is the local player enable buttons to chage their players data
+        //If we have the autority of the player enable buttons to chage their players data
         if (m_NetworkPlayer.hasAuthority)
         {
             m_name.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -117,7 +117,7 @@ public class MatchLobbyPlayer : MonoBehaviour {
     /// <param name="readyB">The ready button from the UI</param>
     public void SetReadyButtonReference(Button readyB)
     {
-        //Not local player so dont set anything
+        //We dont have authority
         if (!m_NetworkPlayer.hasAuthority)
         {
             return;
@@ -190,7 +190,7 @@ public class MatchLobbyPlayer : MonoBehaviour {
             }
         }
 
-        //As every instance of lobby player has these buttons we need to check if it is the local one
+        //As every instance of lobby player has these buttons we need to check if we have authority over ti
         if (m_NetworkPlayer.hasAuthority)
         {
             //Only allow the player to switch if there is space in the other team
