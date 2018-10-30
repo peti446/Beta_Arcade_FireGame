@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : MonoBehaviour {
-
-    private int Health;
-    private bool IsAlive;
+public class HoseWeapon : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -16,12 +13,4 @@ public class Character : MonoBehaviour {
 	void Update () {
 		
 	}
-
-    void ToggleHose()
-    {
-
-    }
-
-    
-
 }

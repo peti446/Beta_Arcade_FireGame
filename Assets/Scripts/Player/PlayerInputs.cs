@@ -42,17 +42,15 @@ public class PlayerInputs : MonoBehaviour {
 
     private void FixedUpdate()
     {
+        //TODO call the character function instead of doing it directly here
         playerRigibody.AddRelativeForce(0, 0, verticalInput * playerSpeed, ForceMode.Force);
         //playerRigibody.AddRelativeForce(horizontalInput * playerSpeed, 0, 0,  ForceMode.Force);
         transform.Rotate(0, playerTurn * horizontalInput, 0);
-
-
-
-
     }
 
     protected void LateUpdate()
     {
+        //TODO call the character function instead of doing it directly here
         transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
     }
 }
