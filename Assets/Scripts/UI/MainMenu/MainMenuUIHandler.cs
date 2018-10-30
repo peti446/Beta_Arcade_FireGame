@@ -65,8 +65,11 @@ public class MainMenuUIHandler : MonoBehaviour {
             _instance = null;
 
         //Tidy up event references
-        if(MainNetworkManager._instance != null)
-        MainNetworkManager._instance.ClientShutdown -= OnClientStopped;
+        if (MainNetworkManager._instance != null)
+        {
+            MainNetworkManager._instance.ClientShutdown -= OnClientStopped;
+            MainNetworkManager._instance.HostShutdown -= OnClientStopped;
+        }
     }
     #endregion
 
@@ -178,10 +181,12 @@ public class MainMenuUIHandler : MonoBehaviour {
     private void OnClientStopped()
     {
         //IF there is a disconected task execute it as the network manager just stopped
-        if(m_DisconectedTask != null)
-        {
-            m_DisconectedTask.Invoke();
-            m_DisconectedTask = null;
-        }
+            StartCoroutine(CoroutineUtilities.DoOnNextFrame(() => {
+            if (m_DisconectedTask != null)
+            {
+                m_DisconectedTask.Invoke();
+                m_DisconectedTask = null;
+            }
+            }));
     }
 }
