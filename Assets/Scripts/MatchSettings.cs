@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -35,7 +36,6 @@ public class MatchSettings : MonoBehaviour {
             return (uint)m_crazyPeopleTeam.Count;
         }
     }
-
     /// <summary>
     /// Size of the fire fighters team
     /// </summary>
@@ -45,7 +45,12 @@ public class MatchSettings : MonoBehaviour {
         {
             return (uint)m_fireFigthersTeam.Count;
         }
-    } 
+    }
+
+    /// <summary>
+    /// Invoked when any team changed
+    /// </summary>
+    public event Action TeamsChanged;
 
     /// <summary>
     /// Get the team a new player should join to keep the match taem sizes balanced
@@ -103,6 +108,11 @@ public class MatchSettings : MonoBehaviour {
                 case ETeams.FireFighters:
                     m_fireFigthersTeam.Add(p);
                     break;
+            }
+            //Invoke that a team changed
+            if(TeamsChanged != null)
+            {
+                TeamsChanged.Invoke();
             }
             //Return the team it joined
             return newTeam;
@@ -188,6 +198,11 @@ public class MatchSettings : MonoBehaviour {
                 }
                 break;
         }
+        //Invoke that a team changed
+        if (TeamsChanged != null)
+        {
+            TeamsChanged.Invoke();
+        }
     }
 
     /// <summary>
@@ -199,5 +214,10 @@ public class MatchSettings : MonoBehaviour {
         //Remove the player form all team as he needs to be in one of them
         m_crazyPeopleTeam.Remove(p);
         m_fireFigthersTeam.Remove(p);
+        //Invoke that a team changed
+        if (TeamsChanged != null)
+        {
+            TeamsChanged.Invoke();
+        }
     }
 }

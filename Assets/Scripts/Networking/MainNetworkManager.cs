@@ -77,6 +77,13 @@ public class MainNetworkManager : NetworkManager
     {
         get
         {
+            //Check if there are are at least one payer in each team
+            if (MatchSettings._instance != null)
+            {
+                //Make sure there is one in each team
+                return MatchSettings._instance.CrazyTeamSize > 0 && MatchSettings._instance.FirefightersTeamSize > 0;
+            }
+            //Else just return if there are at least 2 players
             return NumberOfPlayers >= 2;
         }
     }
@@ -100,7 +107,7 @@ public class MainNetworkManager : NetworkManager
     /// </summary>
     public event Action ServerShutdown;
     /// <summary>
-    /// Invoked when the server disconected.
+    /// Invoked on the server when a client disconects
     /// </summary>
     public event Action ClientDisconnectedServer;
     /// <summary>
@@ -431,9 +438,13 @@ public class MainNetworkManager : NetworkManager
             PlayersConnected[i].SetID(i);
     }
 
-    //Resets the ready status for all players
-    private void ClearAllPlayersReadyStatus()
+    /// <summary>
+    ///  Resets the ready status for all players
+    /// </summary>
+    public void ClearAllPlayersReadyStatus()
     {
+        if (!Is_Server)
+            return;
         foreach (NetworkPlayer p in PlayersConnected)
             p.ClearReadyStatus();
     }
@@ -600,7 +611,7 @@ public class MainNetworkManager : NetworkManager
 
         //Ge the player from the connection and remove it from the game and the players list
         NetworkPlayer p = conn.playerControllers[0].gameObject.GetComponent<NetworkPlayer>();
-        if(p != null)
+        if (p != null)
         {
             Destroy(p.gameObject);
             PlayersConnected.Remove(p);
@@ -609,14 +620,14 @@ public class MainNetworkManager : NetworkManager
 
     public override void OnServerConnect(NetworkConnection conn)
     {
-        //If the server connects check if we are in the correct state and that we did not hit the player limit. If so disconect
+        //If a client connects check if we are in the correct state and that we did not hit the player limit. If so disconect the client
         if (numPlayers >= m_MaxPlayersPerMatch || State != ENetworkState.InMatchLobby)
         {
             conn.Disconnect();
         }
         else
         {
-            //Clear players ready status
+            //Clear players ready status as a new player just joined
             ClearAllPlayersReadyStatus();
         }
         base.OnServerConnect(conn);
@@ -624,10 +635,12 @@ public class MainNetworkManager : NetworkManager
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
+        //Client disconected from the server
+
         //Base handeling
         base.OnServerDisconnect(conn);
 
-        //If in the match lobby clear all the ready status from all players. Anyways the server disconected so the match is been deleted, and so all clients disconected
+        //If in the match lobby clear all the ready status from all players.
         if (State == ENetworkState.InMatchLobby)
         {
             ClearAllPlayersReadyStatus();

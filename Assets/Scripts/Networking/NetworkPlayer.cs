@@ -120,9 +120,11 @@ public class NetworkPlayer : NetworkBehaviour {
             Destroy(m_matchLobbyPlayer.gameObject);
         }
 
-        //Remove the player from the team
-        if(MatchSettings._instance != null)
+        if (MatchSettings._instance != null)
             MatchSettings._instance.RemovePlayer(this);
+
+        //Send the new data to all clients
+        RpcTaemSizesUpdate(MatchSettings._instance.GetTeamMembersId(ETeams.CrazyPeople), MatchSettings._instance.GetTeamMembersId(ETeams.FireFighters));
 
         //Remove the player from the players list if the network manager still exists
         if (MainNetworkManager._instance != null)
@@ -137,6 +139,7 @@ public class NetworkPlayer : NetworkBehaviour {
         if (m_matchLobbyPlayer != null)
         {
             Destroy(m_matchLobbyPlayer.gameObject);
+
         }
         if (MatchSettings._instance != null)
             MatchSettings._instance.RemovePlayer(this);
@@ -262,6 +265,8 @@ public class NetworkPlayer : NetworkBehaviour {
         }
         //Send the new data to all clients
         RpcTaemSizesUpdate(MatchSettings._instance.GetTeamMembersId(ETeams.CrazyPeople), MatchSettings._instance.GetTeamMembersId(ETeams.FireFighters));
+        //Reset ready status for everyone
+        MainNetworkManager._instance.ClearAllPlayersReadyStatus();
     }
     #endregion
 

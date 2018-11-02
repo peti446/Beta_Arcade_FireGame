@@ -44,6 +44,8 @@ public class MatchLobbyPlayer : MonoBehaviour {
             MainNetworkManager._instance.NetworkPlayerAdded -= PlayerJoined;
             MainNetworkManager._instance.NetworkPlayerRemoved -= PlayerLeft;
         }
+        if(MatchSettings._instance != null)
+            MatchSettings._instance.TeamsChanged -= MatchTeamsChanged;
     }
 
     /// <summary>
@@ -64,6 +66,7 @@ public class MatchLobbyPlayer : MonoBehaviour {
         m_NetworkPlayer.NetworkPlayerDataUpdated += OnPlayerDataUpdated;
         MainNetworkManager._instance.NetworkPlayerAdded += PlayerJoined;
         MainNetworkManager._instance.NetworkPlayerRemoved += PlayerLeft;
+        MatchSettings._instance.TeamsChanged += MatchTeamsChanged;
 
         //By default the player is not the local one
         m_readyText.gameObject.SetActive(false);
@@ -193,8 +196,9 @@ public class MatchLobbyPlayer : MonoBehaviour {
         //As every instance of lobby player has these buttons we need to check if we have authority over ti
         if (m_NetworkPlayer.hasAuthority)
         {
-            //Only allow the player to switch if there is space in the other team
-            m_switchTeamButton.interactable = MatchSettings._instance.CanSwitchToTeam(m_NetworkPlayer.Player_Team == ETeams.CrazyPeople ? ETeams.FireFighters : ETeams.CrazyPeople);
+            //Only allow the player to switch if there is space in the other team and we dident say we are ready
+            m_switchTeamButton.interactable = MatchSettings._instance.CanSwitchToTeam(m_NetworkPlayer.Player_Team == ETeams.CrazyPeople ? ETeams.FireFighters : ETeams.CrazyPeople) && !m_NetworkPlayer.Is_ready;
+            m_ShowChangeNameButton.interactable = !m_NetworkPlayer.Is_ready;
         }
     }
 
@@ -211,6 +215,11 @@ public class MatchLobbyPlayer : MonoBehaviour {
     }
 
     private void PlayerLeft(NetworkPlayer p)
+    {
+        UpdateButtonState();
+    }
+
+    private void MatchTeamsChanged()
     {
         UpdateButtonState();
     }
