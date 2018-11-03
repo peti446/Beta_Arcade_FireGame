@@ -16,25 +16,25 @@ public class CameraController : MonoBehaviour {
     {
 
 
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            camSensX = 0.5f;
+        //if (Input.GetKey(KeyCode.LeftShift))
+        //{
+        //    camSensX = 0.5f;
            
 
-        }
-        else
-        {
-            camSensX = 0.0f;
-            // transform.eulerAngles = new Vector3(0, 0, 0);
+        //}
+        //else
+        //{
+        //    camSensX = 0.0f;
+        //    // transform.eulerAngles = new Vector3(0, 0, 0);
 
-            // transform.rotation = Quaternion.Euler(0, 0, 0); // this is 90 degrees around y axis
-            //Debug.Log(transform.rotation.y);
-            //if(transform.rotation.y > 0)
-            //{
-            //    transform.Rotate(Vector3.right * 10, Time.deltaTime, Space.World);
-            //}
+        //    // transform.rotation = Quaternion.Euler(0, 0, 0); // this is 90 degrees around y axis
+        //    //Debug.Log(transform.rotation.y);
+        //    //if(transform.rotation.y > 0)
+        //    //{
+        //    //    transform.Rotate(Vector3.right * 10, Time.deltaTime, Space.World);
+        //    //}
 
-        }
+        //}
         lastMouse = Input.mousePosition - lastMouse;
         lastMouse = new Vector3(-lastMouse.y * camSensY, lastMouse.x * camSensX, 0);
         lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x, transform.eulerAngles.y + lastMouse.y, 0);

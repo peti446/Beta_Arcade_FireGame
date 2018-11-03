@@ -48,19 +48,16 @@ public class PlayerInputs : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        //playerRigibody.AddRelativeForce(0, 0, verticalInput * playerSpeed, ForceMode.Force);
-        ////playerRigibody.AddRelativeForce(horizontalInput * playerSpeed, 0, 0,  ForceMode.Force);
-        //transform.Rotate(0, playerTurn * horizontalInput, 0);
 
         //m_character.MovePlayer(verticalInput, horizontalInput);
-
-
+        
 
         if(verticalInput != 0 || horizontalInput != 0)
         {
             playerRigibody.velocity = (gameObject.transform.forward * verticalInput * playerSpeed) + (gameObject.transform.right * horizontalInput * playerSpeed);
 
         }
+
         lastMouse = Input.mousePosition - lastMouse;
         lastMouse = new Vector3(-lastMouse.y * camSensY, lastMouse.x * camSensX, 0);
         lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x, transform.eulerAngles.y + lastMouse.y, 0);
@@ -71,13 +68,13 @@ public class PlayerInputs : MonoBehaviour {
 
     }
 
-    protected void LateUpdate()
-    {
-        //TODO call the character function instead of doing it directly here
-        //transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
-        //if (verticalInput == 0)
-        //{
-        //    playerRigibody.velocity = new Vector3(playerRigibody.velocity.x * 0.80f, playerRigibody.velocity.y * 0.80f, playerRigibody.velocity.z * 0.80f);
-        //}
-    }
+    //protected void LateUpdate()
+    //{
+    //    //TODO call the character function instead of doing it directly here
+    //    //transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
+    //    //if (verticalInput == 0)
+    //    //{
+    //    //    playerRigibody.velocity = new Vector3(playerRigibody.velocity.x * 0.80f, playerRigibody.velocity.y * 0.80f, playerRigibody.velocity.z * 0.80f);
+    //    //}
+    //}
 }
