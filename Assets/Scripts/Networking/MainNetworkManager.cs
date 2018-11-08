@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
+using UnityEngine.SceneManagement;
 
 public enum ENetworkState
 {
@@ -123,27 +124,27 @@ public class MainNetworkManager : NetworkManager
     /// </summary>
     public event Action ConnectionDroped;
     /// <summary>
-    /// Invoked when a new player has connected to the match and he has been added to the list of clients. Aka a player connected.
+    /// Invoked when a new player has connected to the match and he has been added to the list of clients. Aka a player connected. Called on all clients.
     /// </summary>
     public event Action<NetworkPlayer> NetworkPlayerAdded;
     /// <summary>
-    /// Invoked when a player is removed from the list of client. Aka a player disconected.
+    /// Invoked when a player is removed from the list of client. Aka a player disconected. Called on all clients.
     /// </summary>
     public event Action<NetworkPlayer> NetworkPlayerRemoved;
     /// <summary>
-    /// Invoked when a client disconnected. There might not be a player object anymore at this point.
+    /// Invoked when the client disconnected. There might not be a player object anymore at this point.
     /// </summary>
     public event Action<NetworkConnection> ClientDisconected;
     /// <summary>
-    /// Invoked when a client connected. There is not a player object yet.
+    /// Invoked when the client connected. There is not a player object yet.
     /// </summary>
     public event Action<NetworkConnection> ClientConnected;
     /// <summary>
-    /// Invoked when an error happend on a client.
+    /// Invoked when an error happend for a client.
     /// </summary>
     public event Action<NetworkConnection, int> ClientErrorHappend;
     /// <summary>
-    /// Invoked when an error happend on the server.
+    /// Invoked when an error happend for a client on the server.
     /// </summary>
     public event Action<NetworkConnection, int> ServerErrorHappend;
     /// <summary>
@@ -312,9 +313,13 @@ public class MainNetworkManager : NetworkManager
             UpdatePlayers_ID();
         }
 
-        //TODO: Check where the player is to instanciate the correct prefab
+        string currentSceneName = SceneManager.GetActiveScene().name;
         //Check where the player is to instanciate the correct object to play
-        if(MainMenuUIHandler._instance != null)
+        if (MatchSettings._instance != null && MatchSettings._instance.MapID == currentSceneName)
+        {
+            //TODO: Load player character
+        }
+        else if (MainMenuUIHandler._instance != null)
         {
            player.LobbyLoaded();
         }
@@ -394,6 +399,7 @@ public class MainNetworkManager : NetworkManager
         State = ENetworkState.JoiningMatch;
         m_OnMatchCreateCallback = onMatchCreatedCallback;
         matchName = name;
+
         //Send request to create the match
         matchMaker.CreateMatch(name, m_MaxPlayersPerMatch, true, string.Empty, string.Empty, string.Empty, 0, 0, OnMatchCreate);
     }
@@ -418,25 +424,7 @@ public class MainNetworkManager : NetworkManager
         //Send request to join the match
         matchMaker.JoinMatch(netID, string.Empty, string.Empty, string.Empty, 0, 0, OnMatchJoined);
     }
-    #endregion
 
-    #region Private helpers function
-    //Function that will be fired when a player get ready
-    private void NetPlayerGotReady(NetworkPlayer p)
-    {
-        if(AreAllPlayersReady() && ServerAllPlayersGotReady != null)
-        {
-            ServerAllPlayersGotReady.Invoke();
-        }
-    }
-
-    //Update Ids function easier as to use copy pasto so in case we need to edit it
-    private void UpdatePlayers_ID()
-    {
-        //Just set the ID based on their position in the array
-        for (int i = 0; i < PlayersConnected.Count; i++)
-            PlayersConnected[i].SetID(i);
-    }
 
     /// <summary>
     ///  Resets the ready status for all players
@@ -463,6 +451,57 @@ public class MainNetworkManager : NetworkManager
 
         State = ENetworkState.InLobby;
         StartMatchMaker();
+    }
+
+    /// <summary>
+    /// Starts the game and makes the server switch to the correct map, once the server changed all clients will be notified to change aswell
+    /// </summary>
+    public void StartGame()
+    {
+        //If we are not the server wtf?
+        if (!Is_Server)
+            return;
+        //Everyone bgin up the loading sceen as we will change the scene soon
+        foreach(NetworkPlayer p in PlayersConnected)
+        {
+            p.TargetEnableLoadingScreen(p.connectionToClient);
+        }
+
+        //Get the match scene name
+        string name = MatchSettings._instance.MapID;
+        Debug.Log(name);
+        if(name != string.Empty && name != null)
+        {
+            //Load the scene
+            ServerChangeScene(name);
+        }
+        else
+        {
+            //We dont have a settings name this will never happen but to debug this kind of behaveur lets use a simple scene
+            ServerChangeScene("GameScene_DebugTransition");
+        }
+
+        //Update state
+        State = ENetworkState.Playing;
+    }
+    #endregion
+
+    #region Private helpers function
+    //Function that will be fired when a player get ready
+    private void NetPlayerGotReady(NetworkPlayer p)
+    {
+        if(AreAllPlayersReady() && ServerAllPlayersGotReady != null)
+        {
+            ServerAllPlayersGotReady.Invoke();
+        }
+    }
+
+    //Update Ids function easier as to use copy pasto so in case we need to edit it
+    private void UpdatePlayers_ID()
+    {
+        //Just set the ID based on their position in the array
+        for (int i = 0; i < PlayersConnected.Count; i++)
+            PlayersConnected[i].SetID(i);
     }
     #endregion
 
@@ -508,6 +547,55 @@ public class MainNetworkManager : NetworkManager
         if(MatchJoined != null)
         {
             MatchJoined.Invoke(success, extendedInfo, matchInfo);
+        }
+    }
+
+    public override void OnServerSceneChanged(string sceneName)
+    {
+        base.OnServerSceneChanged(sceneName);
+
+        //If we are now in main menu make sure players dont switch scenes when joining
+        if (MainMenuUIHandler._instance != null)
+        {
+            networkSceneName = string.Empty;
+        }
+    }
+
+    public override void OnClientSceneChanged(NetworkConnection conn)
+    {
+        //Base handling
+        base.OnClientSceneChanged(conn);
+
+        //If it is not the local player we dont need to switch the scene
+        if(!conn.playerControllers[0].unetView.isLocalPlayer)
+            return;
+
+        string scene = SceneManager.GetActiveScene().name;
+        if (MatchSettings._instance != null && MatchSettings._instance.MapID == scene)
+        {
+            //We are in a game now
+            State = ENetworkState.EndGame;
+            //Tell the network that you are playinf
+            foreach(NetworkPlayer p in PlayersConnected)
+            {
+                if(p != null)
+                {
+                    //TODO: Load player character
+                }
+            }
+        }
+        else if(MainMenuUIHandler._instance != null && State != ENetworkState.IDLE)
+        {
+            //Change state
+            State = ENetworkState.InLobby;
+            //We are in lobby so ask all players to show their lobby instance
+            foreach(NetworkPlayer p in PlayersConnected)
+            {
+                if(p != null)
+                {
+                    p.LobbyLoaded();
+                }
+            }
         }
     }
 

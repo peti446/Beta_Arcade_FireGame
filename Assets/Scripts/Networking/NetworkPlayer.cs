@@ -223,8 +223,6 @@ public class NetworkPlayer : NetworkBehaviour {
         m_Name = name;
         m_team = MatchSettings._instance.TryToAddPlayerToTeam(this, MatchSettings._instance.GetNewPlayerStartingTeam());
         m_Initialized = true;
-        ///Send team size info to the player
-        RpcTaemSizesUpdate(MatchSettings._instance.GetTeamMembersId(ETeams.CrazyPeople), MatchSettings._instance.GetTeamMembersId(ETeams.FireFighters));
     }
 
     /// <summary>
@@ -277,11 +275,14 @@ public class NetworkPlayer : NetworkBehaviour {
     /// <param name="teamPlayersId1">players id in team one</param>
     /// <param name="teamPlayersId2">players id in team two</param>
     [ClientRpc]
-    private void RpcTaemSizesUpdate(int[] teamPlayersId1, int[] teamPlayersId2)
+    public void RpcTaemSizesUpdate(int[] teamPlayersId1, int[] teamPlayersId2)
     {
-        //Update both teams
-        MatchSettings._instance.SetTeamFromIds(teamPlayersId1, ETeams.CrazyPeople);
-        MatchSettings._instance.SetTeamFromIds(teamPlayersId2, ETeams.FireFighters);
+        if (!MainNetworkManager.Is_Server)
+        {
+            //Update both teams
+            MatchSettings._instance.SetTeamFromIds(teamPlayersId1, ETeams.CrazyPeople);
+            MatchSettings._instance.SetTeamFromIds(teamPlayersId2, ETeams.FireFighters);
+        }
     }
     #endregion
 
@@ -292,12 +293,26 @@ public class NetworkPlayer : NetworkBehaviour {
     /// <param name="target"></param>
     /// <param name="newUsername"></param>
     [TargetRpc]
-    private void TargetUsernameChangeError(NetworkConnection target, string newUsername)
+    public void TargetUsernameChangeError(NetworkConnection target, string newUsername)
     {
         //Check if there is a lobby player before showing the erro
         if(m_matchLobbyPlayer != null)
         {
             m_matchLobbyPlayer.DisplayUsernameError(newUsername);
+        }
+    }
+
+    /// <summary>
+    /// Makes the client show their loadins creen if it does exist.
+    /// </summary>
+    /// <param name="target">The player connection to send the message</param>
+    [TargetRpc]
+    public void TargetEnableLoadingScreen(NetworkConnection target)
+    {
+        LoadingScreen ls = LoadingScreen._instance;
+        if(ls != null)
+        {
+            ls.Show();
         }
     }
     #endregion
@@ -332,6 +347,11 @@ public class NetworkPlayer : NetworkBehaviour {
         {
             m_Initialized = newStatus;
             CreateLobbyPlayer();
+            if(MainNetworkManager.Is_Server)
+            {
+                ///Send team size info to the player
+                RpcTaemSizesUpdate(MatchSettings._instance.GetTeamMembersId(ETeams.CrazyPeople), MatchSettings._instance.GetTeamMembersId(ETeams.FireFighters));
+            }
         }
     }
     #endregion

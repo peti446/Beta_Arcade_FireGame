@@ -105,11 +105,14 @@ public class MainMenuUIHandler : MonoBehaviour {
                     m_DisconectedTask = () => {
                         ShowPanel(m_MainMenu);
                     };
+                    ShowLoadingScreen();
                     MainNetworkManager._instance.Disconect();
+                    ShowPanel(eMainMenuScreens.MainMenu);
                 }
                 else
                 {
                     ShowPanel(m_MainMenu);
+                    HideLoadingScreen();
                 }
                 break;
             case eMainMenuScreens.MatchCreation:
@@ -119,6 +122,7 @@ public class MainMenuUIHandler : MonoBehaviour {
                     MainNetworkManager._instance.StartUnityMatchmaking();
                 }
                 ShowPanel(m_MatchCreation);
+                HideLoadingScreen();
                 break;
             case eMainMenuScreens.Lobby:
                 //If we want to show the lobby first disconect everything as we dont know ecactly the state we are in then start the manager again.
@@ -128,12 +132,15 @@ public class MainMenuUIHandler : MonoBehaviour {
                         MainNetworkManager._instance.StartUnityMatchmaking();
                         ShowPanel(m_MatchListLobby);
                     };
+                    ShowLoadingScreen();
                     MainNetworkManager._instance.Disconect();
+                    ShowPanel(eMainMenuScreens.Lobby);
                 }
                 else
                 {
                     MainNetworkManager._instance.StartUnityMatchmaking();
                     ShowPanel(m_MatchListLobby);
+                    HideLoadingScreen();
                 }
                 break;
             case eMainMenuScreens.MatchLobby:
@@ -141,6 +148,7 @@ public class MainMenuUIHandler : MonoBehaviour {
                 if (MainNetworkManager._instance.isNetworkActive)
                 {
                     ShowPanel(m_MatchLobby);
+                    HideLoadingScreen();
                 }
                 else
                 {
@@ -150,6 +158,29 @@ public class MainMenuUIHandler : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Shows the loading screen
+    /// </summary>
+    public void ShowLoadingScreen()
+    {
+        LoadingScreen ls = LoadingScreen._instance;
+        if(ls != null)
+        {
+            ls.Show();
+        }
+    }
+    /// <summary>
+    /// Hides the loading screen
+    /// </summary>
+    private void HideLoadingScreen()
+    {
+        LoadingScreen ls = LoadingScreen._instance;
+        if (ls != null)
+        {
+            ls.Hide();
+        }
+    }
+    
     //Buttons wrappers to show specific uis 
     public void ShowMatchListUI()
     {
