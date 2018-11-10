@@ -31,8 +31,8 @@ public class VehicleInputs : MonoBehaviour {
     private Vehicle m_vehicle;
     //private Rigidbody vehicleRigibody;
 
-    //private float horizontalInput;
-    //private float verticalInput;
+    private float horizontalInput;
+    private float verticalInput;
 
 
 
@@ -43,22 +43,27 @@ public class VehicleInputs : MonoBehaviour {
 
     // Update is called once per frame
     void Update()
-    { 
-        Vector3 input = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0).normalized;
+    {
+        //Vector3 input = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0).normalized;
         //Check velocity be correct
 
-        if(m_vehicle.State != EVehicleStatus.Accelerating && input.sqrMagnitude < 1.0)
-        {
-            return;
-        }
+        //if(m_vehicle.State != EVehicleStatus.AcceleratingFoward && input.sqrMagnitude < 1.0)
+        //{
+        //    return;
+        //}
 
-        m_vehicle.SetDirection(input);
+        horizontalInput = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxis("Vertical");
+
+      
+
+        //m_vehicle.SetDirection(input);
 
     }
 
     private void FixedUpdate()
     {
-        
+        m_vehicle.SetInputs(horizontalInput, verticalInput);
     }
 
 
