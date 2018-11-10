@@ -48,6 +48,15 @@ public class MatchSettings : MonoBehaviour {
     }
 
     /// <summary>
+    /// TODO: Make this variable change based on selected map
+    /// </summary>
+    public string MapID
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
     /// Invoked when any team changed
     /// </summary>
     public event Action TeamsChanged;

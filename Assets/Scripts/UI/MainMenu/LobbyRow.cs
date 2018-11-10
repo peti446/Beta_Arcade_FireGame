@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
 using UnityEngine.Networking.Types;
 using UnityEngine.UI;
@@ -10,11 +11,11 @@ public class LobbyRow : MonoBehaviour {
     [SerializeField]
     private Text m_matchName;
     [SerializeField]
-    private Text m_matchMode;
-    [SerializeField]
     private Text m_playerCount;
     [SerializeField]
     private Button m_joinButton;
+    [SerializeField]
+    private Text m_ping;
 
     private ulong m_netID;
 
@@ -28,6 +29,9 @@ public class LobbyRow : MonoBehaviour {
         //Set the match name and player ocunt
         m_matchName.text = info.name;
         m_playerCount.text = string.Format("{0}/{1}", info.currentSize, info.maxSize);
+
+        //Set the ping
+        m_ping.text = "No Ping, any other data can go here";
 
         //Set the internal value to join the server later
         m_netID = (ulong)info.networkId;
@@ -52,9 +56,13 @@ public class LobbyRow : MonoBehaviour {
     //Button on click function
     private void JoinMatch()
     {
+        //Invoke the loadins screen
+        LoadingScreen ls = LoadingScreen._instance;
+        ls.Show();
         //Execute mentwork manager join function
         MainNetworkManager._instance.JoinUnityMatchmakingMatch((NetworkID)m_netID, (success, extraData, matchInfo) =>
         {
+            ls.Hide();
             //Did we join the match ?
             if(success)
             {

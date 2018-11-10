@@ -38,6 +38,7 @@ public class MatchLobby : MonoBehaviour {
         MainNetworkManager._instance.ServerErrorHappend += OnServerErrorHappened;
         MainNetworkManager._instance.ClientDisconected += OnClientDisconected;
         MainNetworkManager._instance.ConnectionDroped += OnConnectionDropped;
+        MainNetworkManager._instance.ServerAllPlayersGotReady += OnAllClientsGotReady;
     }
 
     private void OnDisable()
@@ -49,6 +50,7 @@ public class MatchLobby : MonoBehaviour {
             MainNetworkManager._instance.ServerErrorHappend -= OnServerErrorHappened;
             MainNetworkManager._instance.ClientDisconected -= OnClientDisconected;
             MainNetworkManager._instance.ConnectionDroped -= OnConnectionDropped;
+            MainNetworkManager._instance.ServerAllPlayersGotReady -= OnAllClientsGotReady;
         }
     }
 
@@ -122,7 +124,13 @@ public class MatchLobby : MonoBehaviour {
         return false;
     }
 
-    #region Networking events handling
+    //Fired on the server once all clients are ready
+    private void OnAllClientsGotReady()
+    {
+        MainNetworkManager._instance.StartGame();
+    }
+
+    #region Networking events handling disconnection
     //Handle networking events. All types of events will just bring the user back to the lobby
     private void OnClientErrorHappened(NetworkConnection con, int errorCode)
     {
