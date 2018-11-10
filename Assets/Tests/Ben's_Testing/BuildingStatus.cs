@@ -203,7 +203,7 @@ public class BuildingStatus : MonoBehaviour
         //Reset fire lighting timer
         time_left = 1.2f;
         damp_time -= Time.deltaTime;
-        wetState();
+        //wetState();
     }
 
     public void StopLighting()

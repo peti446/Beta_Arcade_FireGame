@@ -4,13 +4,18 @@ using UnityEngine;
 
 public class Raycast_Test : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+
+  private RaycastHit hit;
+  // Use this for initialization
+  void Start () {
 		
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
+		if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), 10))
+    {
+      print("something in front of obvj");
+    }
 	}
 }
