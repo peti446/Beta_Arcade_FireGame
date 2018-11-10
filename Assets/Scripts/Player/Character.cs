@@ -12,18 +12,17 @@ public class Character : MonoBehaviour
   [SerializeField]
   private float playerTurn;
 
-  [SerializeField]
-  private ParticleSystem hoseWater;
+  private GameObject hose;
 
 
   private void Awake()
   {
     playerRigibody = GetComponent<Rigidbody>();
+    //TODO kony: change this to properly find the particle object 
+    hose = transform.Find("HoseParticles").gameObject;
   }
   // Use this for initialization
 
-  private int Health;
-  private bool IsAlive;
   void Start()
   {
   }
@@ -38,9 +37,6 @@ public class Character : MonoBehaviour
   {
     if (verticalInput == 0 && horizontalInput == 0)
       return;
-    //playerRigibody.AddRelativeForce(0, 0, verticalInput * playerSpeed, ForceMode.Force);
-    //playerRigibody.AddRelativeForce(horizontalInput * playerSpeed, 0, 0,  ForceMode.Force);
-    //transform.Rotate(0, playerTurn * horizontalInput, 0);
     if (verticalInput == 1)
       playerRigibody.velocity = gameObject.transform.forward * playerSpeed;
     else if (verticalInput == 0)
@@ -49,16 +45,45 @@ public class Character : MonoBehaviour
       playerRigibody.velocity = gameObject.transform.forward * -playerSpeed;
   }
 
+
+  public RaycastHit hit;
   public void ToggleHose(bool open)
   {
     if (open)
     {
-      hoseWater.enableEmission = true;
-      hoseWater.Play();
+      hose.GetComponent<ParticleSystem>().enableEmission = true;
+      hose.GetComponent<ParticleSystem>().Play();
     }
     else if (!open)
     {
-      hoseWater.enableEmission = false;
+      hose.GetComponent<ParticleSystem>().enableEmission = false;
+    }
+  }
+
+  public void InteractRay()
+  {
+    Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 10, Color.red);
+    Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 10);
+    if (hit.collider != null)
+    {
+      switch (hit.collider.tag)
+      {
+        case "Building":
+
+          if (hit.collider.GetComponent<BuildingStatus>())
+            hit.collider.GetComponent<BuildingStatus>().Extinguish();
+          else
+            Debug.Log("hose raycast hit against object with tag building but without building script");
+          break;
+
+        case "Burnling":
+
+          break;
+
+        default:
+          //even if u want to do nothing with the default, better to specify it
+          break;
+      }
     }
   }
 

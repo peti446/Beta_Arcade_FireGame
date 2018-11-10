@@ -43,11 +43,16 @@ public class PlayerInputs : MonoBehaviour
     horizontalInput = Input.GetAxis("Horizontal");
     verticalInput = Input.GetAxis("Vertical");
     
-    if(Input.GetKeyDown(KeyCode.E))
+    if (Input.GetKeyDown(KeyCode.E))
     {
-      //building.gameObject.GetComponent<BuildingStatus>().Extinguish();
       m_character.ToggleHose(true);
     }
+
+    if (Input.GetKey(KeyCode.E))
+    {
+      m_character.InteractRay();
+    }
+
     if (Input.GetKeyUp(KeyCode.E))
     {
       m_character.ToggleHose(false);
@@ -74,17 +79,6 @@ public class PlayerInputs : MonoBehaviour
     transform.eulerAngles = lastMouse;
     lastMouse = Input.mousePosition;
 
-
-
   }
 
-  //protected void LateUpdate()
-  //{
-  //    //TODO call the character function instead of doing it directly here
-  //    //transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
-  //    //if (verticalInput == 0)
-  //    //{
-  //    //    playerRigibody.velocity = new Vector3(playerRigibody.velocity.x * 0.80f, playerRigibody.velocity.y * 0.80f, playerRigibody.velocity.z * 0.80f);
-  //    //}
-  //}
 }
