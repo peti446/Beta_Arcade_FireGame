@@ -15,7 +15,6 @@ public class Raycast_Test : MonoBehaviour {
 	void Update () {
 		if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), 10))
     {
-      print("something in front of obvj");
     }
 	}
 }
