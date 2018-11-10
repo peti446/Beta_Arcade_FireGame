@@ -68,6 +68,8 @@ MonoBehaviour:
   m_SpawnPrefabs:
   - {fileID: 1276727471650550, guid: e99bd4e5f94c6fc418e786e50692862d, type: 2}
   - {fileID: 1072095748322430, guid: 8108cd509e9a33148947b3c0e2ac3e18, type: 2}
+  - {fileID: 1924839943697842, guid: dfbb441db3d2b934385069b29ce1ba7d, type: 2}
+  - {fileID: 1879709825057874, guid: 550b115bd0110694892de9d6d2f27956, type: 2}
   m_CustomConfig: 0
   m_MaxConnections: 4
   m_ConnectionConfig:
@@ -110,11 +112,11 @@ MonoBehaviour:
     m_MaxTimerTimeout: 12000
     m_MinNetSimulatorTimeout: 1
     m_MaxNetSimulatorTimeout: 12000
-  m_Channels: 0500000000000000
+  m_Channels: 0500000000000000080000000700000006000000
   m_UseWebSockets: 0
-  m_UseSimulator: 0
-  m_SimulatedLatency: 1
-  m_PacketLossPercentage: 0
+  m_UseSimulator: 1
+  m_SimulatedLatency: 80
+  m_PacketLossPercentage: 5
   m_MaxBufferedPackets: 16
   m_AllowFragmentation: 1
   m_MatchHost: mm.unet.unity3d.com

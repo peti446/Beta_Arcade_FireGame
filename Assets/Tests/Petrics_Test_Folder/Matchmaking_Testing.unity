@@ -152,6 +152,21 @@ Prefab:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 114141968595042078, guid: 0fea6c7d0a8074f4eb8fa2e6d614c7ef,
+        type: 2}
+      propertyPath: m_UseSimulator
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114141968595042078, guid: 0fea6c7d0a8074f4eb8fa2e6d614c7ef,
+        type: 2}
+      propertyPath: m_SimulatedLatency
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 114141968595042078, guid: 0fea6c7d0a8074f4eb8fa2e6d614c7ef,
+        type: 2}
+      propertyPath: m_PacketLossPercentage
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0fea6c7d0a8074f4eb8fa2e6d614c7ef, type: 2}
   m_IsPrefabParent: 0
@@ -417,7 +432,7 @@ Prefab:
     - target: {fileID: 224702849084859272, guid: 40ceae370072b6d40aef8b42331d2726,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: -0.000003151552
+      value: 0.000012107237
       objectReference: {fileID: 0}
     - target: {fileID: 224748558158087434, guid: 40ceae370072b6d40aef8b42331d2726,
         type: 2}

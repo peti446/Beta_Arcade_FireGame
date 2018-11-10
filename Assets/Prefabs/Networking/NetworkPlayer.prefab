@@ -86,5 +86,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_LobbyPlayerPref: {fileID: 1072095748322430, guid: 8108cd509e9a33148947b3c0e2ac3e18,
     type: 2}
-  m_CrazyManPrefab: {fileID: 0}
-  m_FiremanPrefab: {fileID: 0}
+  m_CrazyManPrefab: {fileID: 1879709825057874, guid: 550b115bd0110694892de9d6d2f27956,
+    type: 2}
+  m_FiremanPrefab: {fileID: 1924839943697842, guid: dfbb441db3d2b934385069b29ce1ba7d,
+    type: 2}
