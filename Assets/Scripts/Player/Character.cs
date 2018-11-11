@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class Character : MonoBehaviour
+public class Character : NetworkBehaviour
 {
 
   private Rigidbody playerRigibody;
@@ -14,6 +15,8 @@ public class Character : MonoBehaviour
 
   private GameObject hose;
 
+    [SyncVar]
+    private int m_controllingPlayerID = -1;
 
   private void Awake()
   {
@@ -32,6 +35,19 @@ public class Character : MonoBehaviour
   {
 
   }
+
+    /// <summary>
+    /// Can only be executed on server, sets the controlling player id for this character.
+    /// </summary>
+    /// <param name="id">The player id that will be controling this character.</param>
+    [Server]
+    public void SetPlayerID(int id)
+    {
+        if(m_controllingPlayerID == -1)
+        {
+            m_controllingPlayerID = id;
+        }
+    }
 
   public void MovePlayer(float verticalInput, float horizontalInput)
   {

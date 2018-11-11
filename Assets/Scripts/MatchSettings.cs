@@ -13,6 +13,8 @@ public class MatchSettings : MonoBehaviour {
 
         _instance = this;
         DontDestroyOnLoad(gameObject);
+
+        MapID = "Map1";
     }
 
     private void OnDestroy()

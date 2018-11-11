@@ -317,7 +317,7 @@ public class MainNetworkManager : NetworkManager
         //Check where the player is to instanciate the correct object to play
         if (MatchSettings._instance != null && MatchSettings._instance.MapID == currentSceneName)
         {
-            //TODO: Load player character
+            player.GameSceneLoaded();
         }
         else if (MainMenuUIHandler._instance != null)
         {
@@ -580,7 +580,7 @@ public class MainNetworkManager : NetworkManager
             {
                 if(p != null)
                 {
-                    //TODO: Load player character
+                    p.GameSceneLoaded();
                 }
             }
         }

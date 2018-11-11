@@ -156,6 +156,18 @@ public class NetworkPlayer : NetworkBehaviour {
             CreateLobbyPlayer();
     }
 
+    /// <summary>
+    /// Creates a player instance for this player if we have the authority aka we are the local player
+    /// </summary>
+    [Client]
+    public void GameSceneLoaded()
+    {
+        if(localPlayerAuthority)
+        {
+            CmdSpawnPlayerGameObject();
+        }
+    }
+
     #region Server side execution only
 
     /// <summary>
@@ -265,6 +277,46 @@ public class NetworkPlayer : NetworkBehaviour {
         RpcTaemSizesUpdate(MatchSettings._instance.GetTeamMembersId(ETeams.CrazyPeople), MatchSettings._instance.GetTeamMembersId(ETeams.FireFighters));
         //Reset ready status for everyone
         MainNetworkManager._instance.ClearAllPlayersReadyStatus();
+    }
+
+    /// <summary>
+    /// Called on the server when the client is loaded up in the game
+    /// </summary>
+    [Command]
+    public void CmdSpawnPlayerGameObject()
+    {
+        //Based on team spawn different charactr
+        GameObject o = null;
+        switch(m_team)
+        {
+            case ETeams.CrazyPeople:
+                o = Instantiate(m_CrazyManPrefab);
+                break;
+            case ETeams.FireFighters:
+                o = Instantiate(m_FiremanPrefab);
+                break;
+        }
+
+        //Just in case
+        if (o == null)
+        {
+            Debug.LogError("Player Object not spawned, even it should of been");
+            return;
+        }
+
+        //Give the authority to the player and make it spawn on every client
+        NetworkServer.SpawnWithClientAuthority(o, connectionToClient);
+
+        //Set the id to the character
+        Character c = o.GetComponent<Character>();
+        if(c != null)
+        {
+            c.SetPlayerID(m_ID);
+        }
+        else
+        {
+            Debug.LogError("Somthing went wrong, the character prefab does not have a character (?)");
+        }
     }
     #endregion
 
