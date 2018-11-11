@@ -285,6 +285,8 @@ public class NetworkPlayer : NetworkBehaviour {
     [Command]
     public void CmdSpawnPlayerGameObject()
     {
+        //TODO: Check for the connection to be ready
+
         //Based on team spawn different charactr
         GameObject o = null;
         switch(m_team)
