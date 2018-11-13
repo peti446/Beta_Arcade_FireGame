@@ -162,7 +162,7 @@ public class NetworkPlayer : NetworkBehaviour {
     [Client]
     public void GameSceneLoaded()
     {
-        if(localPlayerAuthority)
+        if(hasAuthority)
         {
             CmdSpawnPlayerGameObject();
         }
@@ -285,11 +285,24 @@ public class NetworkPlayer : NetworkBehaviour {
     [Command]
     public void CmdSpawnPlayerGameObject()
     {
-        //TODO: Check for the connection to be ready
+        StartCoroutine(SpawnPlayerWhenReady());
+    }
 
+    private IEnumerator SpawnPlayerWhenReady()
+    {
+        while (!connectionToClient.isReady)
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
+        SpawnPlayerObject();
+    }
+
+    [Server]
+    private void SpawnPlayerObject()
+    {
         //Based on team spawn different charactr
         GameObject o = null;
-        switch(m_team)
+        switch (m_team)
         {
             case ETeams.CrazyPeople:
                 o = Instantiate(m_CrazyManPrefab);
@@ -311,7 +324,7 @@ public class NetworkPlayer : NetworkBehaviour {
 
         //Set the id to the character
         Character c = o.GetComponent<Character>();
-        if(c != null)
+        if (c != null)
         {
             c.SetPlayerID(m_ID);
         }
@@ -319,6 +332,8 @@ public class NetworkPlayer : NetworkBehaviour {
         {
             Debug.LogError("Somthing went wrong, the character prefab does not have a character (?)");
         }
+
+        o.transform.position = SpawnManager._instance.GetSpawnPoint(m_team).position;
     }
     #endregion
 

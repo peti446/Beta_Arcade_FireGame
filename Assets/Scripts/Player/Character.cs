@@ -15,8 +15,9 @@ public class Character : NetworkBehaviour
 
   private GameObject hose;
 
-    [SyncVar]
+    [SyncVar(hook = "OnPlayerIdChanged")]
     private int m_controllingPlayerID = -1;
+    private bool m_isSetup = false;
 
   private void Awake()
   {
@@ -24,9 +25,37 @@ public class Character : NetworkBehaviour
     //TODO kony: change this to properly find the particle object 
     hose = transform.Find("HoseParticles").gameObject;
   }
-  // Use this for initialization
+    // Use this for initialization
 
-  void Start()
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        if (m_isSetup || m_controllingPlayerID == -1)
+            return;
+        Debug.Log("Start on local player, with ID:" + m_controllingPlayerID);
+        transform.position = SpawnManager._instance.GetSpawnPoint(MainNetworkManager._instance.PlayersConnected[m_controllingPlayerID].Player_Team).position;
+        m_isSetup = true;
+    }
+
+    public override void OnStartAuthority()
+    {
+        base.OnStartAuthority();
+        if (hasAuthority)
+            transform.GetChild(0).gameObject.SetActive(true);
+    }
+
+    private void OnPlayerIdChanged(int newID)
+    {
+        m_controllingPlayerID = newID;
+        if (m_isSetup)
+            return;
+        Debug.Log("Start on local player, with ID:" + m_controllingPlayerID);
+        transform.position = SpawnManager._instance.GetSpawnPoint(MainNetworkManager._instance.PlayersConnected[m_controllingPlayerID].Player_Team).position;
+        m_isSetup = true;
+
+    }
+
+    void Start()
   {
   }
 

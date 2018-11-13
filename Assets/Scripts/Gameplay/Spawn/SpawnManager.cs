@@ -4,6 +4,26 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour {
 
+    public static SpawnManager _instance
+    {
+        get;
+        private set;
+    }
+
+    private void Awake()
+    {
+        if (_instance != null)
+            Destroy(gameObject);
+
+        _instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        if (_instance == this)
+            _instance = null;
+    }
+
     [SerializeField]
     private GameObject[] m_FireStationSpawns;
     [SerializeField]
