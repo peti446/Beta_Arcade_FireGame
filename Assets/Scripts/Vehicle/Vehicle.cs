@@ -1,51 +1,38 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum EVehicleStatus
 {
-    IDLE, AcceleratingFoward, AcceleratingBack, DesceleratingFoward, DesceleratingBack
+    IDLE, AcceleratingFoward, AcceleratingBack, DesceleratingFoward, DesceleratingBack, Brake
 }
+
 
 [RequireComponent(typeof(Rigidbody))]
 
 public class Vehicle : MonoBehaviour {
 
-    private Rigidbody vehicleRigibody;
-    //private Vector3 Dir;
-    //[SerializeField]
-    //private float m_MaxVelocity;
-    //[SerializeField]
-    //private float m_CurrentVelocity;
-    //[SerializeField]
-    //private float m_Acceleration;
-    //[SerializeField]
-    //private float m_maxBackAccel;
-
+    private Rigidbody m_vehicleRigibody;
 
     [SerializeField]
-    private float vehicleMaxSpeed = 20.0f;
+    private float m_vehicleMaxSpeed = 20.0f;
     [SerializeField]
-    private float vehicleAcceleration = 5.0f;
+    private float m_vehicleAcceleration = 5.0f;
 
     [SerializeField]
-    private float maxVehicleTurn = 2.0f;
+    private float m_maxVehicleTurn = 2.0f;
     [SerializeField]
-    private float vehicleBrake = 3.0f;
+    private float m_vehicleBrake = 3.0f;
     [SerializeField]
-    private float vehicleReverseMaxSpeed = 5.0f;
+    private float m_vehicleReverseMaxSpeed = 5.0f;
     [SerializeField]
-    private float vehicleReverseAcceleration = 0.1f;
+    private float m_vehicleReverseAcceleration = 0.1f;
 
     //Don't change this values on editor, just showed on editor for debug information
     [SerializeField]
-    private float vehicleSpeed = 0.0f;
+    private float m_vehicleSpeed = 0.0f;
     [SerializeField]
-    private float vehicleTurn = 0.0f;
+    private float m_vehicleTurn = 0.0f;
 
-
-
-
+       
     public EVehicleStatus State
     {
         get;
@@ -54,124 +41,85 @@ public class Vehicle : MonoBehaviour {
 
     private void Awake()
     {
-        vehicleRigibody = GetComponent<Rigidbody>();
+        m_vehicleRigibody = GetComponent<Rigidbody>();
     }
-    // Use this for initialization
-    void Start () {
-		//vehicleVelocity = vehicleRigibody.velocity.
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+       
 
     private void FixedUpdate()
     {
-
         UpdateVehicleVelocity();
-        //Add gravity
-        //vehicleRigibody.velocity += Physics.gravity;
     }
-
-    //private void UpdateVehicleVelocity()
-    //{
-    //    if(Dir.y > 0)
-    //    {
-    //        m_CurrentVelocity = Mathf.Clamp(m_CurrentVelocity + m_Acceleration, 0, m_MaxVelocity);
-    //    }
-    //    else if(Dir.y < 0)
-    //    {
-    //        m_CurrentVelocity = Mathf.Clamp(m_CurrentVelocity - m_Acceleration, m_maxBackAccel * -1, m_MaxVelocity);
-    //    }
-
+    
+    
     private void UpdateVehicleVelocity()
     {
         switch(State)
         {
             case EVehicleStatus.AcceleratingFoward:
-                vehicleSpeed += vehicleAcceleration;
-                vehicleSpeed = Mathf.Clamp(vehicleSpeed, 0, vehicleMaxSpeed);
+                m_vehicleSpeed += m_vehicleAcceleration;
+                m_vehicleSpeed = Mathf.Clamp(m_vehicleSpeed, 0, m_vehicleMaxSpeed);
                 break;
+            case EVehicleStatus.AcceleratingBack:
+                m_vehicleSpeed -= m_vehicleBrake;
+                m_vehicleSpeed = Mathf.Clamp(m_vehicleSpeed, 0, m_vehicleMaxSpeed);
+                break;
+            case EVehicleStatus.Brake:
+                m_vehicleSpeed -= m_vehicleReverseAcceleration;
+                m_vehicleSpeed = Mathf.Clamp(m_vehicleSpeed, m_vehicleReverseMaxSpeed * -1, 0);
+                break;
+            case EVehicleStatus.DesceleratingFoward:
+                m_vehicleSpeed -= m_vehicleAcceleration;
+                m_vehicleSpeed = Mathf.Clamp(m_vehicleSpeed, 0, m_vehicleMaxSpeed);
+                break;
+            case EVehicleStatus.DesceleratingBack:
+                m_vehicleSpeed += m_vehicleReverseAcceleration;
+                m_vehicleSpeed = Mathf.Clamp(m_vehicleSpeed, m_vehicleReverseMaxSpeed * -1, 0);
+                break;
+
             default:
                 break;
         }
+
+        //Vehicle Turn
+        transform.Rotate(0, Mathf.Clamp(m_vehicleSpeed * 0.1f, -m_maxVehicleTurn, m_maxVehicleTurn) * m_vehicleTurn, 0);
+        m_vehicleRigibody.velocity = gameObject.transform.forward * m_vehicleSpeed;
+        //m_vehicleRigibody.velocity += Physics.gravity;
     }
 
 
-
-    //    vehicleRigibody.velocity = gameObject.transform.forward * m_CurrentVelocity;
-    //}
-
-    //public void SetDirection(Vector3 dirToMove)
-    //{
-    //    //Check if we are actually moving
-    //    if (dirToMove.sqrMagnitude < 1.0f)
-    //    {
-    //        State = EVehicleStatus.IDLE;
-    //        Dir = new Vector3(0, 0, 0);
-    //        return;
-    //    }
-    //    Dir = dirToMove.normalized;
-    //    State = EVehicleStatus.AcceleratingFoward;
-    //}
-
     public void SetInputs(float horizontalInput, float verticalInput)
-    {
-        //Vehicle Acceleration
+    {        
         if (verticalInput > 0)
         {
-            State = EVehicleStatus.AcceleratingBack;
-
-            vehicleSpeed += vehicleAcceleration;
-            vehicleSpeed = Mathf.Clamp(vehicleSpeed, 0, vehicleMaxSpeed);
-
-
-
-            //Vehicle break and reverse move
+            State = EVehicleStatus.AcceleratingFoward;    
         }
         else if (verticalInput < 0)
         {
-            if (vehicleSpeed > 0)
-            {
-                vehicleSpeed -= vehicleBrake;
-                vehicleSpeed = Mathf.Clamp(vehicleSpeed, 0, vehicleMaxSpeed);
+            if (m_vehicleSpeed > 0)
+            {              
+                State = EVehicleStatus.AcceleratingBack;
             }
             else
-            {
-                vehicleSpeed -= vehicleReverseAcceleration;
-                vehicleSpeed = Mathf.Clamp(vehicleSpeed, vehicleReverseMaxSpeed * -1, 0);
-            }
-            //Put vehicle speed slowly to 0 if you don't press any button
+            {                
+                State = EVehicleStatus.Brake;
+            }            
         }
         else
         {
-            if (vehicleSpeed > 0)
+            if (m_vehicleSpeed > 0)
             {
-                vehicleSpeed -= vehicleAcceleration;
-                vehicleSpeed = Mathf.Clamp(vehicleSpeed, 0, vehicleMaxSpeed);
+                State = EVehicleStatus.DesceleratingFoward;                
             }
             else
             {
-                vehicleSpeed += vehicleReverseAcceleration;
-                vehicleSpeed = Mathf.Clamp(vehicleSpeed, vehicleReverseMaxSpeed * -1, 0);
+                State = EVehicleStatus.DesceleratingBack;                
             }
-
         }
+        
+        //Vehicle Turn Input
+        m_vehicleTurn = horizontalInput;
 
 
-
-        //Vehicle turn
-        if (horizontalInput != 0)
-        {
-            vehicleTurn = vehicleSpeed * 0.1f;
-            vehicleTurn = Mathf.Clamp(vehicleTurn, maxVehicleTurn * -1, maxVehicleTurn);
-            transform.Rotate(0, horizontalInput * vehicleTurn, 0);
-
-        }
-
-        vehicleRigibody.velocity = gameObject.transform.forward * vehicleSpeed;
-        //vehicleRigibody.velocity += Physics.gravity;
     }
    
 }

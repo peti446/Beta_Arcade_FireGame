@@ -3,17 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+public enum EPlayerStatus
+{
+    IDLE, MoveFoward, MoveBack, MoveLeft, MoveRight
+}
+
 public class Character : NetworkBehaviour
 {
 
   private Rigidbody playerRigibody;
 
-  [SerializeField]
-  private float playerSpeed;
-  [SerializeField]
-  private float playerTurn;
+    [SerializeField]
+    private float playerSpeed;
+    [SerializeField]
+    float camSensY = 0.0f; //How sensitive it with mouse
+    [SerializeField]
+    float camSensX = 0.5f; //How sensitive it with mouse
 
-  private GameObject hose;
+    private Vector3 lastMouse = new Vector3(255, 255, 255); //kind of in the middle of the screen, rather than at the top (play)
+
+    public EPlayerStatus State
+    {
+        get;
+        private set;
+    }
+
+
+    private GameObject hose;
 
     [SyncVar(hook = "OnPlayerIdChanged")]
     private int m_controllingPlayerID = -1;
@@ -78,18 +94,20 @@ public class Character : NetworkBehaviour
         }
     }
 
-  public void MovePlayer(float verticalInput, float horizontalInput)
-  {
-    if (verticalInput == 0 && horizontalInput == 0)
-      return;
-    if (verticalInput == 1)
-      playerRigibody.velocity = gameObject.transform.forward * playerSpeed;
-    else if (verticalInput == 0)
-      playerRigibody.velocity = new Vector3(0, 0, 0);
-    else
-      playerRigibody.velocity = gameObject.transform.forward * -playerSpeed;
-  }
+  //public void MovePlayer(float verticalInput, float horizontalInput)
+  //{
+  //  if (verticalInput == 0 && horizontalInput == 0)
+  //    return;
+  //  if (verticalInput == 1)
+  //    playerRigibody.velocity = gameObject.transform.forward * playerSpeed;
+  //  else if (verticalInput == 0)
+  //    playerRigibody.velocity = new Vector3(0, 0, 0);
+  //  else
+  //    playerRigibody.velocity = gameObject.transform.forward * -playerSpeed;
+  //}
 
+
+        
 
   public RaycastHit hit;
   public void ToggleHose(bool open)
@@ -133,14 +151,29 @@ public class Character : NetworkBehaviour
   }
 
 
-  /// <summary>
-  /// Sets the direction of the characters
-  /// </summary>
-  /// <param name="newDir"><c>Vector3</c> The new direciton of this characters</param>
-  public void SetDir(Vector3 newDir)
-  {
+    public void SetInputs(float horizontalInput, float verticalInput)
+    {
+        if (verticalInput > 0)
+        {
+            State = EPlayerStatus.MoveFoward;
+        }
+        else if (verticalInput < 0)
+        {
+            State = EPlayerStatus.MoveBack;
+        }
+
+        if (verticalInput > 0)
+        {
+            State = EPlayerStatus.MoveLeft;
+        }
+        else if (verticalInput < 0)
+        {
+            State = EPlayerStatus.MoveRight;
+        }
+
+  
 
 
-  }
+    }
 
 }
