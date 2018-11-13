@@ -99,15 +99,22 @@ public class BuildingStatus : MonoBehaviour
         {
             BuildingRegen();
         }
+
         if(dampening == true)
         {
             damp_time -= Time.deltaTime;
             wet_bar_bg.gameObject.SetActive(true);
             wet_bar.gameObject.SetActive(true);
-            wet_bar.fillAmount = damp_time / 7.0f;
+            wet_bar.fillAmount = damp_time / 10.0f;
             if (damp_time < 8.0f)
             {
                 damp_building_text.SetActive(false);
+            }
+            if(damp_time <= 0.0f)
+            {
+                dampening = false;
+                wet_bar.gameObject.SetActive(false);
+                wet_bar_bg.gameObject.SetActive(false);
             }
 
             //wet_bar_bg.gameObject.SetActive(false);
@@ -149,8 +156,11 @@ public class BuildingStatus : MonoBehaviour
             if (damp_time < 8)
             {
                 damp_building_text.SetActive(false);
+                //dampening = false;
+            }
+            if(damp_time <= 0)
+            {
                 dampening = false;
-
             }
         }
 
@@ -192,17 +202,15 @@ public class BuildingStatus : MonoBehaviour
 
     public void Extinguish()
     {
+        dampening = true;
         //set on fire to false
         on_fire = false;
-        //Deactivate health bars
-       //////////////////////////////// health_bar.gameObject.SetActive(false);
-       //////////////////////////////// health_bar_bg.gameObject.SetActive(false);
         //reset ablaze
         ablaze = false;
         ablaze_burn_time = 0;
         //Reset fire lighting timer
         time_left = 1.2f;
-        damp_time -= Time.deltaTime;
+        //damp_time -= Time.deltaTime;
         //wetState();
     }
 
