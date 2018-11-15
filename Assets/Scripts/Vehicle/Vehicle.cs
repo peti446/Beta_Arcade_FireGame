@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 
 public enum EVehicleStatus
 {
@@ -7,11 +8,10 @@ public enum EVehicleStatus
 
 
 [RequireComponent(typeof(Rigidbody))]
-
-public class Vehicle : MonoBehaviour {
+[RequireComponent(typeof(NetworkIdentity))]
+public class Vehicle : NetworkBehaviour {
 
     private Rigidbody m_vehicleRigibody;
-
     [SerializeField]
     private float m_vehicleMaxSpeed = 20.0f;
     [SerializeField]
@@ -26,10 +26,12 @@ public class Vehicle : MonoBehaviour {
     [SerializeField]
     private float m_vehicleReverseAcceleration = 0.1f;
 
+
+    [SyncVar]
+    private int m_controllingPlayerID = -1;
+
     //Don't change this values on editor, just showed on editor for debug information
-    [SerializeField]
     private float m_vehicleSpeed = 0.0f;
-    [SerializeField]
     private float m_vehicleTurn = 0.0f;
 
        
@@ -43,13 +45,27 @@ public class Vehicle : MonoBehaviour {
     {
         m_vehicleRigibody = GetComponent<Rigidbody>();
     }
-       
+
+    public void GainControl(Character c)
+    {
+        if (c.hasAuthority)
+        {
+            gameObject.GetComponent<VehicleInputs>().enabled = true;
+            GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
+            camera.transform.SetParent(gameObject.transform, false);
+        }
+    }
+
+    public void LoseControl(Character c)
+    {
+        if (c.hasAuthority)
+            gameObject.GetComponent<VehicleInputs>().enabled = false;
+    }
 
     private void FixedUpdate()
     {
         UpdateVehicleVelocity();
     }
-    
     
     private void UpdateVehicleVelocity()
     {
@@ -83,9 +99,8 @@ public class Vehicle : MonoBehaviour {
         //Vehicle Turn
         transform.Rotate(0, Mathf.Clamp(m_vehicleSpeed * 0.1f, -m_maxVehicleTurn, m_maxVehicleTurn) * m_vehicleTurn, 0);
         m_vehicleRigibody.velocity = gameObject.transform.forward * m_vehicleSpeed;
-        //m_vehicleRigibody.velocity += Physics.gravity;
+        m_vehicleRigibody.velocity += Physics.gravity;
     }
-
 
     public void SetInputs(float horizontalInput, float verticalInput)
     {        

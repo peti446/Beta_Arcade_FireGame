@@ -5,13 +5,13 @@ using UnityEngine.Networking;
 
 public enum EPlayerStatus
 {
-    IDLE, MoveFoward, MoveBack, MoveLeft, MoveRight
+    IDLE, Moving, Casting, Other
 }
 
 public class Character : NetworkBehaviour
 {
 
-  private Rigidbody playerRigibody;
+    private Rigidbody playerRigibody;
 
     [SerializeField]
     private float playerSpeed;
@@ -27,65 +27,80 @@ public class Character : NetworkBehaviour
         get;
         private set;
     }
-
-
     private GameObject hose;
 
+
+    //Variables for the current character status
     [SyncVar(hook = "OnPlayerIdChanged")]
     private int m_controllingPlayerID = -1;
     private bool m_isSetup = false;
 
-  private void Awake()
-  {
-    playerRigibody = GetComponent<Rigidbody>();
-    //TODO kony: change this to properly find the particle object 
-    hose = transform.Find("HoseParticles").gameObject;
-  }
-    // Use this for initialization
+    private void Awake()
+    {
+        playerRigibody = GetComponent<Rigidbody>();
+        //TODO kony: change this to properly find the particle object 
+        hose = transform.Find("HoseParticles").gameObject;
+    }
 
+
+    //Start function when object spawned, called on all client.
     public override void OnStartClient()
     {
         base.OnStartClient();
-        if (m_isSetup || m_controllingPlayerID == -1)
-            return;
-        Debug.Log("Start on local player, with ID:" + m_controllingPlayerID);
-        transform.position = SpawnManager._instance.GetSpawnPoint(MainNetworkManager._instance.PlayersConnected[m_controllingPlayerID].Player_Team).position;
-        m_isSetup = true;
+        //Init the player
+        InitPlayer();
+    }
+
+    public override void OnStartLocalPlayer()
+    {
+        base.OnStartLocalPlayer();
+        InitPlayer();
     }
 
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
-        if (hasAuthority)
-            transform.GetChild(0).gameObject.SetActive(true);
+        //Get the camera when we get authority
+        if (!hasAuthority)
+            return;
+        GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
+        camera.transform.SetParent(transform, false);
+        gameObject.GetComponent<PlayerInputs>().enabled = true;
     }
 
+    //Only init the players on the client
+    private void InitPlayer()
+    {
+        //Dont init the player again
+        if (m_isSetup || m_controllingPlayerID == -1)
+            return;
+
+        //Set camera and enable input
+        if (hasAuthority)
+        {
+            GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
+            camera.transform.SetParent(transform, false);
+            gameObject.GetComponent<PlayerInputs>().enabled = true;
+        }
+
+        //Set the position to a valid spawn position
+        transform.position = SpawnManager._instance.GetSpawnPoint(MainNetworkManager._instance.PlayersConnected[m_controllingPlayerID].Player_Team).position;
+
+        //Set the character script to be settet up
+        m_isSetup = true;
+    }
+
+    //PlayerID changed so init the player and set the instance ID player id to the player
     private void OnPlayerIdChanged(int newID)
     {
         m_controllingPlayerID = newID;
-        if (m_isSetup)
-            return;
-        Debug.Log("Start on local player, with ID:" + m_controllingPlayerID);
-        transform.position = SpawnManager._instance.GetSpawnPoint(MainNetworkManager._instance.PlayersConnected[m_controllingPlayerID].Player_Team).position;
-        m_isSetup = true;
-
+        InitPlayer();
     }
-
-    void Start()
-  {
-  }
-
-  // Update is called once per frame
-  void Update()
-  {
-
-  }
 
     /// <summary>
     /// Can only be executed on server, sets the controlling player id for this character.
     /// </summary>
     /// <param name="id">The player id that will be controling this character.</param>
-    [Server]
     public void SetPlayerID(int id)
     {
         if(m_controllingPlayerID == -1)
@@ -123,6 +138,7 @@ public class Character : NetworkBehaviour
     }
   }
 
+  [Client]
   public void InteractRay()
   {
     Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 10, Color.red);
@@ -142,7 +158,9 @@ public class Character : NetworkBehaviour
         case "Burnling":
 
           break;
-
+        case "Firetruck":
+           CmdGetUpThefireTruck(hit.transform.gameObject);
+           break;
         default:
           //even if u want to do nothing with the default, better to specify it
           break;
@@ -150,29 +168,29 @@ public class Character : NetworkBehaviour
     }
   }
 
+    [Command]
+    private void CmdGetUpThefireTruck(GameObject fireTruck)
+    {
+        Debug.Log("Trying to acces vechicle");
+        if (fireTruck.GetComponent<NetworkIdentity>().clientAuthorityOwner == null)
+        {
+            fireTruck.GetComponent<NetworkIdentity>().AssignClientAuthority(connectionToClient);
+            RpcGetUpToVehicle(fireTruck);
+        }
+
+    }
+
+    [ClientRpc]
+    private void RpcGetUpToVehicle(GameObject firetruck)
+    {
+        GetComponent<PlayerInputs>().enabled = false;
+        firetruck.GetComponent<Vehicle>().GainControl(this);
+    }
 
     public void SetInputs(float horizontalInput, float verticalInput)
     {
-        if (verticalInput > 0)
-        {
-            State = EPlayerStatus.MoveFoward;
-        }
-        else if (verticalInput < 0)
-        {
-            State = EPlayerStatus.MoveBack;
-        }
-
-        if (verticalInput > 0)
-        {
-            State = EPlayerStatus.MoveLeft;
-        }
-        else if (verticalInput < 0)
-        {
-            State = EPlayerStatus.MoveRight;
-        }
-
-  
-
+        playerRigibody.velocity = new Vector3(horizontalInput * 20, 0, verticalInput * 20);
+        playerRigibody.velocity += (Physics.gravity);
 
     }
 
