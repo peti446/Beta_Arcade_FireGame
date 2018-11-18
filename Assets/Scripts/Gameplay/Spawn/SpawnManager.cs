@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour {
 
-    public static SpawnManager _instance
+	private IList<SpawnPoint> m_FireStationSpawns;
+	private IList<SpawnPoint> m_BurnlingsSpawns;
+
+	public static SpawnManager _instance
     {
         get;
         private set;
@@ -12,10 +15,31 @@ public class SpawnManager : MonoBehaviour {
 
     private void Awake()
     {
-        if (_instance != null)
-            Destroy(gameObject);
-
+		if (_instance != null)
+		{
+			Destroy(gameObject);
+			return;
+		}
         _instance = this;
+
+		//Set the list
+		m_FireStationSpawns = new List<SpawnPoint>();
+		m_BurnlingsSpawns = new List<SpawnPoint>();
+
+		//Add the spawns to the correct list
+		SpawnPoint[] allSpawns = GameObject.FindObjectsOfType<SpawnPoint>();
+		foreach(SpawnPoint sp in allSpawns)
+		{
+			switch(sp.SpawnSide)
+			{
+				case ETeams.CrazyPeople:
+					m_BurnlingsSpawns.Add(sp);
+					break;
+				case ETeams.FireFighters:
+					m_FireStationSpawns.Add(sp);
+					break;
+			}
+		}
     }
 
     private void OnDestroy()
@@ -24,60 +48,32 @@ public class SpawnManager : MonoBehaviour {
             _instance = null;
     }
 
-    [SerializeField]
-    private GameObject[] m_FireStationSpawns;
-    [SerializeField]
-    private GameObject[] m_BurnlingsSpawns;
-
-    public Transform GetSpawnPoint(ETeams team)
+    public SpawnPoint GetSpawnPoint(Character c)
     {
-        Transform t = gameObject.transform;
-        switch (team)
+        switch (MainNetworkManager._instance.PlayersConnected[c.ControllingPlayerID].Player_Team)
         {
             case ETeams.CrazyPeople:
-                foreach(GameObject sp in m_BurnlingsSpawns)
+                foreach(SpawnPoint sp in m_BurnlingsSpawns)
                 {
-                    Collider[] allCollions = Physics.OverlapBox(sp.transform.position, new Vector3(10,10,10));
-                    bool hasCharacter = false;
-                    foreach(Collider c in allCollions)
-                    {
-                        if(c.gameObject.GetComponentInChildren<Character>() != null)
-                        {
-                            hasCharacter = true;
-                            break;
-                        }
-                    }
-                    
-                    if(!hasCharacter)
-                    {
-                        t = sp.transform;
-                        break;
-                    }
+					if(sp.IsSpawnFree)
+					{
+						sp.UseSpawn(c);
+						return sp;
+					}
                 }
                 break;
             case ETeams.FireFighters:
-                foreach (GameObject sp in m_BurnlingsSpawns)
+                foreach (SpawnPoint sp in m_FireStationSpawns)
                 {
-                    Collider[] allCollions = Physics.OverlapBox(sp.transform.position, new Vector3(10, 10, 10));
-                    bool hasCharacter = false;
-                    foreach (Collider c in allCollions)
-                    {
-                        if (c.gameObject.GetComponentInChildren<Character>() != null)
-                        {
-                            hasCharacter = true;
-                            break;
-                        }
-                    }
-
-                    if (!hasCharacter)
-                    {
-                        t = sp.transform;
-                        break;
-                    }
-                }
+					if (sp.IsSpawnFree)
+					{
+						sp.UseSpawn(c);
+						return sp;
+					}
+				}
                 break;
         }
 
-        return t;
+        return null;
     }
 }

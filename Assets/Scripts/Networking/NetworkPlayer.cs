@@ -332,8 +332,6 @@ public class NetworkPlayer : NetworkBehaviour {
         {
             Debug.LogError("Somthing went wrong, the character prefab does not have a character (?)");
         }
-
-        o.transform.position = SpawnManager._instance.GetSpawnPoint(m_team).position;
     }
     #endregion
 

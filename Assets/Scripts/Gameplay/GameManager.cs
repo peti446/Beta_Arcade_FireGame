@@ -67,8 +67,15 @@ public class GameManager : NetworkBehaviour
 	{
 		if(SpawnManager._instance != null)
 		{
-			Transform spawnLocation = SpawnManager._instance.GetSpawnPoint(MainNetworkManager._instance.PlayersConnected[c.ControllingPlayerID].Player_Team);
-            c.TargetSpawnPlayerAt(MainNetworkManager._instance.PlayersConnected[c.ControllingPlayerID].connectionToClient, spawnLocation.position);
+			SpawnPoint spawnPoint = SpawnManager._instance.GetSpawnPoint(c);
+			if (spawnPoint != null)
+			{
+				c.TargetSpawnPlayerAt(MainNetworkManager._instance.PlayersConnected[c.ControllingPlayerID].connectionToClient, spawnPoint.transform.position);
+			}
+			else
+			{
+				Debug.Log("No free spawn point available");
+			}
 		}
 	}
 

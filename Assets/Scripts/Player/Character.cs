@@ -71,6 +71,7 @@ public class Character : NetworkBehaviour
 		camera.transform.SetParent(transform, false);
 		camera.transform.localPosition = new Vector3(0, 0, 0);
 		gameObject.GetComponent<PlayerInputs>().enabled = true;
+		CmdSpawn();
 	}
 
 	//Init the player if it has valid values

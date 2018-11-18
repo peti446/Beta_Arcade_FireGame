@@ -37,7 +37,6 @@ GameObject:
   m_Component:
   - component: {fileID: 224359767132275350}
   - component: {fileID: 114216771553551572}
-  - component: {fileID: 114834061408056146}
   - component: {fileID: 114515055800486512}
   m_Layer: 5
   m_Name: MatchLobbyPlayerInfo
@@ -709,38 +708,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: <>
---- !u!114 &114834061408056146
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1072095748322430}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SceneId:
-    m_Value: 0
-  m_AssetId:
-    i0: 129
-    i1: 8
-    i2: 205
-    i3: 80
-    i4: 158
-    i5: 154
-    i6: 51
-    i7: 20
-    i8: 137
-    i9: 71
-    i10: 179
-    i11: 192
-    i12: 226
-    i13: 172
-    i14: 62
-    i15: 24
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 1
 --- !u!114 &114981213328073324
 MonoBehaviour:
   m_ObjectHideFlags: 1
