@@ -87,10 +87,8 @@ public class NetworkPlayer : NetworkBehaviour {
     {
         //Call the base start for local player
         base.OnStartLocalPlayer();
-        //TODO: Proper automatic name generation
-        //Generate random name and send the server information aobut ourselves, the name might change on the server.
-        String s = Guid.NewGuid().ToString("N");
-        CmdSetUpPlayer(s);
+		//Generate random name and send the server information aobut ourselves, the name might change on the server.
+		CmdSetUpPlayer(RandomNameGenerator.GetRanomName());
         //Set the local player on the manager
         MainNetworkManager._instance.SetLocalPlayerRef(this);
     }
@@ -231,8 +229,20 @@ public class NetworkPlayer : NetworkBehaviour {
     [Command]
     private void CmdSetUpPlayer(string name)
     {
-        //Set all the data and initialize it
-        m_Name = name;
+		//Get the name from all the other players
+		List<string> usedNames = new List<string>();
+		foreach(NetworkPlayer p in MainNetworkManager._instance.PlayersConnected)
+		{
+			if(p != this)
+				usedNames.Add(p.Player_Name);
+		}
+		//Generate new names until we got a unique one
+		while(usedNames.Contains(name))
+		{
+			name = RandomNameGenerator.GetRanomName();
+		}
+		//Set all the data and initialize it
+		m_Name = name;
         m_team = MatchSettings._instance.TryToAddPlayerToTeam(this, MatchSettings._instance.GetNewPlayerStartingTeam());
         m_Initialized = true;
     }
