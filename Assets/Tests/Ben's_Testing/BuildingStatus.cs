@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Networking;
 
-public class BuildingStatus : MonoBehaviour
+public class BuildingStatus : NetworkBehaviour
 {
     //Used for testing
     [SerializeField]
@@ -15,8 +16,22 @@ public class BuildingStatus : MonoBehaviour
     private Color std_colour = Color.white;
 
     //Building health and max health
+    [SyncVar(hook ="OnBuidlingHPUpdate")]
+    private float building_health;
+
+    private void OnBuidlingHPUpdate(float _newHP)
+    {
+        building_health = _newHP;
+        //Activate building health/burn amount bars
+        health_bar.gameObject.SetActive(true);
+        health_bar_bg.gameObject.SetActive(true);
+        health_bar.fillAmount = building_health / building_max_health;
+        //Display health counter
+        health_counter.GetComponent<TextMeshProUGUI>().SetText("Health: " + (int)building_health + "%");
+    }
+
     [SerializeField]
-    private float building_health, building_max_health;
+    private float building_max_health;
 
     //Building burn amount/health bars
     [SerializeField]
@@ -58,7 +73,7 @@ public class BuildingStatus : MonoBehaviour
     private bool dampening = false;
     [SerializeField]
     private bool planting = false;
-    [SerializeField]
+    [SyncVar]
     private float damp_time = 10.0f;
     [SerializeField]
     private int setting_percent;
@@ -75,7 +90,7 @@ public class BuildingStatus : MonoBehaviour
         rend = GetComponent<Renderer>();
     }
 
-    //Update is called once per frame
+    [ServerCallback]
     void Update()
     {
         ablaze_burn_time = burn_time;
@@ -84,22 +99,12 @@ public class BuildingStatus : MonoBehaviour
         {
             BurningPhase();
         }
-        // Starting Fire
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            Debug.Log("Status Script Working.");
-            planting = true;
-        }
+       
 
-        if (Input.GetKeyUp(KeyCode.F))
-        {
-            Debug.Log("F released");
-            planting = false;
-        }
         // Fire Burn Timer
         if (ablaze_burn_time > 10.0f)
         {
-            isAblaze();
+            ablaze = true;
         }
         // Ablaze effects
         if (ablaze == true)
@@ -157,19 +162,51 @@ public class BuildingStatus : MonoBehaviour
         }
     }
 
-    public void StartingFire()
+    [Client]
+    public void EmulateStartingFire()
     {
-        //If not in wet phase
-        if (dampening == false)
+        if (dampening)
         {
-            damp_time = 10.0f;
-            //Activate fire starting bars
-            setting_bar_bg.gameObject.SetActive(true);
-            setting_bar.gameObject.SetActive(true);
+            damp_building_text.SetActive(true);
+            if (damp_time < 8)
+            {
+                damp_building_text.SetActive(false);
+            }
+            return;
+        }
+        //Activate fire starting bars
+        setting_bar_bg.gameObject.SetActive(true);
+        setting_bar.gameObject.SetActive(true);
 
-            //Display setting text with time left to light reducing by 1/sec
-            fire_setting_counter.gameObject.GetComponent<TextMeshProUGUI>().SetText("Lighting fire in: " + (int)time_left);
-            time_left -= Time.deltaTime;
+        //Display setting text with time left to light reducing by 1/sec
+        fire_setting_counter.gameObject.GetComponent<TextMeshProUGUI>().SetText("Lighting fire in: " + (int)time_left);
+        time_left -= Time.deltaTime;
+    }
+
+    [TargetRpc]
+    private void TargetStopLighting(NetworkConnection target)
+    {
+        setting_bar.gameObject.SetActive(false);
+        setting_bar_bg.gameObject.SetActive(false);
+        time_left = 1.2f;
+    }
+
+    [Server]
+    public void StartingFire(Character c)
+    {
+        if(dampening)
+        {
+            ablaze = false;
+            if (damp_time <= 0)
+            {
+                dampening = false;
+            }
+        }
+        else
+        {
+            TargetStopLighting(MainNetworkManager._instance.PlayersConnected[c.ControllingPlayerID].connectionToClient);
+            damp_time = 10.0f;
+
             //Fill bar based on time lighting
             setting_bar.fillAmount = time_left / 1.2f;
 
@@ -186,33 +223,13 @@ public class BuildingStatus : MonoBehaviour
                 on_fire = true;
             }
         }
-        if (dampening == true)
-        {
-            damp_building_text.SetActive(true);
-            ablaze = false;
-
-            if (damp_time < 8)
-            {
-                damp_building_text.SetActive(false);
-            }
-            if(damp_time <= 0)
-            {
-                dampening = false;
-            }
-        }
     }
 
-    public void BurningPhase()
+    [Server]
+    private void BurningPhase()
     {
-        //Activate building health/burn amount bars
-        health_bar.gameObject.SetActive(true);
-        health_bar_bg.gameObject.SetActive(true);
-
         //Reduce building health by 1/sec & fill health bar based on health/max health
         building_health -= Time.deltaTime;
-        health_bar.fillAmount = building_health / building_max_health;
-        //Display health counter
-        health_counter.GetComponent<TextMeshProUGUI>().SetText("Health: " + (int)building_health + "%");
         //Add to burn timer
         burn_time += Time.deltaTime;
 
@@ -237,6 +254,7 @@ public class BuildingStatus : MonoBehaviour
         }
     }
 
+    [Server]
     public void Extinguish()
     {
         dampening = true;
@@ -249,15 +267,7 @@ public class BuildingStatus : MonoBehaviour
         time_left = 1.2f;
     }
 
-    //If player stops lighting fire, hide progress bar and reset timer
-    public void StopLighting()
-    {
-        setting_bar.gameObject.SetActive(false);
-        setting_bar_bg.gameObject.SetActive(false);
-        time_left = 1.2f;
-    }
-
-    public void BuildingRegen() //Not polished - needs designer input
+    private void BuildingRegen() //Not polished - needs designer input
     {
         //If building health is less than 100, heal 1/1.5 secs
         if(building_health < 100 && building_health <= 66)
@@ -301,9 +311,11 @@ public class BuildingStatus : MonoBehaviour
         }
     }
 
-    public void isAblaze()
+    public bool IsAblaze
     {
-        ablaze = true;
+        get
+        {
+            return ablaze;
+        }
     }
-
 }

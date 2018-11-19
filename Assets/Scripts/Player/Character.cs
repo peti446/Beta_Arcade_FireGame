@@ -181,11 +181,10 @@ public class Character : NetworkBehaviour
 	  switch (hit.collider.tag)
 	  {
 		case "Building":
-
-		  if (hit.collider.GetComponent<BuildingStatus>())
-			hit.collider.GetComponent<BuildingStatus>().Extinguish();
-		  else
-			Debug.Log("hose raycast hit against object with tag building but without building script");
+            if (hit.collider.GetComponent<BuildingStatus>())
+                CmdInteractBuilding(hit.collider.gameObject);
+            else
+                Debug.Log("hose raycast hit against object with tag building but without building script");
 		  break;
 
 		case "Burnling":
@@ -194,12 +193,25 @@ public class Character : NetworkBehaviour
 		case "Firetruck":
 		   CmdGetUpThefireTruck(hit.transform.gameObject);
 		   break;
-		default:
+         default:
 		  //even if u want to do nothing with the default, better to specify it
 		  break;
 	  }
 	}
   }
+
+    [Command]
+    private void CmdInteractBuilding(GameObject building)
+    {
+        BuildingStatus bs = building.GetComponent<BuildingStatus>();
+        if(bs.IsAblaze)
+        {
+            bs.Extinguish();
+        } else
+        {
+            bs.StartingFire(this);
+        }
+    }
 
 	[Command]
 	private void CmdGetUpThefireTruck(GameObject fireTruck)

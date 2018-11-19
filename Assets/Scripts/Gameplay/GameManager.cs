@@ -18,7 +18,11 @@ public class GameManager : NetworkBehaviour
 
 	SyncList<GameObject> d;
 
-	public static GameManager _instance = null;
+	public static GameManager _instance
+    {
+        get;
+        private set;
+    }
 	/// <summary>
 	/// Keeps the GameManager object alive throughout the whole game
 	/// and prevents it from being duplicated
