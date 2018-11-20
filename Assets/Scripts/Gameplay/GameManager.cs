@@ -16,8 +16,6 @@ public class GameManager : NetworkBehaviour
 	[SerializeField]
 	private GameObject m_fireTruckPrefab;
 
-	SyncList<GameObject> d;
-
 	public static GameManager _instance
     {
         get;

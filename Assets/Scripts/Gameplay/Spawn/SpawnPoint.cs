@@ -7,6 +7,8 @@ public class SpawnPoint : MonoBehaviour {
 
 	[SerializeField]
 	private ETeams m_spawnSide;
+	[SerializeField]
+	private bool m_isFireTruckSpawn;
 
 	private Character m_spawnPointUsedCharacter;
 	private IList<Character> m_characterInSpawn;

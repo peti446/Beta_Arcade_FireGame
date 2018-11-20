@@ -33,7 +33,7 @@ public class PlayerInput : MonoBehaviour
         else
         {
             building.gameObject.GetComponent<BuildingStatus>().StopCoroutine("StartingFire");
-            building.gameObject.GetComponent<BuildingStatus>().StopLighting();
+            //building.gameObject.GetComponent<BuildingStatus>().StopLighting();
         }
 
 
