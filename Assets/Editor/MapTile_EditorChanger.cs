@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(MapTile))]
+[CustomEditor(typeof(MapTile), true)]
 public class MapTile_EditorChanger : Editor
 {
 	private MapTile m_mapTileScript;
@@ -14,10 +14,13 @@ public class MapTile_EditorChanger : Editor
 		m_mapTileScript = target as MapTile;
 		m_gridX = serializedObject.FindProperty("GridX");
 		m_gridZ = serializedObject.FindProperty("GridZ");
+		m_mapTileScript.GetComponent<Renderer>().material.shader = Shader.Find("Standard");
+		m_mapTileScript.EditorEnabled();
 	}
 
 	public override void OnInspectorGUI()
 	{
+		serializedObject.Update();
 		//Get the user input
 		int x = EditorGUILayout.IntField("Grid X", m_gridX.intValue);
 		int z = EditorGUILayout.IntField("Grid Z", m_gridZ.intValue);
@@ -28,20 +31,33 @@ public class MapTile_EditorChanger : Editor
 		string label = "1x1";
 		switch(m_mapTileScript.TileType)
 		{
+			case ETileType.Size1x1:
+				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.white);
+				break;
 			case ETileType.Size1x2:
+				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.blue);
 				label = "1x2";
 				break;
 			case ETileType.Size2x1:
+				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.cyan);
 				label = "2x1";
 				break;
 			case ETileType.Size2x2:
+				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.green);
 				label = "2x2";
 				break;
 			case ETileType.Random:
+				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.gray);
 				label = "Random";
+				break;
+			case ETileType.Road:
+				label = "Road";
+				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.black);
 				break;
 		}
 		EditorGUILayout.LabelField("Tile Type", label);
+
+		DrawDefaultInspector();
 	}
 	private void OnSceneGUI()
 	{
