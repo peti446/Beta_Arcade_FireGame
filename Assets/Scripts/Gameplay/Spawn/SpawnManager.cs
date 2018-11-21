@@ -6,6 +6,7 @@ public class SpawnManager : MonoBehaviour {
 
 	private IList<SpawnPoint> m_FireStationSpawns;
 	private IList<SpawnPoint> m_BurnlingsSpawns;
+	private IList<SpawnPoint> m_TruckSpawns;
 
 	public static SpawnManager _instance
     {
@@ -25,6 +26,7 @@ public class SpawnManager : MonoBehaviour {
 		//Set the list
 		m_FireStationSpawns = new List<SpawnPoint>();
 		m_BurnlingsSpawns = new List<SpawnPoint>();
+		m_TruckSpawns = new List<SpawnPoint>();
 
 		//Add the spawns to the correct list
 		SpawnPoint[] allSpawns = GameObject.FindObjectsOfType<SpawnPoint>();
@@ -36,7 +38,14 @@ public class SpawnManager : MonoBehaviour {
 					m_BurnlingsSpawns.Add(sp);
 					break;
 				case ETeams.FireFighters:
-					m_FireStationSpawns.Add(sp);
+					if(sp.IsTruckSpawn)
+					{
+						m_TruckSpawns.Add(sp);
+					}
+					else
+					{
+						m_FireStationSpawns.Add(sp);
+					}
 					break;
 			}
 		}
@@ -57,7 +66,7 @@ public class SpawnManager : MonoBehaviour {
                 {
 					if(sp.IsSpawnFree)
 					{
-						sp.UseSpawn(c);
+						sp.UseSpawn(c.gameObject);
 						return sp;
 					}
                 }
@@ -67,7 +76,7 @@ public class SpawnManager : MonoBehaviour {
                 {
 					if (sp.IsSpawnFree)
 					{
-						sp.UseSpawn(c);
+						sp.UseSpawn(c.gameObject);
 						return sp;
 					}
 				}
@@ -76,4 +85,18 @@ public class SpawnManager : MonoBehaviour {
 
         return null;
     }
+
+	public SpawnPoint GetFireTruckSpawnPoint(GameObject fireTruck)
+	{
+		foreach(SpawnPoint sp in m_TruckSpawns)
+		{
+			if(sp.IsSpawnFree)
+			{
+				sp.UseSpawn(fireTruck);
+				return sp;
+			}
+		}
+
+		return null;
+	}
 }

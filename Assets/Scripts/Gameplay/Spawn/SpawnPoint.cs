@@ -8,10 +8,17 @@ public class SpawnPoint : MonoBehaviour {
 	[SerializeField]
 	private ETeams m_spawnSide;
 	[SerializeField]
-	private bool m_isFireTruckSpawn;
+	private bool m_isFireTruckSpawn = false;
+	public bool IsTruckSpawn
+	{
+		get
+		{
+			return m_isFireTruckSpawn;
+		}
+	}
 
-	private Character m_spawnPointUsedCharacter;
-	private IList<Character> m_characterInSpawn;
+	private GameObject m_spawnPointUsedObject;
+	private IList<GameObject> m_EntitiesInSpawn;
 	private float m_timeSpawnAssigned;
 
 
@@ -23,7 +30,7 @@ public class SpawnPoint : MonoBehaviour {
 		get
 		{
 			//Can only use this spawn if we have no character waiting to be sapwned here, or if no other character is in it
-			return m_spawnPointUsedCharacter == null && m_characterInSpawn.Count == 0;
+			return m_spawnPointUsedObject == null && m_EntitiesInSpawn.Count == 0;
 		}
 	}
 
@@ -41,15 +48,15 @@ public class SpawnPoint : MonoBehaviour {
 	private void Awake()
 	{
 		//Init values
-		m_spawnPointUsedCharacter = null;
-		m_characterInSpawn = new List<Character>();
+		m_spawnPointUsedObject = null;
+		m_EntitiesInSpawn = new List<GameObject>();
 	}
 
 
 	private void Update()
 	{
 		//Reset the spawn if a player takes more then 10 seconds to position itself on the spawn
-		if(m_characterInSpawn != null)
+		if(m_EntitiesInSpawn != null)
 		{
 			if(Time.time - m_timeSpawnAssigned > 10.0f)
 			{
@@ -60,37 +67,37 @@ public class SpawnPoint : MonoBehaviour {
 
 	private void OnCollisionEnter(Collision collision)
 	{
-		//Check if we hitted a character 
+		//Check if we hitted a character or vehicle 
 		Character charHitted = collision.transform.GetComponent<Character>();
-		if (charHitted != null)
+		Vehicle vehicle = collision.transform.GetComponent<Vehicle>();
+		if (charHitted != null || vehicle != null)
 		{
-			//We hitted a character so add it to the list
-			m_characterInSpawn.Add(charHitted);
+			//We hitted a character or vheicle so add it to the list
+			m_EntitiesInSpawn.Add(collision.transform.gameObject);
 		}
 	}
 
 	private void OnCollisionExit(Collision collision)
 	{
-		Character charHitted = collision.transform.GetComponent<Character>();
-		//Check if we hitted the character we were waiting for
-		if (charHitted == m_spawnPointUsedCharacter)
+		//Check if the character that soposued to be spawned here exited
+		if (collision.gameObject == m_spawnPointUsedObject)
 		{
 			//Reset the flag
-			m_spawnPointUsedCharacter = null;
+			m_spawnPointUsedObject = null;
 		}
 
 		//Remove the character from the character in spawn list
-		m_characterInSpawn.Remove(charHitted);
+		m_EntitiesInSpawn.Remove(collision.gameObject);
 	}
 
 	/// <summary>
 	/// Marks the spawner as used by a specific character
 	/// </summary>
 	/// <param name="c">The character that is using this spawn</param>
-	public void UseSpawn(Character c)
+	public void UseSpawn(GameObject c)
 	{
 		//Set reference and time
-		m_spawnPointUsedCharacter = c;
+		m_spawnPointUsedObject = c;
 		m_timeSpawnAssigned = Time.time;
 	}
 
@@ -101,6 +108,6 @@ public class SpawnPoint : MonoBehaviour {
 	public void ResetSpawn()
 	{
 		//Reset reference
-		m_spawnPointUsedCharacter = null;
+		m_spawnPointUsedObject = null;
 	}
 }

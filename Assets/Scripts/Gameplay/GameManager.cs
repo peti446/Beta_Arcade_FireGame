@@ -16,6 +16,8 @@ public class GameManager : NetworkBehaviour
 	[SerializeField]
 	private GameObject m_fireTruckPrefab;
 
+	private float m_timeLastTruckDied;
+
 	public static GameManager _instance
     {
         get;
@@ -34,6 +36,7 @@ public class GameManager : NetworkBehaviour
 
 		DontDestroyOnLoad(this);
 		//initialise - game start loading calling 
+		m_timeLastTruckDied = float.PositiveInfinity;
 	}
 
 	private void OnDestroy()
@@ -45,7 +48,10 @@ public class GameManager : NetworkBehaviour
 	[ServerCallback]
 	private void Update()
 	{
-		
+		if(Time.time - m_timeLastTruckDied > 6000)
+		{
+			SpawnFiretruk();
+		}
 	}
 
 	[ServerCallback]
@@ -88,6 +94,10 @@ public class GameManager : NetworkBehaviour
 	public void SpawnFiretruk()
 	{
 		GameObject ft = Instantiate(m_fireTruckPrefab);
+		SpawnPoint sp = SpawnManager._instance.GetFireTruckSpawnPoint(ft);
+		if (sp != null)
+			ft.transform.position = sp.transform.position;
+
 		NetworkServer.Spawn(ft);
 	}
 }
