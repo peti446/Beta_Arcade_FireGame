@@ -26,6 +26,9 @@ public class Vehicle : NetworkBehaviour {
     [SerializeField]
     private float m_vehicleReverseAcceleration = 0.1f;
 
+    [SerializeField]
+    private float m_vehicleUsageLife = 100f;
+
 
     [SyncVar]
     private int m_controllingPlayerID = -1;
@@ -98,10 +101,17 @@ public class Vehicle : NetworkBehaviour {
 
         //Vehicle Turn
         transform.Rotate(0, Mathf.Clamp(m_vehicleSpeed * 0.1f, -m_maxVehicleTurn, m_maxVehicleTurn) * m_vehicleTurn, 0);
-        m_vehicleRigibody.velocity = gameObject.transform.forward * m_vehicleSpeed;
-        m_vehicleRigibody.velocity += Physics.gravity;
+        Vector3 newMove = transform.forward * m_vehicleSpeed;
+        newMove.y = m_vehicleRigibody.velocity.y;
+        m_vehicleRigibody.velocity = newMove;
+
     }
 
+    /// <summary>
+    /// Move the vehicle depends on horizontal and vertical inputs
+    /// </summary>
+    /// <param name="horizontalInput">Side Move</param>
+    /// <param name="verticalInput">Foward Move</param>
     public void SetInputs(float horizontalInput, float verticalInput)
     {        
         if (verticalInput > 0)
@@ -134,6 +144,12 @@ public class Vehicle : NetworkBehaviour {
         //Vehicle Turn Input
         m_vehicleTurn = horizontalInput;
 
+
+    }
+
+    public void ShootWater()
+    {
+        m_vehicleUsageLife -= 1.0f * Time.deltaTime;
 
     }
    

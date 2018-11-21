@@ -24,6 +24,11 @@ public class VehicleInputs : MonoBehaviour {
 
         m_vehicle.SetInputs(m_horizontalInput, m_verticalInput);
 
+
+        if (Input.GetKey(KeyCode.F))
+        {
+            m_vehicle.ShootWater();
+        }
     }
 
 }
