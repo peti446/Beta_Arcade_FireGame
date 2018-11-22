@@ -20,51 +20,89 @@ public class MapTile_EditorChanger : Editor
 
 	public override void OnInspectorGUI()
 	{
+		//Update
 		serializedObject.Update();
+
+		//Get the tile info user input
+		ETileType tileType = ((ETileType)EditorGUILayout.EnumPopup("Tile Type", m_mapTileScript.TileType));
+		
 		//Get the user input
 		int x = EditorGUILayout.IntField("Grid X", m_gridX.intValue);
 		int z = EditorGUILayout.IntField("Grid Z", m_gridZ.intValue);
-		//Update the poosition in the grid
-		SetPosToGrid(x, z);
 
-		//Draw the tile type for debuging
-		string label = "1x1";
-		switch(m_mapTileScript.TileType)
+
+		//Check if we did change tile, if we did also check if we can change to the given size
+		if (m_mapTileScript.TileType != tileType && m_mapTileScript.CanChangeSizeTo(tileType))
+		{
+			//Update scripts
+			if (tileType == ETileType.Random && m_mapTileScript.TileType != ETileType.Random)
+			{
+				GameObject o = m_mapTileScript.gameObject;
+				Component[] Components = m_mapTileScript.gameObject.GetComponents<MapTile>();
+				foreach (Component c in Components)
+				{
+					DestroyImmediate(c);
+				}
+				o.transform.position = new Vector3(m_gridX.intValue * 10, 0, m_gridZ.intValue * 10);
+				o.AddComponent<RandomMapTile>();
+				EditorGUIUtility.ExitGUI();
+			}
+			else if (tileType != ETileType.Random && m_mapTileScript.TileType == ETileType.Random)
+			{
+				GameObject o = m_mapTileScript.gameObject;
+				Component[] Components = m_mapTileScript.gameObject.GetComponents<RandomMapTile>();
+				foreach (Component c in Components)
+				{
+					DestroyImmediate(c);
+				}
+				o.transform.position = new Vector3(m_gridX.intValue * 10, 0, m_gridZ.intValue * 10);
+				MapTile mt = o.AddComponent<MapTile>();
+				mt.TileType = tileType;
+				EditorGUIUtility.ExitGUI();
+			}
+
+			//Save the tile type to the object
+			m_mapTileScript.TileType = tileType;
+		}
+
+		//Change the tile color based on the current tile type
+		switch (m_mapTileScript.TileType)
 		{
 			case ETileType.Size1x1:
 				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.white);
 				break;
 			case ETileType.Size1x2:
 				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.blue);
-				label = "1x2";
 				break;
 			case ETileType.Size2x1:
 				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.cyan);
-				label = "2x1";
 				break;
 			case ETileType.Size2x2:
 				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.green);
-				label = "2x2";
 				break;
 			case ETileType.Random:
 				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.gray);
-				label = "Random";
 				break;
 			case ETileType.Road:
-				label = "Road";
 				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.black);
 				break;
+			case ETileType.Firestation:
+				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.red);
+				break;
 		}
-		EditorGUILayout.LabelField("Tile Type", label);
 
+		//Update the poosition in the grid
+		SetPosToGrid(x, z);
+
+		//Draw the default inspector for subclasses
 		DrawDefaultInspector();
 	}
 	private void OnSceneGUI()
 	{
-		//Get the current pos in the map
-		Vector3 pos = m_mapTileScript.transform.position;
-		int gridX = Mathf.CeilToInt(pos.x * 0.1f);
-		int gridZ = Mathf.CeilToInt(pos.z * 0.1f);
+		//Get the current grid from the position
+		int gridX = 0;
+		int gridZ = 0;
+		m_mapTileScript.GetGridFromPosition(out gridX, out gridZ);
 
 		//Update the map to be in the correct location
 		SetPosToGrid(gridX, gridZ);
@@ -72,19 +110,20 @@ public class MapTile_EditorChanger : Editor
 
 	private void SetPosToGrid(int x, int z)
 	{
+		//New position in the world
+		Vector3 newPos = m_mapTileScript.ConvertGridToPosition(x, z);
+		Vector3 size = m_mapTileScript.GetTileSize();
+
 		//Only make a ray cast and update the values if we moved
 		if (x != m_gridX.intValue || z != m_gridZ.intValue) {
 			//Check if we can actually move to the given grid position
-			RaycastHit[] hits = Physics.RaycastAll(new Vector3(x * 10, 10, z * 10), Vector3.down, 15.0f, 1 << 30);
-			foreach (RaycastHit hit in hits)
+			if(!m_mapTileScript.CanMoveToGridPos(newPos))
 			{
-				MapTile mt = hit.transform.gameObject.GetComponent<MapTile>();
-				if (mt != null && mt != m_mapTileScript)
-				{
-					//Somone is already in the given position so just roll back to the last given values
-					m_mapTileScript.transform.position = new Vector3(m_gridX.intValue * 10, 0, m_gridZ.intValue * 10);
-					return;
-				}
+				//If the space is used set the pos back
+				m_mapTileScript.transform.position = m_mapTileScript.ConvertGridToPosition(m_gridX.intValue, m_gridZ.intValue);
+				m_mapTileScript.transform.rotation = Quaternion.identity;
+				m_mapTileScript.transform.localScale = size;
+				return;
 			}
 
 			//Update the value inside the script
@@ -97,22 +136,8 @@ public class MapTile_EditorChanger : Editor
 		}
 
 		//Set to the correct position and rotation will always be the same
-		m_mapTileScript.transform.position = new Vector3(x * 10, 0, z * 10);
+		m_mapTileScript.transform.position = newPos;
 		m_mapTileScript.transform.rotation = Quaternion.identity;
-		//Set the correct size for the tile based on the tyle type
-		Vector3 size = Vector3.one;
-		switch(m_mapTileScript.TileType)
-		{
-			case ETileType.Size1x2:
-				size = new Vector3(1, 1, 2);
-				break;
-			case ETileType.Size2x1:
-				size = new Vector3(2, 1, 1);
-				break;
-			case ETileType.Size2x2:
-				size = new Vector3(2, 1, 2);
-				break;
-		}
 		m_mapTileScript.transform.localScale = size;
 	}
 }
