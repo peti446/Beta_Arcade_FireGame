@@ -40,7 +40,7 @@ public class MapEditor_Window : EditorWindow {
 
 		if(m_MapManager == null)
 		{
-			m_MapManager = Component.FindObjectOfType<ProceduralMapManager>();
+			m_MapManager = GameObject.FindObjectOfType<ProceduralMapManager>();
 			if(m_MapManager == null)
 			{
 				GUI.Label(new Rect(0, 0, 300, 20), "No ProceduralMapManager Detected in scene!", EditorStyles.boldLabel);
@@ -109,14 +109,15 @@ public class MapEditor_Window : EditorWindow {
 		//Buttons
 		if (GUI.Button(new Rect(15, 120, 150, 20), "Generate Preview City"))
 		{
-
+			m_MapManager.DeleteCityPreview();
+			m_MapManager.GenerateCityPreview();
 		}
 
-		GUI.enabled = false;
+		GUI.enabled = GameObject.FindGameObjectWithTag("PreviewBuilding") != null;
 		//Buttons
 		if (GUI.Button(new Rect(170, 120, 150, 20), "Remove Preview"))
 		{
-
+			m_MapManager.DeleteCityPreview();
 		}
 
 		GUI.enabled = true;

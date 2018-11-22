@@ -63,6 +63,54 @@ public class MapTile : MonoBehaviour {
 	/// </summary>
 	protected virtual void Setup(){}
 
+	public virtual void SpawnPreviewBuilding()
+	{
+		Debug.Log("Starting");
+		ProceduralMapManager pmm = ProceduralMapManager._instance;
+		if (pmm == null)
+		{
+			pmm = GameObject.FindObjectOfType<ProceduralMapManager>();
+			if(pmm == null)
+				return;
+		}
+		Debug.Log("Spawning!");
+		GameObject o = null;
+		switch (m_tileType)
+		{
+			case ETileType.Size1x1:
+				if (pmm.m_spawneable1x1Buildings != null && pmm.m_spawneable1x1Buildings.Length > 0)
+					o = Instantiate(pmm.m_spawneable1x1Buildings[Random.Range(0, pmm.m_spawneable1x1Buildings.Length)]);
+				break;
+			case ETileType.Size1x2:
+			case ETileType.Size2x1:
+				if (pmm.m_spawneable1x2Buildings != null && pmm.m_spawneable1x2Buildings.Length > 0)
+					o = Instantiate(pmm.m_spawneable1x2Buildings[Random.Range(0, pmm.m_spawneable1x2Buildings.Length)]);
+				break;
+			case ETileType.Size2x2:
+				if(pmm.m_spawneadble2x2Buildings != null && pmm.m_spawneadble2x2Buildings.Length > 0)
+					o = Instantiate(pmm.m_spawneadble2x2Buildings[Random.Range(0, pmm.m_spawneadble2x2Buildings.Length)]);
+				break;
+			case ETileType.Firestation:
+				if (pmm.m_spawneableFireStations != null && pmm.m_spawneableFireStations.Length > 0)
+					o = Instantiate(pmm.m_spawneableFireStations[Random.Range(0, pmm.m_spawneableFireStations.Length)]);
+				break;
+			case ETileType.Road:
+				if (pmm.m_spawneableRoadsBuildings != null && pmm.m_spawneableRoadsBuildings.Length > 0)
+					o = Instantiate(pmm.m_spawneableRoadsBuildings[Random.Range(0, pmm.m_spawneableRoadsBuildings.Length)]);
+				break;
+		}
+		if(o != null)
+		{
+			o.tag = "PreviewBuilding";
+			o.transform.position = transform.position;
+		}
+	}
+
+	protected virtual void SpawnBuilding()
+	{
+
+	}
+
 	/// <summary>
 	/// Gets the scale of the current tile
 	/// </summary>
