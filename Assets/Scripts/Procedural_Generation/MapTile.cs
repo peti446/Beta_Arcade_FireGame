@@ -11,10 +11,12 @@ public class MapTile : MonoBehaviour {
 
 	[HideInInspector]
 	[SerializeField]
-	protected int GridX;
+	protected int m_gridX;
 	[HideInInspector]
 	[SerializeField]
-	protected int GridZ;
+	protected int m_gridZ;
+	[HideInInspector]
+	[SerializeField]
 	protected ETileType m_tileType = ETileType.Size1x1;
 	public ETileType TileType
 	{
@@ -27,19 +29,29 @@ public class MapTile : MonoBehaviour {
 			m_tileType = value;
 		}
 	}
+	public int GridX
+	{
+		get { return m_gridX; }
+	}
+	public int GridZ
+	{
+		get { return m_gridZ; }
+	}
 
 	//To controll the setup
 	private bool m_isSettetUp = false;
 	/// <summary>
 	/// Called on the editor script when its enabled
 	/// </summary>
-	public virtual void EditorEnabled()
+	public void EditorEnabled()
 	{
 		//We only want to set up the class once
 		if(!m_isSettetUp)
 		{
 			//Set the correct grid based on current position
-			GetGridFromPosition(out GridX, out GridZ);
+			GetGridFromPosition(out m_gridX, out m_gridZ);
+			//Set the correct scale
+			gameObject.transform.localScale = GetTileSize();
 			//Setup and make sure we dont do it again
 			Setup();
 			m_isSettetUp = true;
@@ -120,7 +132,7 @@ public class MapTile : MonoBehaviour {
 	public bool CanChangeSizeTo(ETileType newTile)
 	{
 		//Raycast over a box with the grid converted to position using the new tile type at the center and the tile size as the tile size as the box definition
-		RaycastHit[] hits = Physics.BoxCastAll(ConvertGridToPosition(GridX, GridZ, newTile) + (Vector3.up * 20.0f), GetTileSize(newTile)*4.5f, Vector3.down, Quaternion.identity, 20.0f, 1 << 30);
+		RaycastHit[] hits = Physics.BoxCastAll(ConvertGridToPosition(m_gridX, m_gridZ, newTile) + (Vector3.up * 20.0f), GetTileSize(newTile)*4.5f, Vector3.down, Quaternion.identity, 20.0f, 1 << 30);
 		//Go trought all object hitted and check if there is another map tile there 
 		foreach (RaycastHit hit in hits)
 		{
@@ -170,5 +182,30 @@ public class MapTile : MonoBehaviour {
 	{
 		Vector3 size = GetTileSize(tile);
 		return new Vector3((x * 10) + (((size.x - 1) % 2) * 5), 0, (z * 10) + (((size.z - 1) % 2) * 5));
+	}
+
+	/// <summary>
+	/// Checks if a tile can be placed on the given position
+	/// </summary>
+	/// <param name="x">Grid X position</param>
+	/// <param name="z">Griz Z pos</param>
+	/// <param name="tile">The type of the tile</param>
+	/// <returns><c>True</c> if there is space to move a tile there, <c>false</c> otherwise</returns>
+	public static bool CanMoveToGridPos(int x, int z, ETileType tile)
+	{
+		//Raycast over a box with the pos at the center and the tile size as the tile size as the box definition
+		RaycastHit[] hits = Physics.BoxCastAll(ConvertGridToPosition(x, z, tile) + (Vector3.up * 20.0f), GetTileSize(tile) * 4.5f, Vector3.down, Quaternion.identity, 20.0f, 1 << 30);
+		//Go trought all object hitted and check if there is another map tile there 
+		foreach (RaycastHit hit in hits)
+		{
+			MapTile mt = hit.transform.gameObject.GetComponent<MapTile>();
+			if (mt != null)
+			{
+				//There is another tile so we cannot move there
+				return false;
+			}
+		}
+		//No tile found so we can move
+		return true;
 	}
 }

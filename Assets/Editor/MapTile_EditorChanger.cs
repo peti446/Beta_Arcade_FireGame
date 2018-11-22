@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 [CustomEditor(typeof(MapTile), true)]
 public class MapTile_EditorChanger : Editor
@@ -7,15 +8,45 @@ public class MapTile_EditorChanger : Editor
 	private MapTile m_mapTileScript;
 	private SerializedProperty m_gridX;
 	private SerializedProperty m_gridZ;
+	private IDictionary<ETileType, Material> m_tilesMaterial = new Dictionary<ETileType, Material>();
 
 	public void OnEnable()
 	{
 		//Get initial values
 		m_mapTileScript = target as MapTile;
-		m_gridX = serializedObject.FindProperty("GridX");
-		m_gridZ = serializedObject.FindProperty("GridZ");
-		m_mapTileScript.GetComponent<Renderer>().material.shader = Shader.Find("Standard");
+		m_gridX = serializedObject.FindProperty("m_gridX");
+		m_gridZ = serializedObject.FindProperty("m_gridZ");
 		m_mapTileScript.EditorEnabled();
+		//Create the materials
+		
+		Material m = new Material(Shader.Find("Standard"));
+		m.SetColor("_Color", Color.white);
+		m_tilesMaterial.Add(ETileType.Size1x1, m);
+
+		m = new Material(Shader.Find("Standard"));
+		m.SetColor(Shader.PropertyToID("_Color"), Color.blue);
+		m_tilesMaterial.Add(ETileType.Size1x2, m);
+
+		m = new Material(Shader.Find("Standard"));
+		m.SetColor(Shader.PropertyToID("_Color"), Color.cyan);
+		m_tilesMaterial.Add(ETileType.Size2x1, m);
+
+		m = new Material(Shader.Find("Standard"));
+		m.SetColor(Shader.PropertyToID("_Color"), Color.green);
+		m_tilesMaterial.Add(ETileType.Size2x2, m);
+
+		m = new Material(Shader.Find("Standard"));
+		m.SetColor(Shader.PropertyToID("_Color"), Color.gray);
+		m_tilesMaterial.Add(ETileType.Random, m);
+
+		m = new Material(Shader.Find("Standard"));
+		m.SetColor(Shader.PropertyToID("_Color"), Color.black);
+		m_tilesMaterial.Add(ETileType.Road, m);
+
+		m = new Material(Shader.Find("Standard"));
+		m.SetColor(Shader.PropertyToID("_Color"), Color.red);
+		m_tilesMaterial.Add(ETileType.Firestation, m);
+
 	}
 
 	public override void OnInspectorGUI()
@@ -65,31 +96,8 @@ public class MapTile_EditorChanger : Editor
 			m_mapTileScript.TileType = tileType;
 		}
 
-		//Change the tile color based on the current tile type
-		switch (m_mapTileScript.TileType)
-		{
-			case ETileType.Size1x1:
-				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.white);
-				break;
-			case ETileType.Size1x2:
-				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.blue);
-				break;
-			case ETileType.Size2x1:
-				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.cyan);
-				break;
-			case ETileType.Size2x2:
-				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.green);
-				break;
-			case ETileType.Random:
-				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.gray);
-				break;
-			case ETileType.Road:
-				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.black);
-				break;
-			case ETileType.Firestation:
-				m_mapTileScript.GetComponent<Renderer>().material.SetColor(Shader.PropertyToID("_Color"), Color.red);
-				break;
-		}
+		if(m_tilesMaterial[m_mapTileScript.TileType] != null)
+			m_mapTileScript.GetComponent<Renderer>().sharedMaterial = m_tilesMaterial[m_mapTileScript.TileType];
 
 		//Update the poosition in the grid
 		SetPosToGrid(x, z);
