@@ -224,28 +224,6 @@ public class Character : NetworkBehaviour
     }
   }
 
-  [Command]
-  private void CmdInteractBuilding(GameObject building)
-  {
-    BuildingStatus bs = building.GetComponent<BuildingStatus>();
-    if (bs.IsAblaze)
-    {
-      bs.Extinguish();
-    }
-    else
-    {
-        BuildingStatus bs = building.GetComponent<BuildingStatus>();
-        if (bs.IsAblaze)
-        {
-            bs.Extinguish();
-        }
-        else
-        {
-            bs.ServerStartingFire(this);
-        }
-    }
-  }
-
 
   [Command]
   private void CmdInteractServer()
