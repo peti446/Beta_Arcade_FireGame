@@ -5,10 +5,22 @@ using UnityEditor;
 
 [CustomEditor(typeof(Interact))]
 public class CI_Interact : Editor {
-  public Object source;
 
-  private void OnSceneGUI()
+  public Character source;
+
+
+  private void OnEnable()
   {
-    EditorGUILayout.ObjectField(source, typeof(Object), true);
+    
+  }
+
+  public override void OnInspectorGUI()
+  {
+    source = (Character)EditorGUILayout.ObjectField(source, typeof(Character), true);
+    //TODO Kony: add security check that the source object is on scene 
+    if (GUILayout.Button("aaa") && source != null)
+    {
+      ((Interact)(target)).ClientInteract(source);
+    }
   }
 }
