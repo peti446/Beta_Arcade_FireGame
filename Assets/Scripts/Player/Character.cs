@@ -194,7 +194,7 @@ public class Character : NetworkBehaviour
         }
         else
         {
-            bs.StartingFire(this);
+            bs.ServerStartingFire(this);
         }
     }
 

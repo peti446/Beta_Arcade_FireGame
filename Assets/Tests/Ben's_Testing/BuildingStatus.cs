@@ -75,6 +75,17 @@ public class BuildingStatus : NetworkBehaviour
     [SerializeField]
     private float BurnTime, AblazeBurnTime;
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        Interact i = GetComponent<Interact>();
+        if(i != null)
+        {
+            i.ClientInteraction.AddListener(EmulateStartingFire);
+            i.ServerInteraction.AddListener(ServerStartingFire);
+        }
+    }
+
     private void Start()
     {
         //Initialised Values
@@ -87,6 +98,19 @@ public class BuildingStatus : NetworkBehaviour
     [ServerCallback]
     void Update()
     {
+        //Sever and client side update
+        if(MainNetworkManager.Is_Server)
+        {
+
+        }
+        else
+        {
+
+        }
+
+        //Common code to update the visual aspect
+        //Really just mesh updates
+
         AblazeBurnTime = BurnTime;
         //if building is on fire, trigger burning
         if (OnFire == true)
@@ -155,10 +179,13 @@ public class BuildingStatus : NetworkBehaviour
         }
     }
 
+    //TODO: Use Starting fire to set variables and then update
+
     [Client]
     ///<summary>Shows client lighting fire</summary>
-    public void EmulateStartingFire()
+    public void EmulateStartingFire(Character c)
     {
+        //MainNetworkManager._instance.PlayersConnected[c.ControllingPlayerID].Player_Team;
         if (Dampening)
         {
             C_DampBuildingText.SetActive(true);
@@ -188,7 +215,7 @@ public class BuildingStatus : NetworkBehaviour
 
     [Server]
     ///<<summary>Target building begins to be set on fire</summary>
-    public void StartingFire(Character c)
+    public void ServerStartingFire(Character c)
     {
         if(Dampening)
         {
