@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 114326418405774712}
   - component: {fileID: 114765125034451398}
   - component: {fileID: 54146619110752548}
+  - component: {fileID: 114882201695487826}
   - component: {fileID: 114119107362373340}
   m_Layer: 0
   m_Name: Vehicle
@@ -530,6 +531,7 @@ MonoBehaviour:
   m_vehicleBrake: 1
   m_vehicleReverseMaxSpeed: 5
   m_vehicleReverseAcceleration: 0.1
+  m_vehicleUsageLife: 100
 --- !u!114 &114617708033602624
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -571,6 +573,17 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7cb725fb88fdd524896530863ee3d9b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114882201695487826
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1541810099911604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 227ef516255d00644935b456c851b3b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!136 &136218976849955314
