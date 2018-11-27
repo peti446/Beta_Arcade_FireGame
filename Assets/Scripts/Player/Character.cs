@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public enum EPlayerStatus
 {
-    IDLE, Moving, Casting, Other
+    Idle, Moving, Casting, Stunned, Alive, Dead
 }
 
 public class Character : NetworkBehaviour
@@ -178,25 +178,9 @@ public class Character : NetworkBehaviour
         Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 10);
         if (hit.collider != null)
         {
-            switch (hit.collider.tag)
-            {
-                case "Building":
-                    if (hit.collider.GetComponent<BuildingStatus>())
-                        CmdInteractBuilding(hit.collider.gameObject);
-                    else
-                        Debug.Log("hose raycast hit against object with tag building but without building script");
-                    break;
-
-                case "Burnling":
-
-                    break;
-                case "Firetruck":
-                    CmdGetUpThefireTruck(hit.transform.gameObject);
-                    break;
-                default:
-                    //even if u want to do nothing with the default, better to specify it
-                    break;
-            }
+          //getcomponent -> interact.cs 
+          //if true -> cmdinteractserver
+          //clientinteract of interact.cs
         }
     }
 
@@ -214,7 +198,14 @@ public class Character : NetworkBehaviour
         }
     }
 
-    [Command]
+
+  [Command]
+  private void CmdInteractServer()
+  {
+
+  }
+
+  [Command]
     private void CmdGetUpThefireTruck(GameObject fireTruck)
     {
         Debug.Log("Trying to acces vechicle");
