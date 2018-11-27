@@ -149,8 +149,13 @@ public class Vehicle : NetworkBehaviour {
 
     public void ShootWater()
     {
+        
         m_vehicleUsageLife -= 1.0f * Time.deltaTime;
 
+        if (m_vehicleUsageLife<=0)
+        {
+            //TODO kick out player
+        }
     }
    
 }
