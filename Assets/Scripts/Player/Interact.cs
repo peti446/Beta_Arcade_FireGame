@@ -20,14 +20,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Interact : MonoBehaviour {
+public class Interact : MonoBehaviour
+{
   public UnityEvent<Character> ClientInteraction;
   public UnityEvent<Character> ServerInteraction;
 
 
-  public void ClientInteract (Character character)
+  public void ClientInteract(Character character)
   {
-    if(MainNetworkManager._instance.LocalPlayer.ID == character.ControllingPlayerID && ClientInteraction != null)
+    if (MainNetworkManager._instance.LocalPlayer.ID == character.ControllingPlayerID && ClientInteraction != null)
     {
       ClientInteraction.Invoke(character);
     }
