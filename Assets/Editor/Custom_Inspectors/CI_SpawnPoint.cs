@@ -7,13 +7,11 @@ public class CI_SpawnPoint : Editor
 {
 	private SerializedProperty m_isFireTruckSpawnSP;
 	private SerializedProperty m_TeamSpawn;
-	private SpawnPoint m_spawnPointScript;
 
 	private void OnEnable()
 	{
 		m_isFireTruckSpawnSP = serializedObject.FindProperty("m_isFireTruckSpawn");
 		m_TeamSpawn = serializedObject.FindProperty("m_spawnSide");
-		m_spawnPointScript = target as SpawnPoint;
 	}
 
 	public override void OnInspectorGUI()

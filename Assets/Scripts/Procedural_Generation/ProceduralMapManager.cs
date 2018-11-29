@@ -115,7 +115,6 @@ public class ProceduralMapManager : MonoBehaviour {
 	public void GenerateCityPreview()
 	{
 		RefreshTileList();
-		Debug.Log("Generating: " + m_mapTiles.Count);
 		foreach (MapTile mt in m_mapTiles)
 		{
 			mt.SpawnPreviewBuilding();

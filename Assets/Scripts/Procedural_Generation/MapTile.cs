@@ -65,7 +65,6 @@ public class MapTile : MonoBehaviour {
 
 	public virtual void SpawnPreviewBuilding()
 	{
-		Debug.Log("Starting");
 		ProceduralMapManager pmm = ProceduralMapManager._instance;
 		if (pmm == null)
 		{
@@ -73,30 +72,155 @@ public class MapTile : MonoBehaviour {
 			if(pmm == null)
 				return;
 		}
-		Debug.Log("Spawning!");
+		Vector2[] dirs = { new Vector2(1, 0), new Vector2(0, 1), new Vector2(-1, 0), new Vector2(0, -1) };
+		Dictionary<Vector2, int> directionsSizes = new Dictionary<Vector2, int>()
+				{
+					{new Vector2(1,0), 0},
+					{new Vector2(0,1), 0},
+					{new Vector2(-1,0), 0},
+					{new Vector2(0,-1), 0}
+				};
+
 		GameObject o = null;
 		switch (m_tileType)
 		{
 			case ETileType.Size1x1:
 				if (pmm.m_spawneable1x1Buildings != null && pmm.m_spawneable1x1Buildings.Length > 0)
 					o = Instantiate(pmm.m_spawneable1x1Buildings[Random.Range(0, pmm.m_spawneable1x1Buildings.Length)]);
+
+				
+				{
+					Vector2 orientation = new Vector2(1, 0);
+					foreach (Vector2 dir in dirs)
+					{
+						//Get the new position
+						int newX = m_gridX + (int)dir.x;
+						int newZ = m_gridZ + (int)dir.y;
+						ETileType e;
+						if (GetTileAtPos(newX, newZ, out e))
+						{
+							if(e == ETileType.Road)
+							{
+								orientation = dir;
+								break;
+							}
+						}
+					}
+
+					o.transform.rotation = Quaternion.FromToRotation(-o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
+				}
+
 				break;
 			case ETileType.Size1x2:
 			case ETileType.Size2x1:
 				if (pmm.m_spawneable1x2Buildings != null && pmm.m_spawneable1x2Buildings.Length > 0)
 					o = Instantiate(pmm.m_spawneable1x2Buildings[Random.Range(0, pmm.m_spawneable1x2Buildings.Length)]);
+				{
+					Vector2 orientation = new Vector2(1, 0);
+					foreach (Vector2 dir in dirs)
+					{
+						//Get the new position
+						int newX = m_gridX + (int)dir.x;
+						int newZ = m_gridZ + (int)dir.y;
+						ETileType e;
+						if (GetTileAtPos(newX, newZ, out e))
+						{
+							if (e == ETileType.Road)
+							{
+								orientation = dir;
+								break;
+							}
+						}
+					}
+
+					o.transform.rotation = Quaternion.FromToRotation(-o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
+				}
 				break;
 			case ETileType.Size2x2:
-				if(pmm.m_spawneadble2x2Buildings != null && pmm.m_spawneadble2x2Buildings.Length > 0)
+				if (pmm.m_spawneadble2x2Buildings != null && pmm.m_spawneadble2x2Buildings.Length > 0)
 					o = Instantiate(pmm.m_spawneadble2x2Buildings[Random.Range(0, pmm.m_spawneadble2x2Buildings.Length)]);
+				{
+					Vector2 orientation = new Vector2(1, 0);
+					foreach (Vector2 dir in dirs)
+					{
+						//Get the new position
+						int newX = m_gridX + (int)dir.x;
+						int newZ = m_gridZ + (int)dir.y;
+						ETileType e;
+						if (GetTileAtPos(newX, newZ, out e))
+						{
+							if (e == ETileType.Road)
+							{
+								orientation = dir;
+								break;
+							}
+						}
+					}
+
+					o.transform.rotation = Quaternion.FromToRotation(-o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
+				}
 				break;
 			case ETileType.Firestation:
 				if (pmm.m_spawneableFireStations != null && pmm.m_spawneableFireStations.Length > 0)
 					o = Instantiate(pmm.m_spawneableFireStations[Random.Range(0, pmm.m_spawneableFireStations.Length)]);
+				{
+					Vector2 orientation = new Vector2(1, 0);
+					foreach (Vector2 dir in dirs)
+					{
+						//Get the new position
+						int newX = m_gridX + (int)dir.x;
+						int newZ = m_gridZ + (int)dir.y;
+						ETileType e;
+						if (GetTileAtPos(newX, newZ, out e))
+						{
+							if (e == ETileType.Road)
+							{
+								orientation = dir;
+								break;
+							}
+						}
+					}
+
+					o.transform.rotation = Quaternion.FromToRotation(-o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
+				}
 				break;
 			case ETileType.Road:
 				if (pmm.m_spawneableRoadsBuildings != null && pmm.m_spawneableRoadsBuildings.Length > 0)
 					o = Instantiate(pmm.m_spawneableRoadsBuildings[Random.Range(0, pmm.m_spawneableRoadsBuildings.Length)]);
+
+
+				foreach(Vector2 dir in dirs)
+				{
+					//Get the new position
+					int newX = m_gridX + (int)dir.x;
+					int newZ = m_gridZ + (int)dir.y;
+					//Loop in the direction unti we run out of tiles or we do not find another road tyle
+					ETileType e;
+					while(GetTileAtPos(newX, newZ, out e))
+					{
+						//If we did not find a road exit
+						if(e != ETileType.Road)
+						{
+							break;
+						}
+						//Update the size
+						directionsSizes[dir] += 1;
+
+						//Update the grid pos
+						newX += (int)dir.x;
+						newZ += (int)dir.y;
+					}
+				}
+				{
+					Vector2 orientation = new Vector2(1, 0);
+					foreach (KeyValuePair<Vector2, int> dirDistances in directionsSizes)
+					{
+						if (directionsSizes[orientation] < dirDistances.Value)
+							orientation = dirDistances.Key;
+					}
+
+					o.transform.rotation = Quaternion.FromToRotation(o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
+				}
 				break;
 		}
 		if(o != null)
@@ -108,7 +232,6 @@ public class MapTile : MonoBehaviour {
 
 	protected virtual void SpawnBuilding()
 	{
-
 	}
 
 	/// <summary>
@@ -255,5 +378,31 @@ public class MapTile : MonoBehaviour {
 		}
 		//No tile found so we can move
 		return true;
+	}
+
+	/// <summary>
+	/// Get the tile at a certan position
+	/// </summary>
+	/// <param name="x">X position</param>
+	/// <param name="z">Z position</param>
+	/// <param name="type">the tile type we found in the position, if there is any</param>
+	/// <returns>true if there is a tile type, false if there is none</returns>
+	public static bool GetTileAtPos(int x, int z, out ETileType type)
+	{
+		type = ETileType.Size1x1;
+		//Raycast to the position
+		RaycastHit[] hits = Physics.BoxCastAll(ConvertGridToPosition(x, z, ETileType.Size1x1) + (Vector3.up * 20.0f), GetTileSize(ETileType.Size1x1) * 4.5f, Vector3.down, Quaternion.identity, 20.0f, 1 << 30);
+		//Go trought all object hitted and check if there is another map tile there 
+		foreach (RaycastHit hit in hits)
+		{
+			MapTile mt = hit.transform.gameObject.GetComponent<MapTile>();
+			if (mt != null)
+			{
+				//There is another tile return true and the tile type
+				type = mt.TileType;
+				return true;
+			}
+		}
+		return false;
 	}
 }
