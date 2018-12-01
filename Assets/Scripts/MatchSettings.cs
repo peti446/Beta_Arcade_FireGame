@@ -150,7 +150,7 @@ public class MatchSettings : MonoBehaviour {
             //Get the ids
             for (int i = 0; i < CrazyTeamSize; i++)
             {
-                returnValue[i] = m_crazyPeopleTeam[i].ID;
+                returnValue[i] = m_crazyPeopleTeam[i].Player_ID;
             }
             return returnValue;
         }
@@ -159,7 +159,7 @@ public class MatchSettings : MonoBehaviour {
         //Get the ids
         for (int i = 0; i < FirefightersTeamSize; i++)
         {
-            firefightersIDS[i] = m_fireFigthersTeam[i].ID;
+            firefightersIDS[i] = m_fireFigthersTeam[i].Player_ID;
         }
         return firefightersIDS;
     }
@@ -184,7 +184,7 @@ public class MatchSettings : MonoBehaviour {
                     //Find the NetworkPlayer object with the given ids and add them to the team list
                     foreach (NetworkPlayer p in MainNetworkManager._instance.PlayersConnected)
                     {
-                        if (playersIDsList.Contains(p.ID))
+                        if (playersIDsList.Contains(p.Player_ID))
                         {
                             m_crazyPeopleTeam.Add(p);
                         }
@@ -201,7 +201,7 @@ public class MatchSettings : MonoBehaviour {
                     //Find the NetworkPlayer object with the given ids and add them to the team list
                     foreach (NetworkPlayer p in MainNetworkManager._instance.PlayersConnected)
                     {
-                        if (playersIDsList.Contains(p.ID))
+                        if (playersIDsList.Contains(p.Player_ID))
                         {
                             m_fireFigthersTeam.Add(p);
                         }

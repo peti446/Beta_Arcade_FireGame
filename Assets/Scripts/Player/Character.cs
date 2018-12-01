@@ -72,10 +72,16 @@ public class Character : NetworkBehaviour
   float m_PlayerRotationX = 5.0f; //How sensitive is x with mouse
   [SerializeField]
   float m_PlayerRotationY = 1.2f; //How sensitive is x with mouse
+    [SerializeField]
+    private GameObject m_cameraPivot;
+    [SerializeField]
+    private GameObject m_graphics;
+    [SerializeField]
+    private GameObject m_collision;
 
-  //private Vector3 lastMouse = new Vector3(255, 255, 255); //kind of in the middle of the screen, rather than at the top (play)
+    //private Vector3 lastMouse = new Vector3(255, 255, 255); //kind of in the middle of the screen, rather than at the top (play)
 
-  public EPlayerStatus State
+    public EPlayerStatus State
   {
     get;
     private set;
@@ -120,8 +126,9 @@ public class Character : NetworkBehaviour
   public override void OnStartAuthority()
   {
     base.OnStartAuthority();
+        Debug.Log("Player got authority ID:" + m_controllingPlayerID);
     GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
-    camera.transform.SetParent(transform, false);
+    camera.transform.SetParent(m_cameraPivot.transform, false);
     camera.transform.localPosition = new Vector3(0, 0, 0);
     gameObject.GetComponent<PlayerInputs>().enabled = true;
     CmdSpawn();
@@ -200,64 +207,74 @@ public class Character : NetworkBehaviour
   {
     if (open)
     {
-      hose.GetComponent<ParticleSystem>().enableEmission = true;
-      hose.GetComponent<ParticleSystem>().Play();
+      //hose.GetComponent<ParticleSystem>().enableEmission = true;
+      //hose.GetComponent<ParticleSystem>().Play();
     }
     else if (!open)
     {
-      hose.GetComponent<ParticleSystem>().enableEmission = false;
+      //hose.GetComponent<ParticleSystem>().enableEmission = false;
     }
   }
 
+    //-----------------------------------------------------------
   [Client]
   public void InteractRay()
   {
-    Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 10, Color.red);
-    Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 10);
-    if (hit.collider != null)
-    {
-      if (hit.collider.GetComponent<Interact>())
-      {
-        CmdInteractServer();
-        hit.collider.GetComponent<Interact>().ClientInteract(this);
-      }
-    }
+	Debug.DrawRay(transform.position, transform.forward * 10, Color.red, 5.0f);
+	Physics.Raycast(transform.position, transform.forward, out hit, 10);
+	if (hit.collider != null)
+	{
+	  if (hit.collider.GetComponent<Interact>() != null)
+	  {
+		CmdInteractServer();
+		hit.collider.GetComponent<Interact>().ClientInteract(this);
+	  }
+	}
   }
-
 
   [Command]
   private void CmdInteractServer()
   {
-    Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 10, Color.red);
-    Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 10);
-    if (hit.collider != null)
+	Debug.DrawRay(transform.position, transform.forward * 10, Color.red);
+	Physics.Raycast(transform.position, transform.forward, out hit, 10);
+	if (hit.collider != null)
+	{
+	  if (hit.collider.GetComponent<Interact>() != null)
+	  {
+		hit.collider.GetComponent<Interact>().ServerInteract(this);
+	  }
+	}
+  }
+    //----------------------------------------------------------
+
+    [TargetRpc]
+    public void TargetUpdatePos(NetworkConnection target, Vector3 pos, Quaternion rotation)
     {
-      if (hit.collider.GetComponent<Interact>())
-      {
-        hit.collider.GetComponent<Interact>().ServerInteract(this);
-      }
-    }
-  }
+        //Just in case make sure we do have authority
+        if (!hasAuthority)
+            return;
 
-  [Command]
-  private void CmdGetUpThefireTruck(GameObject fireTruck)
-  {
-    Debug.Log("Trying to acces vechicle");
-    if (fireTruck.GetComponent<NetworkIdentity>().clientAuthorityOwner == null)
+        transform.position = pos;
+        transform.rotation = rotation;
+    }
+
+    [ClientRpc]
+    public void RpcSetCaracterActive(bool active)
     {
-      fireTruck.GetComponent<NetworkIdentity>().AssignClientAuthority(connectionToClient);
-      RpcGetUpToVehicle(fireTruck);
+       // gameObject.SetActive(active);
+        m_graphics.SetActive(active);
+        m_collision.SetActive(active);
+
+        //Update the camera
+        if (active && hasAuthority)
+        {
+            gameObject.GetComponent<PlayerInputs>().enabled = active;
+            GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
+            camera.transform.SetParent(m_cameraPivot.transform, false);
+            camera.transform.position = m_cameraPivot.transform.position;
+            camera.transform.rotation = m_cameraPivot.transform.rotation;
+        }
     }
-
-  }
-
-  [ClientRpc]
-  private void RpcGetUpToVehicle(GameObject firetruck)
-  {
-    GetComponent<PlayerInputs>().enabled = false;
-    firetruck.GetComponent<Vehicle>().GainControl(this);
-  }
-
 
   /// <summary>
   /// Move the player depends on horizontal and vertical inputs

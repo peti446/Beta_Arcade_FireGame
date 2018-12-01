@@ -59,7 +59,7 @@ public class NetworkPlayer : NetworkBehaviour {
     /// <summary>
     /// The ID imposed by the server for this client
     /// </summary>
-    public int ID
+    public int Player_ID
     {
         get { return m_ID; }
     }

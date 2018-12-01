@@ -23,11 +23,13 @@ public class GameManager : NetworkBehaviour
         get;
         private set;
     }
-	/// <summary>
-	/// Keeps the GameManager object alive throughout the whole game
-	/// and prevents it from being duplicated
-	/// </summary>
-	private void Awake()
+    private float time;
+
+    /// <summary>
+    /// Keeps the GameManager object alive throughout the whole game
+    /// and prevents it from being duplicated
+    /// </summary>
+    private void Awake()
 	{
 		if (_instance == null)
 			_instance = this;
@@ -37,7 +39,10 @@ public class GameManager : NetworkBehaviour
 		DontDestroyOnLoad(this);
 		//initialise - game start loading calling 
 		m_timeLastTruckDied = float.PositiveInfinity;
-	}
+
+        time = Time.time;
+
+    }
 
 	private void OnDestroy()
 	{
@@ -54,11 +59,18 @@ public class GameManager : NetworkBehaviour
 		}
 	}
 
+    private bool SOYSUCIO = false;
+
 	[ServerCallback]
 	private void FixedUpdate()
 	{
-		
-	}
+        if (Time.time - time > 2 && !SOYSUCIO)
+        {
+            SpawnFiretruk();
+            SOYSUCIO = true;
+        }
+
+    }
 
 	[ServerCallback]
 	private void LateUpdate()

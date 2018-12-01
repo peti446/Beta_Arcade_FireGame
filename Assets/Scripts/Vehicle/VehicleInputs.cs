@@ -29,6 +29,11 @@ public class VehicleInputs : MonoBehaviour {
         {
             m_vehicle.ShootWater();
         }
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            m_vehicle.ExitVehicle();
+        }
+        
     }
 
 }

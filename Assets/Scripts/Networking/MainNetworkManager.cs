@@ -78,6 +78,11 @@ public class MainNetworkManager : NetworkManager
     {
         get
         {
+            //In debug mode start with only one player
+            if(Debug.isDebugBuild)
+            {
+                return NumberOfPlayers >= 1;
+            }
             //Check if there are are at least one payer in each team
             if (MatchSettings._instance != null)
             {

@@ -27,17 +27,19 @@ public class PlayerInputs : MonoBehaviour
         m_mouseInputY = Input.GetAxis("Mouse Y");
 
 
-        if (Input.GetKeyDown(KeyCode.E))
+
+
+        if (Input.GetKeyDown(KeyCode.F))
         {
             m_character.ToggleHose(true);
         }
 
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             m_character.InteractRay();
         }
 
-        if (Input.GetKeyUp(KeyCode.E))
+        if (Input.GetKeyUp(KeyCode.F))
         {
             m_character.ToggleHose(false);
         }

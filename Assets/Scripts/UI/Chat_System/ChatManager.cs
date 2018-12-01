@@ -79,7 +79,7 @@ public class ChatManager : NetworkBehaviour {
             return;
 
         //Creates a new Chat message and sends it to the server
-        ChatMessagePacket s = new ChatMessagePacket(MainNetworkManager._instance.LocalPlayer.ID, msg.Replace("\n", "").Replace("\r", ""));
+        ChatMessagePacket s = new ChatMessagePacket(MainNetworkManager._instance.LocalPlayer.Player_ID, msg.Replace("\n", "").Replace("\r", ""));
         MainNetworkManager._instance.client.Send(CustomNetMessages.ChatNetMesage, s);
     }
 

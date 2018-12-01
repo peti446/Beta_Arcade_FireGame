@@ -9,14 +9,12 @@ public enum EVehicleStatus
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(NetworkIdentity))]
+[RequireComponent(typeof(Interact))]
 public class Vehicle : NetworkBehaviour {
-
-    private Rigidbody m_vehicleRigibody;
     [SerializeField]
     private float m_vehicleMaxSpeed = 20.0f;
     [SerializeField]
     private float m_vehicleAcceleration = 5.0f;
-
     [SerializeField]
     private float m_maxVehicleTurn = 2.0f;
     [SerializeField]
@@ -25,19 +23,19 @@ public class Vehicle : NetworkBehaviour {
     private float m_vehicleReverseMaxSpeed = 5.0f;
     [SerializeField]
     private float m_vehicleReverseAcceleration = 0.1f;
-
     [SerializeField]
     private float m_vehicleUsageLife = 100f;
+    [SerializeField]
+    private GameObject m_cameraPivot;
 
-
-    [SyncVar]
+    [SyncVar(hook = "OnControllingPlayerIDUpdated")]
     private int m_controllingPlayerID = -1;
 
-    //Don't change this values on editor, just showed on editor for debug information
+    private Rigidbody m_vehicleRigibody;
     private float m_vehicleSpeed = 0.0f;
     private float m_vehicleTurn = 0.0f;
 
-       
+
     public EVehicleStatus State
     {
         get;
@@ -47,32 +45,26 @@ public class Vehicle : NetworkBehaviour {
     private void Awake()
     {
         m_vehicleRigibody = GetComponent<Rigidbody>();
+        
     }
 
-    public void GainControl(Character c)
+    private void Start()
     {
-        if (c.hasAuthority)
+        Interact interactComponent = GetComponent<Interact>();
+        if (interactComponent != null)
         {
-            gameObject.GetComponent<VehicleInputs>().enabled = true;
-            GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
-            camera.transform.SetParent(gameObject.transform, false);
+            interactComponent.ServerInteraction.AddListener(OnCharacterWantsToEnterVheicle);
         }
-    }
-
-    public void LoseControl(Character c)
-    {
-        if (c.hasAuthority)
-            gameObject.GetComponent<VehicleInputs>().enabled = false;
     }
 
     private void FixedUpdate()
     {
         UpdateVehicleVelocity();
     }
-    
+
     private void UpdateVehicleVelocity()
     {
-        switch(State)
+        switch (State)
         {
             case EVehicleStatus.AcceleratingFoward:
                 m_vehicleSpeed += m_vehicleAcceleration;
@@ -113,34 +105,34 @@ public class Vehicle : NetworkBehaviour {
     /// <param name="horizontalInput">Side Move</param>
     /// <param name="verticalInput">Foward Move</param>
     public void SetInputs(float horizontalInput, float verticalInput)
-    {        
+    {
         if (verticalInput > 0)
         {
-            State = EVehicleStatus.AcceleratingFoward;    
+            State = EVehicleStatus.AcceleratingFoward;
         }
         else if (verticalInput < 0)
         {
             if (m_vehicleSpeed > 0)
-            {              
+            {
                 State = EVehicleStatus.AcceleratingBack;
             }
             else
-            {                
+            {
                 State = EVehicleStatus.Brake;
-            }            
+            }
         }
         else
         {
             if (m_vehicleSpeed > 0)
             {
-                State = EVehicleStatus.DesceleratingFoward;                
+                State = EVehicleStatus.DesceleratingFoward;
             }
             else
             {
-                State = EVehicleStatus.DesceleratingBack;                
+                State = EVehicleStatus.DesceleratingBack;
             }
         }
-        
+
         //Vehicle Turn Input
         m_vehicleTurn = horizontalInput;
 
@@ -149,12 +141,91 @@ public class Vehicle : NetworkBehaviour {
 
     public void ShootWater()
     {
-        
+
         m_vehicleUsageLife -= 1.0f * Time.deltaTime;
 
-        if (m_vehicleUsageLife<=0)
+        if (m_vehicleUsageLife <= 0)
         {
             //TODO kick out player
+
+
+        }
+    }
+
+    [Client]
+    public void ExitVehicle()
+    {
+        GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
+        camera.transform.SetParent(null);
+        CmdPlayerExit();
+    }
+
+    [Command]
+    public void CmdPlayerExit()
+    {
+        NetworkPlayer p = MainNetworkManager._instance.PlayersConnected[m_controllingPlayerID];
+        //Revoke autority
+        GetComponent<NetworkIdentity>().RemoveClientAuthority(p.connectionToClient);
+        //Make the caracter visislbe
+        Character[] allCharacters = FindObjectsOfType<Character>();
+        foreach(Character c in allCharacters)
+        {
+             if(c.ControllingPlayerID == m_controllingPlayerID)
+             {
+                //Update the position and set active
+                c.TargetUpdatePos(p.connectionToClient, transform.position, transform.rotation);
+                c.RpcSetCaracterActive(true);
+             }
+        }
+
+        //Update id
+        m_controllingPlayerID = -1;
+        NetworkServer.Destroy(gameObject);
+    }
+
+    private void OnControllingPlayerIDUpdated(int newPlayerID)
+    {
+        //Set the new player controller
+        m_controllingPlayerID = newPlayerID;
+
+        //Check if it is the local player, if so enable the input, otherwise disable it
+        NetworkPlayer p = MainNetworkManager._instance.LocalPlayer;
+        Debug.Log(newPlayerID);
+        Debug.Log(p);
+        Debug.Log(p.Player_ID);
+        if(p != null && p.Player_ID == newPlayerID)
+        {
+            GetComponent<VehicleInputs>().enabled = true;
+            GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
+            camera.transform.SetParent(m_cameraPivot.transform, false);
+            camera.transform.position = m_cameraPivot.transform.position;
+            camera.transform.rotation = m_cameraPivot.transform.rotation;
+        }
+        else
+        {
+            GetComponent<VehicleInputs>().enabled = false;
+        }
+    }
+
+    [Server]
+    private void OnCharacterWantsToEnterVheicle(Character c)
+    {
+        //Get the players team
+        if(ETeams.FireFighters == MainNetworkManager._instance.PlayersConnected[c.ControllingPlayerID].Player_Team
+            && GetComponent<NetworkIdentity>().clientAuthorityOwner == null)
+        {
+            //We are fire fighters so we can got up to the vheicle, give the player authorty
+            GetComponent<NetworkIdentity>().AssignClientAuthority(
+                MainNetworkManager._instance.PlayersConnected[c.ControllingPlayerID].connectionToClient
+            );
+
+            //Disable the character on all clients
+            c.RpcSetCaracterActive(false);
+
+            //Set the current controling player
+            m_controllingPlayerID = c.ControllingPlayerID;
+
+            Debug.Log("On character want to enter:" + m_controllingPlayerID);
         }
     }
    

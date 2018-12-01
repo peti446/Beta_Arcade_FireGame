@@ -37,7 +37,7 @@ public class ChatMessage : MonoBehaviour {
         //Find the network player instance
         foreach(NetworkPlayer p in MainNetworkManager._instance.PlayersConnected)
         {
-            if (p.ID == playerID)
+            if (p.Player_ID == playerID)
             {
                 m_sender = p;
                 break;
