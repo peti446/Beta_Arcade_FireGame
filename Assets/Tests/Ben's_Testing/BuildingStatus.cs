@@ -53,6 +53,12 @@ public class BuildingStatus : NetworkBehaviour
     [SerializeField]
     private TextMeshProUGUI C_FireSettingCounter;
 
+    //Client Variables
+    private bool C_Ablaze = false;
+    private bool C_OnFire = false;
+    private bool C_Dampening = false;
+    private float C_BuildingMaxHealth, C_FireStartTime, C_TimeLeft, C_BurnTime, C_AblazeBurnTime, C_DampTime, C_BuildingHealth;
+
     //Time it takes to light building on fire
     [SyncVar]
     private float FireStartTime = 1.2f;
@@ -101,82 +107,161 @@ public class BuildingStatus : NetworkBehaviour
         //Sever and client side update
         if(MainNetworkManager.Is_Server)
         {
+            AblazeBurnTime = BurnTime;
+            if (OnFire == true)
+            {
+                ServerBurningPhase();
+            }
 
+            if (AblazeBurnTime > 10.0f)
+            {
+                Ablaze = true;
+            }
+
+            if (Ablaze == true)
+            {
+                //if the building is on fire
+                if (OnFire)
+                {
+                    //reduce health by time & render red
+                    BuildingHealth -= (Time.deltaTime / 2f);
+                    //activate health bars
+                }
+                //if building isn't on fire
+                else
+                {
+                    //reduce health by 1/sec
+                    BuildingHealth -= (1.0f * (Time.deltaTime / 2f));
+                }
+            }
+
+            if (Ablaze == false && OnFire == false && Dampening == false)
+            {
+                ServerBuildingRegen();
+            }
+
+            if (Dampening == true)
+            {
+                //Building health stops changing
+                BuildingHealth += 0 * Time.deltaTime;
+                //Wet time decreases by 1/sec
+                DampTime -= Time.deltaTime;
+                //If wet time is less than 8 stop showing text
+
+                //If wet time depletes, stop wet state and hide bars
+                if (DampTime <= 0.0f)
+                {
+                    Dampening = false;
+                }
+            }
         }
         else
         {
+            if (Ablaze == true)
+            {
+                //if the building is on fire
+                if (OnFire)
+                {
+                    //reduce health by time & render red
+                    C_Rend.material.color = C_AltColour;
+                    //activate health bars
+                    if (C_HealthBar.isActiveAndEnabled == false)
+                    {
+                        C_HealthBar.gameObject.SetActive(true);
+                        C_HealthBarBg.gameObject.SetActive(true);
+                    }
+                }
+            }
 
+            if (Dampening == true)
+            {
+                //Activate wet bars and reeduce fill parallel to wet timer
+                C_WetBarBg.gameObject.SetActive(true);
+                C_WetBar.gameObject.SetActive(true);
+                C_WetBar.fillAmount = DampTime / 10.0f;
+                //If wet time is less than 8 stop showing text
+                if (DampTime < 8.0f)
+                {
+                    C_DampBuildingText.SetActive(false);
+                }
+                //If wet time depletes, stop wet state and hide bars
+                if (DampTime <= 0.0f)
+                {
+                    C_WetBar.gameObject.SetActive(false);
+                    C_WetBarBg.gameObject.SetActive(false);
+                }
+            }
         }
 
         //Common code to update the visual aspect
         //Really just mesh updates
 
-        AblazeBurnTime = BurnTime;
+            //AblazeBurnTime = BurnTime;
         //if building is on fire, trigger burning
-        if (OnFire == true)
-        {
-            BurningPhase();
-        }  
+            //if (OnFire == true)
+            //{
+            //    BurningPhase();
+            //}  
 
         // Fire Burn Timer
-        if (AblazeBurnTime > 10.0f)
-        {
-            Ablaze = true;
-        }
+            //if (AblazeBurnTime > 10.0f)
+            //{
+                //Ablaze = true;
+            //}
         // Ablaze effects
-        if (Ablaze == true)
-        {
-            //if the building is on fire
-            if (OnFire)
-            {
-                //reduce health by time & render red
-                BuildingHealth -= (Time.deltaTime / 2f);
-                C_Rend.material.color = C_AltColour;
-                //activate health bars
-                if (C_HealthBar.isActiveAndEnabled == false)
-                {
-                    C_HealthBar.gameObject.SetActive(true);
-                    C_HealthBarBg.gameObject.SetActive(true);
-                }
-            }
-            //if building isn't on fire
-            else
-            {
-                //reduce health by 1/sec
-                BuildingHealth -= (1.0f * (Time.deltaTime / 2f));
-            }
-        }
+            //if (Ablaze == true)
+            //{
+            //    //if the building is on fire
+            //    if (OnFire)
+            //    {
+            //        //reduce health by time & render red
+            //        BuildingHealth -= (Time.deltaTime / 2f);
+            //        C_Rend.material.color = C_AltColour;
+            //        //activate health bars
+            //        if (C_HealthBar.isActiveAndEnabled == false)
+            //        {
+            //            C_HealthBar.gameObject.SetActive(true);
+            //            C_HealthBarBg.gameObject.SetActive(true);
+            //        }
+            //    }
+            //    //if building isn't on fire
+            //    else
+            //    {
+            //        //reduce health by 1/sec
+            //        BuildingHealth -= (1.0f * (Time.deltaTime / 2f));
+            //    }
+            //}
 
         //building regenerate if not on fire/ablaze/damp
-        if(Ablaze == false && OnFire == false && Dampening == false)
-        {
-            BuildingRegen();
-        }
+            //if(Ablaze == false && OnFire == false && Dampening == false)
+            //{
+            //    BuildingRegen();
+            //}
 
         //If damp
-        if(Dampening == true)
-        {
-            //Building health stops changing
-            BuildingHealth += 0 * Time.deltaTime;
-            //Wet time decreases by 1/sec
-            DampTime -= Time.deltaTime;
-            //Activate wet bars and reeduce fill parallel to wet timer
-            C_WetBarBg.gameObject.SetActive(true);
-            C_WetBar.gameObject.SetActive(true);
-            C_WetBar.fillAmount = DampTime / 10.0f;
-            //If wet time is less than 8 stop showing text
-            if (DampTime < 8.0f)
-            {
-                C_DampBuildingText.SetActive(false);
-            }
-            //If wet time depletes, stop wet state and hide bars
-            if(DampTime <= 0.0f)
-            {
-                Dampening = false;
-                C_WetBar.gameObject.SetActive(false);
-                C_WetBarBg.gameObject.SetActive(false);
-            }
-        }
+        //if(Dampening == true)
+        //{
+        //    //Building health stops changing
+        //    BuildingHealth += 0 * Time.deltaTime;
+        //    //Wet time decreases by 1/sec
+        //    DampTime -= Time.deltaTime;
+        //    //Activate wet bars and reeduce fill parallel to wet timer
+        //    C_WetBarBg.gameObject.SetActive(true);
+        //    C_WetBar.gameObject.SetActive(true);
+        //    C_WetBar.fillAmount = DampTime / 10.0f;
+        //    //If wet time is less than 8 stop showing text
+        //    if (DampTime < 8.0f)
+        //    {
+        //        C_DampBuildingText.SetActive(false);
+        //    }
+        //    //If wet time depletes, stop wet state and hide bars
+        //    if(DampTime <= 0.0f)
+        //    {
+        //        Dampening = false;
+        //        C_WetBar.gameObject.SetActive(false);
+        //        C_WetBarBg.gameObject.SetActive(false);
+        //    }
+        //}
     }
 
     //TODO: Use Starting fire to set variables and then update
@@ -250,7 +335,7 @@ public class BuildingStatus : NetworkBehaviour
 
     [Server]
     ///<<summary>Modifies burning building based on building health</summary>
-    private void BurningPhase()
+    private void ServerBurningPhase()
     {
         //Reduce building health by 1/sec & fill health bar based on health/max health
         BuildingHealth -= Time.deltaTime;
@@ -279,7 +364,7 @@ public class BuildingStatus : NetworkBehaviour
 
     [Server]
     ///<summary>Extinguishes fire on building</summary>
-    public void Extinguish()
+    public void ServerExtinguish()
     {
         Dampening = true;
         //set on fire to false
@@ -293,7 +378,7 @@ public class BuildingStatus : NetworkBehaviour
 
     [Server]
     ///<summary>Building gains health based on current health and on it's status</summary>
-    private void BuildingRegen() //Not polished - needs designer input
+    private void ServerBuildingRegen() //Not polished - needs designer input
     {
         //If building health is less than 100, heal 1/1.5 secs
         if(BuildingHealth < 100 && BuildingHealth <= 66)
