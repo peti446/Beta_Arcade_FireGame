@@ -240,15 +240,6 @@ public class Character : NetworkBehaviour
     }
   }
 
-  public void StopInteraction()
-  {
-    if (m_last_interacted_obj != null && m_last_interacted_obj.GetComponent<Interact>() != null)
-    {
-      m_last_interacted_obj.GetComponent<Interact>().ServerStopInteract.Invoke(this);
-      m_last_interacted_obj.GetComponent<Interact>().ClientStopInteract.Invoke(this);
-    }
-  }
-
   [Command]
   private void CmdInteractServer()
   {
@@ -263,6 +254,26 @@ public class Character : NetworkBehaviour
       }
     }
   }
+
+  [Client]
+  public void StopInteraction()
+  {
+    if (m_last_interacted_obj != null && m_last_interacted_obj.GetComponent<Interact>() != null)
+    {
+      CmdServerStopInteract();
+      m_last_interacted_obj.GetComponent<Interact>().ClientStopInteract.Invoke(this);
+    }
+  }
+
+  [Command]
+  private void CmdServerStopInteract()
+  {
+    if (m_last_interacted_obj != null && m_last_interacted_obj.GetComponent<Interact>() != null)
+    {
+      m_last_interacted_obj.GetComponent<Interact>().ServerStopInteract.Invoke(this);
+    }
+  }
+
   //----------------------------------------------------------
 
   [TargetRpc]
