@@ -48,8 +48,9 @@ public class Vehicle : NetworkBehaviour {
         
     }
 
-    private void Start()
+    public override void OnStartServer()
     {
+        base.OnStartServer();
         Interact interactComponent = GetComponent<Interact>();
         if (interactComponent != null)
         {
