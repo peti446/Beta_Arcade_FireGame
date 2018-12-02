@@ -25,9 +25,12 @@ public class CharacterInteractEvent : UnityEvent<Character> { }
 
 public class Interact : MonoBehaviour
 {
-   public CharacterInteractEvent ClientInteraction;
+  public CharacterInteractEvent ClientInteraction;
   public CharacterInteractEvent ServerInteraction;
 
+  public CharacterInteractEvent ClientStopInteract;
+  public CharacterInteractEvent ServerStopInteract;
+ 
 
   public void ClientInteract(Character character)
   {

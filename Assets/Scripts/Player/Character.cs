@@ -72,16 +72,20 @@ public class Character : NetworkBehaviour
   float m_PlayerRotationX = 5.0f; //How sensitive is x with mouse
   [SerializeField]
   float m_PlayerRotationY = 1.2f; //How sensitive is x with mouse
-    [SerializeField]
-    private GameObject m_cameraPivot;
-    [SerializeField]
-    private GameObject m_graphics;
-    [SerializeField]
-    private GameObject m_collision;
+  [SerializeField]
+  private GameObject m_cameraPivot;
+  [SerializeField]
+  private GameObject m_graphics;
+  [SerializeField]
+  private GameObject m_collision;
 
-    //private Vector3 lastMouse = new Vector3(255, 255, 255); //kind of in the middle of the screen, rather than at the top (play)
+  [SerializeField]
+  private GameObject m_last_interacted_obj;
 
-    public EPlayerStatus State
+
+  //private Vector3 lastMouse = new Vector3(255, 255, 255); //kind of in the middle of the screen, rather than at the top (play)
+
+  public EPlayerStatus State
   {
     get;
     private set;
@@ -126,7 +130,7 @@ public class Character : NetworkBehaviour
   public override void OnStartAuthority()
   {
     base.OnStartAuthority();
-        Debug.Log("Player got authority ID:" + m_controllingPlayerID);
+    Debug.Log("Player got authority ID:" + m_controllingPlayerID);
     GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
     camera.transform.SetParent(m_cameraPivot.transform, false);
     camera.transform.localPosition = new Vector3(0, 0, 0);
@@ -216,65 +220,79 @@ public class Character : NetworkBehaviour
     }
   }
 
-    //-----------------------------------------------------------
+  ///TODO: JOE KONY COMENTA LAS COSDAS POR DIOS (FIRMADO KONY)
+  /// <summary>
+  /// 11
+  /// </summary>
   [Client]
   public void InteractRay()
   {
-	Debug.DrawRay(transform.position, transform.forward * 10, Color.red, 5.0f);
-	Physics.Raycast(transform.position, transform.forward, out hit, 10);
-	if (hit.collider != null)
-	{
-	  if (hit.collider.GetComponent<Interact>() != null)
-	  {
-		CmdInteractServer();
-		hit.collider.GetComponent<Interact>().ClientInteract(this);
-	  }
-	}
+    Debug.DrawRay(transform.position, transform.forward * 10, Color.red, 5.0f);
+    Physics.Raycast(transform.position, transform.forward, out hit, 10);
+    if (hit.collider != null)
+    {
+      if (hit.collider.GetComponent<Interact>() != null)
+      {
+        CmdInteractServer();
+        hit.collider.GetComponent<Interact>().ClientInteract(this);
+        m_last_interacted_obj = hit.collider.gameObject;
+      }
+    }
+  }
+
+  public void StopInteraction()
+  {
+    if (m_last_interacted_obj != null && m_last_interacted_obj.GetComponent<Interact>() != null)
+    {
+      m_last_interacted_obj.GetComponent<Interact>().ServerStopInteract.Invoke(this);
+      m_last_interacted_obj.GetComponent<Interact>().ClientStopInteract.Invoke(this);
+    }
   }
 
   [Command]
   private void CmdInteractServer()
   {
-	Debug.DrawRay(transform.position, transform.forward * 10, Color.red);
-	Physics.Raycast(transform.position, transform.forward, out hit, 10);
-	if (hit.collider != null)
-	{
-	  if (hit.collider.GetComponent<Interact>() != null)
-	  {
-		hit.collider.GetComponent<Interact>().ServerInteract(this);
-	  }
-	}
+    Debug.DrawRay(transform.position, transform.forward * 10, Color.red);
+    Physics.Raycast(transform.position, transform.forward, out hit, 10);
+    if (hit.collider != null)
+    {
+      if (hit.collider.GetComponent<Interact>() != null)
+      {
+        hit.collider.GetComponent<Interact>().ServerInteract(this);
+        m_last_interacted_obj = hit.collider.gameObject;
+      }
+    }
   }
-    //----------------------------------------------------------
+  //----------------------------------------------------------
 
-    [TargetRpc]
-    public void TargetUpdatePos(NetworkConnection target, Vector3 pos, Quaternion rotation)
+  [TargetRpc]
+  public void TargetUpdatePos(NetworkConnection target, Vector3 pos, Quaternion rotation)
+  {
+    //Just in case make sure we do have authority
+    if (!hasAuthority)
+      return;
+
+    transform.position = pos;
+    transform.rotation = rotation;
+  }
+
+  [ClientRpc]
+  public void RpcSetCaracterActive(bool active)
+  {
+    // gameObject.SetActive(active);
+    m_graphics.SetActive(active);
+    m_collision.SetActive(active);
+
+    //Update the camera
+    if (active && hasAuthority)
     {
-        //Just in case make sure we do have authority
-        if (!hasAuthority)
-            return;
-
-        transform.position = pos;
-        transform.rotation = rotation;
+      gameObject.GetComponent<PlayerInputs>().enabled = active;
+      GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
+      camera.transform.SetParent(m_cameraPivot.transform, false);
+      camera.transform.position = m_cameraPivot.transform.position;
+      camera.transform.rotation = m_cameraPivot.transform.rotation;
     }
-
-    [ClientRpc]
-    public void RpcSetCaracterActive(bool active)
-    {
-       // gameObject.SetActive(active);
-        m_graphics.SetActive(active);
-        m_collision.SetActive(active);
-
-        //Update the camera
-        if (active && hasAuthority)
-        {
-            gameObject.GetComponent<PlayerInputs>().enabled = active;
-            GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
-            camera.transform.SetParent(m_cameraPivot.transform, false);
-            camera.transform.position = m_cameraPivot.transform.position;
-            camera.transform.rotation = m_cameraPivot.transform.rotation;
-        }
-    }
+  }
 
   /// <summary>
   /// Move the player depends on horizontal and vertical inputs
