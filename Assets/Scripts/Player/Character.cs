@@ -107,6 +107,7 @@ public class Character : NetworkBehaviour
   }
   private bool m_isSetup = false;
   private bool m_spawned = false;
+	private bool m_autoritySet = false;
 
   private void Awake()
   {
@@ -130,12 +131,7 @@ public class Character : NetworkBehaviour
   public override void OnStartAuthority()
   {
     base.OnStartAuthority();
-    Debug.Log("Player got authority ID:" + m_controllingPlayerID);
-    GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
-    camera.transform.SetParent(m_cameraPivot.transform, false);
-    camera.transform.localPosition = new Vector3(0, 0, 0);
-    gameObject.GetComponent<PlayerInputs>().enabled = true;
-    CmdSpawn();
+		SetUpLocalPlayer();
   }
 
   //Init the player if it has valid values
@@ -148,19 +144,27 @@ public class Character : NetworkBehaviour
     //Set camera and enable input
     if (hasAuthority)
     {
-      GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
-      camera.transform.SetParent(transform, false);
-      camera.transform.localPosition = new Vector3(0, 0, 0);
-      gameObject.GetComponent<PlayerInputs>().enabled = true;
+			SetUpLocalPlayer();
 
-      //Ask server to spawn us
-      CmdSpawn();
-    }
+	}
 
     //Set the character script to be settet up
     m_isSetup = true;
   }
 
+	[Client]
+	private void SetUpLocalPlayer()
+	{
+		if (m_autoritySet)
+			return;
+		Debug.Log("Player got authority ID:" + m_controllingPlayerID);
+		GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
+		camera.transform.SetParent(m_cameraPivot.transform, false);
+		camera.transform.localPosition = new Vector3(0, 0, 0);
+		gameObject.GetComponent<PlayerInputs>().enabled = true;
+		CmdSpawn();
+		m_autoritySet = true;
+	}
   /// <summary>
   /// Asks the server to give a valid spawn location for this character
   /// </summary>
