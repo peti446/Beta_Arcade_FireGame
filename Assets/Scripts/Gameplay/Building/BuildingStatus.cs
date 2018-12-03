@@ -4,8 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Networking;
+using System.Linq;
 
 [RequireComponent(typeof(Interact))]
+[RequireComponent(typeof(Renderer))]
 public class BuildingStatus : NetworkBehaviour
 {
     #region UI Elements - All Clients
@@ -35,36 +37,50 @@ public class BuildingStatus : NetworkBehaviour
     private GameObject C_FireStartedText;
     [SerializeField]
     private GameObject C_DampBuildingText;
+	private float C_TimeLeft;
     #endregion
 
     #region All Cients Variables
     //Material for the building
-    private Material m_material;
-    #endregion
+    private Material mC_material;
+	private bool mC_isStartingFire = false;
+	private float mC_startingFireTime = 0;
+	#endregion
 
+	#region Varables Client/Server
+	[SerializeField]
+	private float m_timeToStartFire = 5;
+	#endregion
 
-    #region Server SyncVars
-    [SyncVar]
-    private float FireStartTime = 1.2f;
-    [SyncVar]
-    private float TimeLeft;
-    [SyncVar(hook = "OnBuidlingHPUpdate")]
-    private float BuildingHealth;
-    [SyncVar]
-    private bool Ablaze = false;
+	#region Server SyncVars
+	[SyncVar]
+	private float DampTime = 0;
     [SyncVar]
     private bool OnFire = false;
     [SyncVar]
     private bool Dampening = false;
-    [SyncVar]
-    private float DampTime = 10.0f;
-    #endregion
+	[SyncVar(hook = "OnBuidlingHPUpdate")]
+	private float BuildingHealth;
+	[SyncVar(hook = "OnBuildingCurrenMaxHPUpdate")]
+	private float CurrentBuildingMaxHealth = 100;
+	#endregion
 
-    #region Server only variables
-    [SerializeField]
-    private float BuildingMaxHealth;
-
-    private float BurnTime, AblazeBurnTime;
+	#region Server only variables
+	[SerializeField]
+	private float mS_fireDPS = 1.0f;
+	[SerializeField]
+	private float mS_ablazeDPS = 1.0f;
+	[SerializeField]
+	private float mS_timeBurningForAblaze = 10.0f;
+	[SerializeField]
+	private int mS_buildingMaxHP = 100;
+	[SerializeField]
+	private float mS_spreadTime = 5.0f;
+	[SerializeField]
+	private float mS_buildingHPS = 1.0f;
+	private bool mS_isAblaze = false;
+	private float mS_currentBurningTime, mS_currentAblazeTime = 0;
+	private IDictionary<int, float> mS_characterStartingTime = new Dictionary<int, float>();
     #endregion
 
     public override void OnStartLocalPlayer()
@@ -82,16 +98,26 @@ public class BuildingStatus : NetworkBehaviour
     private void Start()
     {
         //Initialised Values
-        BuildingHealth = 100;
-        BuildingMaxHealth = 100;
-        TimeLeft = FireStartTime;
-        m_material = GetComponent<Renderer>().material;
+        BuildingHealth = mS_buildingMaxHP;
+		CurrentBuildingMaxHealth = mS_buildingMaxHP;
+        mC_material = GetComponent<Renderer>().material;
     }
 
 
     void Update()
     {
-        //Sever and client side update
+        if(MainNetworkManager.Is_Server)
+		{
+			ServerUpdate();
+		}
+		else
+		{
+			ClientUpdate();
+		}
+		
+		
+		
+		/*//Sever and client side update
         if(MainNetworkManager.Is_Server)
         {
             AblazeBurnTime = BurnTime;
@@ -110,9 +136,8 @@ public class BuildingStatus : NetworkBehaviour
                 //if the building is on fire
                 if (OnFire)
                 {
-                    //reduce health by time & render red
+                    //reduce health by time
                     BuildingHealth -= (Time.deltaTime / 2f);
-                    //activate health bars
                 }
                 //if building isn't on fire
                 else
@@ -176,7 +201,31 @@ public class BuildingStatus : NetworkBehaviour
                     C_WetBarBg.gameObject.SetActive(false);
                 }
             }
-        }
+			else if(C_SettingBar.enabled)
+			{
+
+				//Fill bar based on time lighting
+				C_SettingBar.fillAmount = TimeLeft / 1.2f;
+
+
+				//if time depletes
+				if (TimeLeft < 0)
+				{
+					//display fire text
+					C_FireStartedText.SetActive(true);
+					//disable fire starting bars
+					C_SettingBarBg.gameObject.SetActive(false);
+					C_SettingBar.gameObject.SetActive(false);
+				}
+			} 
+			else if(C_DampBuildingText.activeSelf)
+			{
+				if (DampTime < 8)
+				{
+					C_DampBuildingText.SetActive(false);
+				}
+			}
+        }*/
         #region common code
         //Common code to update the visual aspect
         //Really just mesh updates
@@ -250,7 +299,88 @@ public class BuildingStatus : NetworkBehaviour
 #endregion
     }
 
-    //TODO: Use Starting fire to set variables and then update
+	[ServerCallback]
+	private void ServerUpdate()
+	{
+		//If we are starting a fire update the variables
+		if(mS_characterStartingTime.Count > 0)
+		{
+			//As mutiple character can start the fire at the same time for the building, lets update all of them and just consider the higest to start the fire
+			List<int> listKeys = mS_characterStartingTime.Keys.ToList();
+			foreach (int id in listKeys)
+			{
+				//Update the fire time
+				mS_characterStartingTime[id] += Time.deltaTime;
+				//Check if the building should be on fire
+				if (mS_characterStartingTime[id] >= m_timeToStartFire)
+				{
+					//Set on fire
+					OnFire = true;
+					//Clear variables
+					mS_currentAblazeTime = 0;
+					mS_currentBurningTime = 0;
+
+					//Let every client know that they should disable thei on fire ui
+					foreach(KeyValuePair<int,float> keypair in mS_characterStartingTime)
+					{
+						TargetDisableSettingUI(MainNetworkManager._instance.PlayersConnected[keypair.Key].connectionToClient);
+					}
+					//Ckear and return
+					mS_characterStartingTime.Clear();
+					break;
+				}
+			}
+		}
+
+		if (OnFire)
+		{
+			//Reduce building health by the damage every second
+			BuildingHealth -= mS_fireDPS * Time.deltaTime;
+			//Add to burn timer
+			mS_currentBurningTime += Time.deltaTime;
+
+			//If we burned more than the time for ablaze set to ablaze
+			if(mS_currentBurningTime >= mS_timeBurningForAblaze)
+			{
+				mS_isAblaze = true;
+			}
+
+			//If we are ablaze we take permanent damage
+			if(mS_isAblaze)
+			{
+				CurrentBuildingMaxHealth -= mS_ablazeDPS * Time.deltaTime;
+			}
+		}
+		else if(Dampening)
+		{
+			//Update the dampening of the building
+			DampTime -= Time.deltaTime;
+			Dampening = DampTime > 0;
+			if(!Dampening)
+			{
+				DampTime = 0;
+			}
+		} 
+		else
+		{
+			//Regen the Building if we are not ablaze, onfire or dampening
+			//If building is destroyed, stop building regeneration
+			if (BuildingHealth <= 0)
+				return;
+
+			//Heal the building
+			BuildingHealth += Time.deltaTime * mS_buildingHPS;
+
+			//Make sure we never go over the current max hp and never below 0
+			BuildingHealth = Mathf.Max(0, Mathf.Min(BuildingHealth, CurrentBuildingMaxHealth));
+		}
+	}
+
+	[ClientCallback]
+	private void ClientUpdate()
+	{
+
+	}
 
     [Client]
     ///<summary>Shows client lighting fire</summary>
@@ -259,165 +389,118 @@ public class BuildingStatus : NetworkBehaviour
         //Only crazy people can start fire
         if (MainNetworkManager._instance.PlayersConnected[c.ControllingPlayerID].Player_Team == ETeams.CrazyPeople)
         {
-            if (Dampening)
-            {
-                C_DampBuildingText.SetActive(true);
-                if (DampTime < 8)
-                {
-                    C_DampBuildingText.SetActive(false);
-                }
-                return;
-            }
-            //Activate fire starting bars
-            C_SettingBarBg.gameObject.SetActive(true);
-            C_SettingBar.gameObject.SetActive(true);
+			//If we are already on fire we cannot start it
+			if (OnFire)
+			{
+				return;
+			}
 
-            //Display setting text with time left to light reducing by 1/sec
-            C_FireSettingCounter.gameObject.GetComponent<TextMeshProUGUI>().SetText("Lighting fire in: " + (int)TimeLeft);
-            TimeLeft -= Time.deltaTime;
-        }
+			if (Dampening)
+			{
+				return;
+			}
+
+			//Start the fire
+			mC_startingFireTime = 0;
+			mC_isStartingFire = true;
+		}
     }
 
-    [TargetRpc]
-    ///<<summary>Stops client lighting fire</summary>
-    private void TargetStopLighting(NetworkConnection target)
-    {
-        C_SettingBar.gameObject.SetActive(false);
-        C_SettingBarBg.gameObject.SetActive(false);
-        TimeLeft = 1.2f;
-    }
+	[TargetRpc]
+	private void TargetDisableSettingUI(NetworkConnection target)
+	{
+
+	}
+
+	[TargetRpc]
+	private void TargetBuildingIsAlreadyOnFire(NetworkConnection target)
+	{
+
+	}
+
+	[TargetRpc]
+	private void TargetBuildingIsDampening(NetworkConnection traget)
+	{
+
+	}
 
     [Server]
     ///<<summary>Target building begins to be set on fire</summary>
     public void ServerStartingFire(Character c)
     {
         //Only crazy people can start fire
-        if (MainNetworkManager._instance.PlayersConnected[c.ControllingPlayerID].Player_Team == ETeams.CrazyPeople)
+        if (MainNetworkManager._instance.PlayersConnected[c.ControllingPlayerID].Player_Team == ETeams.CrazyPeople && !mS_characterStartingTime.ContainsKey(c.ControllingPlayerID))
         {
-            if (Dampening)
-            {
-                Ablaze = false;
-                if (DampTime <= 0)
-                {
-                    Dampening = false;
-                }
-                TargetStopLighting(MainNetworkManager._instance.PlayersConnected[c.ControllingPlayerID].connectionToClient);
-            }
-            else
-            {
-                DampTime = 10.0f;
+			NetworkConnection character_connectionToClient = MainNetworkManager._instance.PlayersConnected[c.ControllingPlayerID].connectionToClient;
+			//If we are already on fire we cannot start it
+			if (OnFire)
+			{
+				TargetBuildingIsAlreadyOnFire(character_connectionToClient);
+				return;
+			}
 
-                //Fill bar based on time lighting
-                C_SettingBar.fillAmount = TimeLeft / 1.2f;
+			if(Dampening)
+			{
+				TargetBuildingIsDampening(character_connectionToClient);
+				return;
+			}
 
-
-                //if time depletes
-                if (TimeLeft < 0)
-                {
-                    //display fire text
-                    C_FireStartedText.SetActive(true);
-                    //disable fire starting bars
-                    C_SettingBarBg.gameObject.SetActive(false);
-                    C_SettingBar.gameObject.SetActive(false);
-                    //Set fire bool to true
-                    OnFire = true;
-                }
-            }
+			//Add the character to the list
+			mS_characterStartingTime.Add(c.ControllingPlayerID, 0);
         }
-    }
-
-    [Server]
-    ///<<summary>Modifies burning building based on building health</summary>
-    private void ServerBurningPhase()
-    {
-        //Reduce building health by 1/sec & fill health bar based on health/max health
-        BuildingHealth -= Time.deltaTime;
-        //Add to burn timer
-        BurnTime += Time.deltaTime;
     }
 
     [Server]
     ///<summary>Extinguishes fire on building</summary>
     public void ServerExtinguish()
     {
+		//Set Dampering
         Dampening = true;
-        //set on fire to false
-        OnFire = false;
-        //reset ablaze and burn time
-        Ablaze = false;
-        BurnTime = 0;
-        //Reset fire lighting timer
-        TimeLeft = 1.2f;
+		OnFire = false;
+		mS_isAblaze = false;
     }
 
-    [Server]
-    ///<summary>Building gains health based on current health and on it's status</summary>
-    private void ServerBuildingRegen() //Not polished - needs designer input
-    {
-        //If building health is less than 100, heal 1/1.5 secs
-        if(BuildingHealth < 100 && BuildingHealth <= 66)
-        {
-            BuildingHealth += 1.0f * (Time.deltaTime / 1.5f);
-        }
-        //If building health is less than 66, heal 1/1.5 secs up to 66 hp
-        if(BuildingHealth < 66)
-        {
-            if(BuildingHealth != 66)
-            {
-                BuildingHealth += 1.0f * (Time.deltaTime / 1.5f);
-            }
-            if (BuildingHealth == 66)
-            {
-                BuildingHealth += 0;
-            }
-        }
-        //If building health is less than 33, heal 1/1.5 secs up to 33 hp
-        if(BuildingHealth < 33)
-        {
-            if(BuildingHealth != 33)
-            {
-                BuildingHealth += 1.0f * (Time.deltaTime / 1.5f);
-            }
-            if(BuildingHealth == 33)
-            {
-                BuildingHealth += 0 * Time.deltaTime;
-            }
-        }
-        //If building is destroyed, stop building regeneration
-        if(BuildingHealth <= 0)
-        {
-            BuildingHealth += 0 * Time.deltaTime;
-        }
-    }
+	[ClientCallback]
+	private void UpdateBuildingVisualStatus()
+	{
+		//Activate building health/burn amount bars
+		C_HealthBar.gameObject.SetActive(true);
+		C_HealthBarBg.gameObject.SetActive(true);
+		C_HealthBar.fillAmount = BuildingHealth / mS_buildingMaxHP;
+		//Display health counter
+		C_HealthCounter.GetComponent<TextMeshProUGUI>().SetText("Health: " + (int)BuildingHealth / (int)mS_buildingMaxHP + "%");
 
-    //Handle change of variable for HP
-    private void OnBuidlingHPUpdate(float _newHP)
+		//If building health is between 66 and 33
+		if (BuildingHealth < 66 && BuildingHealth > 33)
+		{
+			//Change building to be in its first burning status
+			mC_material.SetInt("_BurningTextureIndex", 1);
+		}
+		//If building health is between 33 and 0
+		if (BuildingHealth < 33 && BuildingHealth > 0)
+		{
+			//Change building to be in its first burning status
+			mC_material.SetInt("_BurningTextureIndex", 2);
+		}
+		//If building health depletes
+		if (BuildingHealth <= 0)
+		{
+			//TODO: Convert Building to ashes
+		}
+	}
+
+	//Handle change of variable for HP
+	private void OnBuidlingHPUpdate(float _newHP)
     {
         BuildingHealth = _newHP;
-        //Activate building health/burn amount bars
-        C_HealthBar.gameObject.SetActive(true);
-        C_HealthBarBg.gameObject.SetActive(true);
-        C_HealthBar.fillAmount = BuildingHealth / BuildingMaxHealth;
-        //Display health counter
-        C_HealthCounter.GetComponent<TextMeshProUGUI>().SetText("Health: " + (int)BuildingHealth + "%");
+		//Update  building visible state
+		UpdateBuildingVisualStatus();
+	}
 
-        //If building health is between 66 and 33
-        if (BuildingHealth < 66 && BuildingHealth > 33)
-        {
-            //Change building to be in its first burning status
-            m_material.SetInt("_BurningTextureIndex", 1);
-        }
-        //If building health is between 33 and 0
-        if (BuildingHealth < 33 && BuildingHealth > 0)
-        {
-            //Change building to be in its first burning status
-            m_material.SetInt("_BurningTextureIndex", 2);
-        }
-        //If building health depletes
-        if (BuildingHealth <= 0)
-        {
-            //Convert to ashes
-            gameObject.transform.localScale = new Vector3(1.5f, 5.5f, 1.5f);
-        }
-    }
+	private void OnBuildingCurrenMaxHPUpdate(float _newMaxHP)
+	{
+		CurrentBuildingMaxHealth = _newMaxHP;
+		//Update building visible state
+		UpdateBuildingVisualStatus();
+	}
 }

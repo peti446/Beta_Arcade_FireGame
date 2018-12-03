@@ -18,6 +18,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _BuildingTextures:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BuildingsTextures:
         m_Texture: {fileID: 18700000, guid: 9f45be7d8d2daac4eb5659b509ccf3f7, type: 2}
         m_Scale: {x: 1, y: 1}
@@ -76,6 +80,8 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
+    - _MaxBuildingTexturesCount: 0
+    - _MaxBurningTexturesCount: 0
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
