@@ -79,6 +79,10 @@ public class MainMenuUIHandler : MonoBehaviour {
         foreach(Transform t in gameObject.transform)
         {
             t.gameObject.SetActive(false);
+			if(t.gameObject.GetComponent<Image>() != null)
+			{
+				t.gameObject.SetActive(true);
+			}
         }
         //Show the main menu
         ShowPanel(m_MainMenu);
