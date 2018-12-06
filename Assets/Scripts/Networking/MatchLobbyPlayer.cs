@@ -87,7 +87,7 @@ public class MatchLobbyPlayer : MonoBehaviour {
         //If we have the autority of the player enable buttons to chage their players data
         if (m_NetworkPlayer.hasAuthority)
         {
-            m_name.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+            m_name.color = Color.blue;
             m_switchTeamButton.onClick.AddListener(OnSwitchTeamClicked);
             m_ShowChangeNameButton.onClick.AddListener(OnShowNameInputClicked);
             m_nameInputfield.onEndEdit.AddListener(OnEndEditChangeName);

@@ -48,7 +48,7 @@ public class ChatMessage : MonoBehaviour {
         m_message = message;
 
         //Format the text
-        string name = m_sender.isLocalPlayer ? "<color=#ffffff>" + m_sender.Player_Name + "</color>" : m_sender.Player_Name;
+        string name = m_sender.isLocalPlayer ? "<color=#0000ff>" + m_sender.Player_Name + "</color>" : m_sender.Player_Name;
         m_Text.text = string.Format(ChatTextFormat, name, m_message);
 
         m_sender.PlayerNameChanged += OnPlayerChangedName;

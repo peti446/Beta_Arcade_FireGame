@@ -156,7 +156,7 @@ public class Character : NetworkBehaviour
 
 		//Update camera rotation and position for the 3 person
 		Quaternion rot = Quaternion.Euler(m_cameraRotation.x, m_cameraRotation.y, 0);
-		Vector3 cameraTargetPos = (transform.position + transform.up * 8) - rot * transform.forward * 10;//(gameObject.transform.position + gameObject.transform.up * 8) + newRotation * new Vector3(0, 0, -10);
+		Vector3 cameraTargetPos = (transform.position + transform.up * 8) - rot * transform.forward * 15;//(gameObject.transform.position + gameObject.transform.up * 8) + newRotation * new Vector3(0, 0, -10);
 
 		//Check if a object would block the camera
 		RaycastHit hit;
@@ -271,7 +271,7 @@ public class Character : NetworkBehaviour
 	{
 		Debug.DrawRay(transform.position, transform.forward * 10, Color.red, 5.0f);
 		RaycastHit hit;
-		Physics.Raycast(transform.position, transform.forward, out hit, 10);
+		Physics.Raycast(transform.position + transform.up, transform.forward, out hit, 10);
 		if (hit.collider != null)
 		{
 			if (hit.collider.GetComponent<Interact>() != null)
@@ -279,6 +279,7 @@ public class Character : NetworkBehaviour
 				CmdInteractServer();
 				hit.collider.GetComponent<Interact>().ClientInteract(this);
 				m_lastInteractedObj = hit.collider.gameObject;
+				
 			}
 		}
 	}
@@ -288,7 +289,7 @@ public class Character : NetworkBehaviour
 	{
 		Debug.DrawRay(transform.position, transform.forward * 10, Color.red);
 		RaycastHit hit;
-		Physics.Raycast(transform.position, transform.forward, out hit, 10);
+		Physics.Raycast(transform.position + transform.up, transform.forward, out hit, 10);
 		if (hit.collider != null)
 		{
 			if (hit.collider.GetComponent<Interact>() != null)
