@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 33191735372721768}
   - component: {fileID: 23556898788902468}
   - component: {fileID: 95225336706799214}
-  - component: {fileID: 114284172331991988}
   m_Layer: 0
   m_Name: CINEMA
   m_TagString: Untagged
@@ -86,7 +85,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 3353a8e0698acdc469f47b2b36f86f05, type: 2}
+  - {fileID: 2100000, guid: 2ff21d8f6d46292428be3f434d68c20d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -130,21 +129,3 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114284172331991988
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1615438632450178}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aeb6b5083215ef64e95b5d68672e1940, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CurrentMaterial: 0
-  isComplex: 0
-  Materials:
-  - {fileID: 2100000, guid: 3353a8e0698acdc469f47b2b36f86f05, type: 2}
-  - {fileID: 2100000, guid: f602240f95664b646bdb6e4f224e7a1d, type: 2}
-  - {fileID: 2100000, guid: 05af25eb56c70164f92acc0caae8d96b, type: 2}
-  - {fileID: 2100000, guid: 7d311448992417049bde335e1d59bda3, type: 2}

@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 33032786382989022}
   - component: {fileID: 23979101791454398}
   - component: {fileID: 95907035181158570}
-  - component: {fileID: 114837628282897772}
   m_Layer: 0
   m_Name: COURT
   m_TagString: Untagged
@@ -57,7 +56,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 68c0ade7d8f8d724c9ff442b8d36e275, type: 2}
+  - {fileID: 2100000, guid: ac952330a9af88b4f9400135279ddb53, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -101,21 +100,3 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114837628282897772
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1748439155138982}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aeb6b5083215ef64e95b5d68672e1940, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CurrentMaterial: 0
-  isComplex: 0
-  Materials:
-  - {fileID: 2100000, guid: 68c0ade7d8f8d724c9ff442b8d36e275, type: 2}
-  - {fileID: 2100000, guid: 70e7fb914a708da47bc48b7b33110856, type: 2}
-  - {fileID: 2100000, guid: 4cbab52dd26c79c448cbe9939052583b, type: 2}
-  - {fileID: 2100000, guid: f1c5bf44cd182564fbb3bb0e08387fab, type: 2}

@@ -15,6 +15,8 @@ public class ChatInputManager : MonoBehaviour {
     private void Awake()
     {
         m_inputField = GetComponent<InputField>();
+		m_inputField.onValueChanged.RemoveAllListeners();
+		m_inputField.onValueChanged.AddListener(delegate { OnValueChanged(); });
     }
 
     public void OnValueChanged()

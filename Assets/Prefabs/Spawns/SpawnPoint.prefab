@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4330989408384938}
   - component: {fileID: 65101621630475342}
   - component: {fileID: 114431443027380120}
-  m_Layer: 0
+  m_Layer: 29
   m_Name: SpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
@@ -65,3 +65,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_spawnSide: 0
+  m_isFireTruckSpawn: 0

@@ -1,0 +1,184 @@
+fileFormatVersion: 2
+guid: 22acc447a90c4b145964a58b82975202
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Box004
+    100002: Box005
+    100004: Box006
+    100006: Box007
+    100008: Box009
+    100010: Box010
+    100012: Box011
+    100014: Box012
+    100016: Box013
+    100018: Plane001
+    100020: Plane003
+    100022: Plane004
+    100024: Plane006
+    100026: Plane008
+    100028: Plane009
+    100030: Plane010
+    100032: Plane011
+    100034: Plane012
+    100036: //RootNode
+    400000: Box004
+    400002: Box005
+    400004: Box006
+    400006: Box007
+    400008: Box009
+    400010: Box010
+    400012: Box011
+    400014: Box012
+    400016: Box013
+    400018: Plane001
+    400020: Plane003
+    400022: Plane004
+    400024: Plane006
+    400026: Plane008
+    400028: Plane009
+    400030: Plane010
+    400032: Plane011
+    400034: Plane012
+    400036: //RootNode
+    2100000: No Name
+    2300000: Box004
+    2300002: Box005
+    2300004: Box006
+    2300006: Box007
+    2300008: Box009
+    2300010: Box010
+    2300012: Box011
+    2300014: Box012
+    2300016: Box013
+    2300018: Plane001
+    2300020: Plane003
+    2300022: Plane004
+    2300024: Plane006
+    2300026: Plane008
+    2300028: Plane009
+    2300030: Plane010
+    2300032: Plane011
+    2300034: Plane012
+    3300000: Box004
+    3300002: Box005
+    3300004: Box006
+    3300006: Box007
+    3300008: Box009
+    3300010: Box010
+    3300012: Box011
+    3300014: Box012
+    3300016: Box013
+    3300018: Plane001
+    3300020: Plane003
+    3300022: Plane004
+    3300024: Plane006
+    3300026: Plane008
+    3300028: Plane009
+    3300030: Plane010
+    3300032: Plane011
+    3300034: Plane012
+    4300000: Plane001
+    4300002: Plane003
+    4300004: Plane004
+    4300006: Plane006
+    4300008: Plane008
+    4300010: Box004
+    4300012: Box005
+    4300014: Plane009
+    4300016: Box006
+    4300018: Box007
+    4300020: Box009
+    4300022: Box010
+    4300024: Box011
+    4300026: Plane010
+    4300028: Box012
+    4300030: Plane011
+    4300032: Plane012
+    4300034: Box013
+    9500000: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: No Name
+    second: {fileID: 2100000, guid: 8be48ba5b777531479a3f164ad297a80, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

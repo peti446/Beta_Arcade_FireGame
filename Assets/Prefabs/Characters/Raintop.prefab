@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4037867244871124}
   - component: {fileID: 23913339876661012}
   - component: {fileID: 33947467273711068}
-  m_Layer: 0
+  m_Layer: 28
   m_Name: Graphics
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,7 +36,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4544548289281830}
-  m_Layer: 0
+  m_Layer: 28
   m_Name: CamaraPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52,7 +52,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4422116603029106}
   - component: {fileID: 65515575702705848}
-  m_Layer: 0
+  m_Layer: 28
   m_Name: Collision
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -72,7 +72,7 @@ GameObject:
   - component: {fileID: 54615040689381864}
   - component: {fileID: 114415544453117042}
   - component: {fileID: 114863631360994502}
-  m_Layer: 0
+  m_Layer: 28
   m_Name: Raintop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 4470438657862750}
   - component: {fileID: 198194218922512622}
   - component: {fileID: 199425081086524126}
-  m_Layer: 0
+  m_Layer: 28
   m_Name: HoseParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,7 +218,7 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!65 &65515575702705848
@@ -297,13 +297,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f2e0aa0490fcc0459c198585d8f2aee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_playerSpeed: 10
-  m_PlayerRotationX: 5
-  m_PlayerRotationY: 1.2
+  m_movingSpeed: 10
+  m_movingRotationSpeed: 5
+  m_cameraRotationSpeed: 2
   m_cameraPivot: {fileID: 1516355305443346}
   m_graphics: {fileID: 1371076727992010}
   m_collision: {fileID: 1616385435326438}
-  m_last_interacted_obj: {fileID: 0}
 --- !u!114 &114863631360994502
 MonoBehaviour:
   m_ObjectHideFlags: 1

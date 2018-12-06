@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 33176755045455858}
   - component: {fileID: 23250724407450828}
   - component: {fileID: 95131569488505338}
-  - component: {fileID: 114543910122812792}
   m_Layer: 0
   m_Name: POLICE_DEPARTMENT
   m_TagString: Untagged
@@ -57,7 +56,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 02ba5ec34723af14480e23a38114f05d, type: 2}
+  - {fileID: 2100000, guid: 227a7b604001b3248baa6cc7d1cf8815, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -101,21 +100,3 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114543910122812792
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1168261853756728}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aeb6b5083215ef64e95b5d68672e1940, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CurrentMaterial: 0
-  isComplex: 0
-  Materials:
-  - {fileID: 2100000, guid: 02ba5ec34723af14480e23a38114f05d, type: 2}
-  - {fileID: 2100000, guid: f0fbe28699fbce04da660c74c41c9777, type: 2}
-  - {fileID: 2100000, guid: 84cb4962a32333b4cad4cecc2a8c3bac, type: 2}
-  - {fileID: 2100000, guid: 40cf1217534a25a40ac29b9092cfacc4, type: 2}

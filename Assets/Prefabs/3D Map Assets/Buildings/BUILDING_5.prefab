@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 33221969762177486}
   - component: {fileID: 23439898073166156}
   - component: {fileID: 95504191672699672}
-  - component: {fileID: 114594401393496496}
   m_Layer: 0
   m_Name: BUILDING_5
   m_TagString: Untagged
@@ -57,7 +56,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 2e1aea5717256f14ca136391a7da9a28, type: 2}
+  - {fileID: 2100000, guid: 6ea24e7cbe8758644bdb84ef739ac537, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -101,21 +100,3 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114594401393496496
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1571519444433568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aeb6b5083215ef64e95b5d68672e1940, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CurrentMaterial: 0
-  isComplex: 0
-  Materials:
-  - {fileID: 2100000, guid: 2e1aea5717256f14ca136391a7da9a28, type: 2}
-  - {fileID: 2100000, guid: 4c4fa975f083ce247bd94b92aa652e6c, type: 2}
-  - {fileID: 2100000, guid: 4e9d70480b848af43a8899b60c2ec1fe, type: 2}
-  - {fileID: 2100000, guid: 2d4deaefa667d9f429dffe7fdd19456d, type: 2}

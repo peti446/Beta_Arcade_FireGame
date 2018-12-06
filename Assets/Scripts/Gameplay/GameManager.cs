@@ -41,6 +41,7 @@ public class GameManager : NetworkBehaviour
 		m_timeLastTruckDied = float.PositiveInfinity;
 
         time = Time.time;
+		GameObject.FindObjectOfType<ChatManager>().InitChat();
 
     }
 

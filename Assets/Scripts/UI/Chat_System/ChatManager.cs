@@ -58,7 +58,7 @@ public class ChatManager : NetworkBehaviour {
         }
     }
 
-    private void OnDestroy()
+	private void OnDestroy()
     {
         DeInitChat();
     }
@@ -92,6 +92,8 @@ public class ChatManager : NetworkBehaviour {
         //We are already ready why do you want to set it up again bro?
         if (m_isChatSetup)
             return;
+
+		Debug.Log("Is initing");
         //Register Message listeners
         MainNetworkManager._instance.client.RegisterHandler(CustomNetMessages.ChatNetMesage, OnReceivedChatMessage);
 

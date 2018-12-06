@@ -36,8 +36,8 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - Players
+  - SpawnPoint
   - MapTiles
   - 
   m_SortingLayers:

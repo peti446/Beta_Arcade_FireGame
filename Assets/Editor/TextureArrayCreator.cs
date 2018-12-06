@@ -8,6 +8,7 @@ public class TextureArrayCreator : EditorWindow
 	private Texture2D[] m_textures = { };
 	private bool m_textureError = false;
 	private string m_savingPath = string.Empty;
+	private string m_errorStr = string.Empty;
 
 	[MenuItem("Custom tools/Texture Array Generator")]
 	public static void CreateWindow()
@@ -45,6 +46,7 @@ public class TextureArrayCreator : EditorWindow
 			TextureFormat format = 0;
 			foreach(Texture2D t in m_textures)
 			{
+				Debug.Log(t.format);
 				//If we do not have info get it
 				if (width == 0 || height == 0)
 				{
@@ -56,6 +58,14 @@ public class TextureArrayCreator : EditorWindow
 				{
 					//A texture has a different format so return
 					m_textureError = true;
+					if(format != t.format)
+					{
+						m_errorStr = "The textures needs to be the same format";
+					} else
+					{
+						m_errorStr = "The textures needs to be the same size";
+					}
+
 					break;
 				}
 			}
@@ -81,7 +91,7 @@ public class TextureArrayCreator : EditorWindow
 		{
 			GUIStyle s = new GUIStyle();
 			s.normal.textColor = Color.red;
-			EditorGUILayout.LabelField("All textures need to be the same size!", s);
+			EditorGUILayout.LabelField(m_errorStr, s);
 		}
 	}
 }
