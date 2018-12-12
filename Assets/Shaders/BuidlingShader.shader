@@ -37,16 +37,10 @@
 		sampler2D _Occlusion;
 		half _Glossiness;
 		half _Metallic;
-		
+		float4 _Color;
+		int _BuildingTextureIndex;
+		int _BurningTextureIndex;
 
-		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
-		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
-		// #pragma instancing_options assumeuniformscaling
-		UNITY_INSTANCING_BUFFER_START(Props)
-			UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)
-			UNITY_DEFINE_INSTANCED_PROP(int, _BuildingTextureIndex)
-			UNITY_DEFINE_INSTANCED_PROP(int, _BurningTextureIndex)
-		UNITY_INSTANCING_BUFFER_END(Props)
 
 		//Function to combine the fire texture with the base textures
 		fixed4 CombineBurning(fixed4 base, fixed4 burning)
@@ -81,7 +75,7 @@
 
 
 			//Sample the array texture to get the colour for the bulding
-			fixed4 buildingColor = UNITY_SAMPLE_TEX2DARRAY(_BuildingTextures, float3(IN.uv_BuildingTextures, UNITY_ACCESS_INSTANCED_PROP(Props, _BuildingTextureIndex)));
+			fixed4 buildingColor = UNITY_SAMPLE_TEX2DARRAY(_BuildingTextures, float3(IN.uv_BuildingTextures, _BuildingTextureIndex));
 			//By default we dont have a burning texture on it
 			fixed4 buildingFire = float4(0, 0, 0, 0);
 			//Only sample the burning texture if the index is higer then 0
@@ -89,10 +83,10 @@
 			{
 				//Sample the texture array to get the the burning colour, the given texture array does not have a non burning texture, but we treat 0 as a non texture,
 				//so we need to substract 1 from the actually index to get the correct position in the array
-				buildingFire = UNITY_SAMPLE_TEX2DARRAY(_BurningTextures, float3(IN.uv2_BurningTextures, UNITY_ACCESS_INSTANCED_PROP(Props, _BurningTextureIndex) - 1));
+				buildingFire = UNITY_SAMPLE_TEX2DARRAY(_BurningTextures, float3(IN.uv2_BurningTextures, _BurningTextureIndex - 1 < 0 ? 0 : _BurningTextureIndex));
 			}
 			//Get thhe combined texture colour
-			fixed4 finalColor = CombineBurning(buildingColor, buildingFire) * UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
+			fixed4 finalColor = CombineBurning(buildingColor, buildingFire) *  _Color;
 			//Apply all the variables to the surface shader output
 			o.Albedo = finalColor.rgb;
 			o.Metallic = _Metallic;

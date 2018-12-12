@@ -145,23 +145,31 @@ public class MapTile : MonoBehaviour {
 
 		NearbyRoadsPos[] allFlags = Enum.GetValues(typeof(NearbyRoadsPos))
 											   .Cast<NearbyRoadsPos>()
-											   .Where(c => (roadsPos & c) == c && c != 0) 
+											   .Where(c => (roadsPos & c) == c && c != NearbyRoadsPos.None) 
 											   .ToArray();
 
-		//Get a randome orientation to a road
-		orientation = Directions[allFlags[Random.Range(0, allFlags.Length)]];
+		//Check if we have any flags
+		if(allFlags.Length == 0)
+		{
+			Debug.Log("Found a tile with no roads neaby");
+			Debug.LogFormat("X: {0}, Y: {1}", m_gridX, m_gridZ);
+			return null;
+		}
+
+
+		orientation = Directions[allFlags[Random.Range((int)0, (int)allFlags.Length)]];
 		//Find a valid xbased orientation
 		if ((roadsPos & (NearbyRoadsPos.North | NearbyRoadsPos.South)) != 0) {
 			do
 			{
-				xBasedOrientation = Directions[allFlags[Random.Range(0, allFlags.Length)]];
+				xBasedOrientation = Directions[allFlags[Random.Range((int)0, (int)allFlags.Length)]];
 			} while (xBasedOrientation.y != 0);
 		}
 		//Find a valid ybased orientation
 		if ((roadsPos & (NearbyRoadsPos.West | NearbyRoadsPos.East)) != 0) {
 			do
 			{
-				yBasedOrientation = Directions[allFlags[Random.Range(0, allFlags.Length)]];
+				yBasedOrientation = Directions[allFlags[Random.Range((int)0, (int)allFlags.Length)]];
 			} while (yBasedOrientation.x != 0);
 		}
 
@@ -172,13 +180,13 @@ public class MapTile : MonoBehaviour {
 			case ETileType.Size1x1:
 				if (proceduralManager.MapBuildingsScripteableObject.Buildings1x1 != null && proceduralManager.MapBuildingsScripteableObject.Buildings1x1.Length > 0)
 				{
-					gameObjectToSpawn = proceduralManager.MapBuildingsScripteableObject.Buildings1x1[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings1x1.Length)];
+					gameObjectToSpawn = proceduralManager.MapBuildingsScripteableObject.Buildings1x1[Random.Range((int)0, (int)proceduralManager.MapBuildingsScripteableObject.Buildings1x1.Length)];
 				}
 				break;
 			case ETileType.Size2x1:
 				if (proceduralManager.MapBuildingsScripteableObject.Buildings1x2 != null && proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length > 0)
 				{
-					gameObjectToSpawn = proceduralManager.MapBuildingsScripteableObject.Buildings1x2[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length)];
+					gameObjectToSpawn = proceduralManager.MapBuildingsScripteableObject.Buildings1x2[Random.Range((int)0, (int)proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length)];
 				}
 				//Make sure to use correct orientation
 				orientation = yBasedOrientation;
@@ -186,7 +194,7 @@ public class MapTile : MonoBehaviour {
 			case ETileType.Size1x2:
 				if (proceduralManager.MapBuildingsScripteableObject.Buildings1x2 != null && proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length > 0)
 				{
-					gameObjectToSpawn = proceduralManager.MapBuildingsScripteableObject.Buildings1x2[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length)];
+					gameObjectToSpawn = proceduralManager.MapBuildingsScripteableObject.Buildings1x2[Random.Range((int)0, (int)proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length)];
 				}
 				//Make sure to use correct orientation
 				orientation = xBasedOrientation;
@@ -194,7 +202,7 @@ public class MapTile : MonoBehaviour {
 			case ETileType.Size2x2:
 				if (proceduralManager.MapBuildingsScripteableObject.Buildings2x2 != null && proceduralManager.MapBuildingsScripteableObject.Buildings2x2.Length > 0)
 				{
-					gameObjectToSpawn = proceduralManager.MapBuildingsScripteableObject.Buildings2x2[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings2x2.Length)];
+					gameObjectToSpawn = proceduralManager.MapBuildingsScripteableObject.Buildings2x2[Random.Range((int)0, (int)proceduralManager.MapBuildingsScripteableObject.Buildings2x2.Length)];
 				}
 				break;
 			case ETileType.Firestation:
@@ -228,6 +236,11 @@ public class MapTile : MonoBehaviour {
 			if (!EditorApplication.isPlaying)
 			{
 				proceduralManager = GameObject.FindObjectOfType<ProceduralMapManager>();
+				if(proceduralManager.MapBuildingsScripteableObject == null)
+				{
+					Debug.Log("Did not find the map building script obect");
+					return;
+				}
 			}
 			else
 			{
@@ -275,7 +288,7 @@ public class MapTile : MonoBehaviour {
 							//Get the maximum
 							int maxTextureIndexExclusive = burningMaterial.GetInt("_MaxBuildingTexturesCount");
 							//Set the base colour
-							burningMaterial.SetInt("_BuildingTextureIndex", Random.Range(0, maxTextureIndexExclusive));
+							burningMaterial.SetInt("_BuildingTextureIndex", Random.Range((int)0, (int)maxTextureIndexExclusive));
 						}
 					}
 				}
@@ -292,9 +305,14 @@ public class MapTile : MonoBehaviour {
 		if (proceduralManager == null || proceduralManager.MapBuildingsScripteableObject == null)
 		{
 #if UNITY_EDITOR
-			if (!EditorApplication.isPlaying)
+			if (!EditorApplication.isPlaying && proceduralManager == null)
 			{
 				proceduralManager = GameObject.FindObjectOfType<ProceduralMapManager>();
+				if (proceduralManager.MapBuildingsScripteableObject == null)
+				{
+					Debug.Log("Did not find the map building script obect");
+					return;
+				}
 			}
 			else
 			{
@@ -343,7 +361,7 @@ public class MapTile : MonoBehaviour {
 							//Get the maximum
 							int maxTextureIndexExclusive = burningMaterial.GetInt("_MaxBuildingTexturesCount");
 							//Set the base colour
-							burningMaterial.SetInt("_BuildingTextureIndex", Random.Range(0, maxTextureIndexExclusive));
+							burningMaterial.SetInt("_BuildingTextureIndex", Random.Range((int)0, (int)maxTextureIndexExclusive));
 						}
 					}
 				}
