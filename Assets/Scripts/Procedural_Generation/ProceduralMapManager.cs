@@ -1,31 +1,37 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class ProceduralMapManager : MonoBehaviour {
+	[SerializeField]
+	private MapBuildings m_mapBuildingsScripteableObject;
+	/// <summary>
+	/// The scripteable object with all the data for spawning the objects
+	/// </summary>
+	public MapBuildings MapBuildingsScripteableObject
+	{
+		get
+		{
+			return m_mapBuildingsScripteableObject;
+		}
+	}
 
-	[SerializeField]
-	public GameObject[] m_spawneableFireStations;
-	[SerializeField]
-	public GameObject[] m_spawneableRoadsBuildings;
-	[SerializeField]
-	public GameObject[] m_spawneable1x1Buildings;
-	[SerializeField]
-	public GameObject[] m_spawneable1x2Buildings;
-	[SerializeField]
-	public GameObject[] m_spawneable2x1Buildings;
-	[SerializeField]
-	public GameObject[] m_spawneadble2x2Buildings;
+	//Data abotut tiles, the list of all tiles in the world, and a count per tile type
 	private List<MapTile> m_mapTiles = new List<MapTile>();
 	private IDictionary<ETileType, int> m_tileCount = new Dictionary<ETileType, int>();
 
+	/// <summary>
+	/// Instance of the manager
+	/// </summary>
 	public static ProceduralMapManager _instance
 	{
 		get;
 		private set;
 	}
 
+	//Instance handling
 	private void Awake()
 	{
 		if (_instance != null)
@@ -40,6 +46,8 @@ public class ProceduralMapManager : MonoBehaviour {
 			_instance = null;
 	}
 
+
+	//Refresh the list when we start the game
 	private void Start()
 	{
 		RefreshTileList();
@@ -98,22 +106,44 @@ public class ProceduralMapManager : MonoBehaviour {
 		});
 	}
 
+	/// <summary>
+	/// Get the count of a tile typle
+	/// </summary>
+	/// <param name="tile">The tile type we want to get a count of</param>
+	/// <returns>Tile count</returns>
 	public int GetTileCount(ETileType tile)
 	{
 		return m_tileCount.ContainsKey(tile) ? m_tileCount[tile] : 0;
 	}
 
+	/// <summary>
+	/// Deletes the peview city from the scene
+	/// </summary>
 	public void DeleteCityPreview()
 	{
+		//Get allobjects of type preview
 		GameObject[] allPreviews = GameObject.FindGameObjectsWithTag("PreviewBuilding");
+		//Delete all of them
 		foreach (GameObject go in allPreviews)
 		{
-			DestroyImmediate(go);
+			//Diferent destroy types if we are in editor playing or editing, also for otimisation, if we are not in editor aka a build just remove the unecesary if statment
+#if UNITY_EDITOR
+			if (!EditorApplication.isPlaying)
+				DestroyImmediate(go.gameObject);
+			else
+				Destroy(go.gameObject);
+#else
+				Destroy(go.gameObject);
+#endif
 		}
 	}
 
+	/// <summary>
+	/// Generates a Preview city
+	/// </summary>
 	public void GenerateCityPreview()
 	{
+		//Refresl the list then spawn the preview
 		RefreshTileList();
 		foreach (MapTile mt in m_mapTiles)
 		{
@@ -121,9 +151,17 @@ public class ProceduralMapManager : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Generates a static city
+	/// </summary>
 	private void GenerateCity()
 	{
-
+		//Refreshes the list and then spawn the buildings
+		RefreshTileList();
+		foreach (MapTile mt in m_mapTiles)
+		{
+			mt.SpawnBuilding();
+		}
 	}
 
 }

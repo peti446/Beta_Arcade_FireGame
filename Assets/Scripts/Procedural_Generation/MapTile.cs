@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public enum ETileType
@@ -63,175 +64,145 @@ public class MapTile : MonoBehaviour {
 	/// </summary>
 	protected virtual void Setup(){}
 
-	public virtual void SpawnPreviewBuilding()
+	/// <summary>
+	/// Get the current object that will be positioned onto the tile
+	/// </summary>
+	/// <returns>The building/road game object</returns>
+	protected virtual GameObject GetTileObject(ProceduralMapManager proceduralManager)
 	{
-		ProceduralMapManager pmm = ProceduralMapManager._instance;
-		if (pmm == null)
-		{
-			pmm = GameObject.FindObjectOfType<ProceduralMapManager>();
-			if(pmm == null)
-				return;
-		}
-		Vector2[] dirs = { new Vector2(1, 0), new Vector2(0, 1), new Vector2(-1, 0), new Vector2(0, -1) };
-		Dictionary<Vector2, int> directionsSizes = new Dictionary<Vector2, int>()
-				{
-					{new Vector2(1,0), 0},
-					{new Vector2(0,1), 0},
-					{new Vector2(-1,0), 0},
-					{new Vector2(0,-1), 0}
-				};
+		//Current orientation for this tile
+		Vector2 orientation =Vector2.zero;
 
+
+		//Directions to search for roads
+		Vector2[] dirs = { new Vector2(1, 0), new Vector2(0, 1), new Vector2(-1, 0), new Vector2(0, -1) };
+		//Search in all directions
+		foreach (Vector2 base_dir in dirs)
+		{
+			//multiply dir by the size to get the tiles next to us
+			Vector2 dir = new Vector3(base_dir.x * GetTileSize().x, base_dir.y * GetTileSize().y);
+			//Get the position the position of the tile in the current direction
+			int newX = m_gridX + (int)dir.x;
+			int newZ = m_gridZ + (int)dir.y;
+			//Get the tite type
+			ETileType e;
+			if (GetTileAtPos(newX, newZ, out e))
+			{
+				if (e == ETileType.Road)
+				{
+					//We got a road so set orientation to the base dir so we can rotate it later
+					orientation = base_dir;
+					break;
+				}
+			}
+		}
+
+		//If we do not have an orientation just return as the no road is nearby
+		if(orientation == Vector2.zero)
+		{
+			return null;
+		}
+
+		//Based on the tile type instanciate the correct object
 		GameObject o = null;
 		switch (m_tileType)
 		{
 			case ETileType.Size1x1:
-				if (pmm.m_spawneable1x1Buildings != null && pmm.m_spawneable1x1Buildings.Length > 0)
-					o = Instantiate(pmm.m_spawneable1x1Buildings[Random.Range(0, pmm.m_spawneable1x1Buildings.Length)]);
-
-				
+				if (proceduralManager.MapBuildingsScripteableObject.Buildings1x1.Length > 0)
 				{
-					Vector2 orientation = new Vector2(1, 0);
-					foreach (Vector2 dir in dirs)
-					{
-						//Get the new position
-						int newX = m_gridX + (int)dir.x;
-						int newZ = m_gridZ + (int)dir.y;
-						ETileType e;
-						if (GetTileAtPos(newX, newZ, out e))
-						{
-							if(e == ETileType.Road)
-							{
-								orientation = dir;
-								break;
-							}
-						}
-					}
-
+					o = Instantiate(proceduralManager.MapBuildingsScripteableObject.Buildings1x1[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings1x1.Length)]);
 					o.transform.rotation = Quaternion.FromToRotation(-o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
 				}
-
 				break;
 			case ETileType.Size1x2:
 			case ETileType.Size2x1:
-				if (pmm.m_spawneable1x2Buildings != null && pmm.m_spawneable1x2Buildings.Length > 0)
-					o = Instantiate(pmm.m_spawneable1x2Buildings[Random.Range(0, pmm.m_spawneable1x2Buildings.Length)]);
+				if (proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length > 0)
 				{
-					Vector2 orientation = new Vector2(1, 0);
-					foreach (Vector2 dir in dirs)
-					{
-						//Get the new position
-						int newX = m_gridX + (int)dir.x;
-						int newZ = m_gridZ + (int)dir.y;
-						ETileType e;
-						if (GetTileAtPos(newX, newZ, out e))
-						{
-							if (e == ETileType.Road)
-							{
-								orientation = dir;
-								break;
-							}
-						}
-					}
-
+					o = Instantiate(proceduralManager.MapBuildingsScripteableObject.Buildings1x2[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length)]);
 					o.transform.rotation = Quaternion.FromToRotation(-o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
 				}
 				break;
 			case ETileType.Size2x2:
-				if (pmm.m_spawneadble2x2Buildings != null && pmm.m_spawneadble2x2Buildings.Length > 0)
-					o = Instantiate(pmm.m_spawneadble2x2Buildings[Random.Range(0, pmm.m_spawneadble2x2Buildings.Length)]);
+				if (proceduralManager.MapBuildingsScripteableObject.Buildings2x2.Length > 0)
 				{
-					Vector2 orientation = new Vector2(1, 0);
-					foreach (Vector2 dir in dirs)
-					{
-						//Get the new position
-						int newX = m_gridX + (int)dir.x;
-						int newZ = m_gridZ + (int)dir.y;
-						ETileType e;
-						if (GetTileAtPos(newX, newZ, out e))
-						{
-							if (e == ETileType.Road)
-							{
-								orientation = dir;
-								break;
-							}
-						}
-					}
-
+					o = Instantiate(proceduralManager.MapBuildingsScripteableObject.Buildings2x2[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings2x2.Length)]);
 					o.transform.rotation = Quaternion.FromToRotation(-o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
 				}
 				break;
 			case ETileType.Firestation:
-				if (pmm.m_spawneableFireStations != null && pmm.m_spawneableFireStations.Length > 0)
-					o = Instantiate(pmm.m_spawneableFireStations[Random.Range(0, pmm.m_spawneableFireStations.Length)]);
-				{
-					Vector2 orientation = new Vector2(1, 0);
-					foreach (Vector2 dir in dirs)
-					{
-						//Get the new position
-						int newX = m_gridX + (int)dir.x;
-						int newZ = m_gridZ + (int)dir.y;
-						ETileType e;
-						if (GetTileAtPos(newX, newZ, out e))
-						{
-							if (e == ETileType.Road)
-							{
-								orientation = dir;
-								break;
-							}
-						}
-					}
-
-					o.transform.rotation = Quaternion.FromToRotation(-o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
-				}
-				break;
-			case ETileType.Road:
-				if (pmm.m_spawneableRoadsBuildings != null && pmm.m_spawneableRoadsBuildings.Length > 0)
-					o = Instantiate(pmm.m_spawneableRoadsBuildings[Random.Range(0, pmm.m_spawneableRoadsBuildings.Length)]);
-
-
-				foreach(Vector2 dir in dirs)
-				{
-					//Get the new position
-					int newX = m_gridX + (int)dir.x;
-					int newZ = m_gridZ + (int)dir.y;
-					//Loop in the direction unti we run out of tiles or we do not find another road tyle
-					ETileType e;
-					while(GetTileAtPos(newX, newZ, out e))
-					{
-						//If we did not find a road exit
-						if(e != ETileType.Road)
-						{
-							break;
-						}
-						//Update the size
-						directionsSizes[dir] += 1;
-
-						//Update the grid pos
-						newX += (int)dir.x;
-						newZ += (int)dir.y;
-					}
-				}
-				{
-					Vector2 orientation = new Vector2(1, 0);
-					foreach (KeyValuePair<Vector2, int> dirDistances in directionsSizes)
-					{
-						if (directionsSizes[orientation] < dirDistances.Value)
-							orientation = dirDistances.Key;
-					}
-
-					o.transform.rotation = Quaternion.FromToRotation(o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
-				}
+				o = Instantiate(proceduralManager.MapBuildingsScripteableObject.FireStation);
+				o.transform.rotation = Quaternion.FromToRotation(-o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
 				break;
 		}
-		if(o != null)
-		{
-			o.tag = "PreviewBuilding";
-			o.transform.position = transform.position;
-		}
+		return o;
 	}
 
-	protected virtual void SpawnBuilding()
+	/// <summary>
+	/// Spawns a preview of the object
+	/// </summary>
+	public void SpawnPreviewBuilding()
 	{
+		ProceduralMapManager proceduralManager = ProceduralMapManager._instance;
+		//If there is no manager return as we cannot spawn any object so just return
+		if (proceduralManager == null)
+		{
+#if UNITY_EDITOR
+			if (!EditorApplication.isPlaying)
+			{
+				proceduralManager = GameObject.FindObjectOfType<ProceduralMapManager>();
+			}
+			else
+			{
+#endif
+			Debug.LogError("Cannot spawn buildins without a procedural manager");
+			return;
+#if UNITY_EDITOR
+			}
+#endif
+		}
+		//Get the tile object to place it in the world
+		GameObject tileObject = GetTileObject(proceduralManager);
+		if(tileObject != null)
+		{
+			//Mark the object as a preview
+			tileObject.tag = "PreviewBuilding";
+			//Set the position of the object to the tile one
+			tileObject.transform.position = transform.position;
+		}
+	}
+	/// <summary>
+	/// Spawns the building and removes the tile
+	/// </summary>
+	public void SpawnBuilding()
+	{
+		ProceduralMapManager proceduralManager = ProceduralMapManager._instance;
+		//If there is no manager return as we cannot spawn any object so just return
+		if (proceduralManager == null)
+		{
+#if UNITY_EDITOR
+			if (!EditorApplication.isPlaying)
+			{
+				proceduralManager = GameObject.FindObjectOfType<ProceduralMapManager>();
+			}
+			else
+			{
+#endif
+				Debug.LogError("Cannot spawn buildins without a procedural manager");
+				return;
+#if UNITY_EDITOR
+			}
+#endif
+		}
+		//Get the object that should be placed in this world
+		GameObject tileObject = GetTileObject(proceduralManager);
+		if (tileObject != null)
+		{
+			//Set the position of the object to the tile one
+			tileObject.transform.position = transform.position;
+
+			//Destroy the tile
+			Destroy(gameObject);
+		}
 	}
 
 	/// <summary>

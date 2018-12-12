@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4fcfee434b62334ba0b597e4b34ad32, type: 3}
+  m_Name: DefaultBuildingsList
+  m_EditorClassIdentifier: 
+  Buildings1x1:
+  - {fileID: 1171271051389238, guid: b7631581722bba242bc24304e319a1f0, type: 2}
+  - {fileID: 1452339418431806, guid: 90891ffb6062cb64aa83b8669c7319eb, type: 2}
+  - {fileID: 1095227043303646, guid: 864902d7916d2fc46b5606a3f3d5d518, type: 2}
+  - {fileID: 1225913617740956, guid: 78713bbc01606564187a56c0735548c3, type: 2}
+  - {fileID: 1761037916267904, guid: c020be75a6d009d499ac3393ad071994, type: 2}
+  - {fileID: 1249696444381802, guid: 9361a99678a572c4792027cb496fb45f, type: 2}
+  - {fileID: 1951875267097902, guid: 716a2f0a865821a40a2f68aa88556a14, type: 2}
+  Buildings2x1:
+  - {fileID: 1136805528920706, guid: 5cf3da794ded86b448a58e21a4275745, type: 2}
+  - {fileID: 1599817644536340, guid: 662c8cbeb12764d49a5b5a18fe50a552, type: 2}
+  Buildings1x2:
+  - {fileID: 1136805528920706, guid: 5cf3da794ded86b448a58e21a4275745, type: 2}
+  - {fileID: 1599817644536340, guid: 662c8cbeb12764d49a5b5a18fe50a552, type: 2}
+  Buildings2x2: []
+  FireStation: {fileID: 1581890665710094, guid: 9f92d820a664bed469b57642120d68c8,
+    type: 2}
+  Road: {fileID: 1700440324196066, guid: cdc7daf583215174ea27414fd556a172, type: 2}

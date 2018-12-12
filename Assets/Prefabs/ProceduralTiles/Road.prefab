@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33666540720130574}
   - component: {fileID: 64149260572081434}
   - component: {fileID: 23544853534880420}
-  - component: {fileID: 114408227503082122}
+  - component: {fileID: 114771155688369182}
   m_Layer: 30
   m_Name: Road
   m_TagString: Untagged
@@ -98,7 +98,7 @@ MeshCollider:
   m_CookingOptions: 14
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &114408227503082122
+--- !u!114 &114771155688369182
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -106,9 +106,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1348384338479644}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c3731ca1da10d74d8187c03826f0b37, type: 3}
+  m_Script: {fileID: 11500000, guid: 885d961120ff3b8418199442804bcb14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_gridX: 0
   m_gridZ: 0
+<<<<<<< HEAD
   m_tileType: 5
+=======
+  m_tileType: 0
+>>>>>>> Road generation done
