@@ -144,7 +144,7 @@ public class MapTile : MonoBehaviour {
 	{
 		ProceduralMapManager proceduralManager = ProceduralMapManager._instance;
 		//If there is no manager return as we cannot spawn any object so just return
-		if (proceduralManager == null)
+		if (proceduralManager == null || proceduralManager.MapBuildingsScripteableObject == null)
 		{
 #if UNITY_EDITOR
 			if (!EditorApplication.isPlaying)
@@ -177,7 +177,7 @@ public class MapTile : MonoBehaviour {
 	{
 		ProceduralMapManager proceduralManager = ProceduralMapManager._instance;
 		//If there is no manager return as we cannot spawn any object so just return
-		if (proceduralManager == null)
+		if (proceduralManager == null || proceduralManager.MapBuildingsScripteableObject == null)
 		{
 #if UNITY_EDITOR
 			if (!EditorApplication.isPlaying)

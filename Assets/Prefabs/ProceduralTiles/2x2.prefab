@@ -109,6 +109,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c3731ca1da10d74d8187c03826f0b37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GridX: 0
-  GridZ: 0
+  m_gridX: 0
+  m_gridZ: 0
   m_tileType: 3
