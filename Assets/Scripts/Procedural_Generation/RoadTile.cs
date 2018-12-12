@@ -6,31 +6,6 @@ using UnityEngine;
 
 public class RoadTile : MapTile
 {
-	private static readonly IDictionary<NearbyRoadsPos, Vector2Int> Directions = new Dictionary<NearbyRoadsPos, Vector2Int>()
-	{
-		{ NearbyRoadsPos.North, new Vector2Int(1, 0) },
-		{ NearbyRoadsPos.NorthEast, new Vector2Int(1, -1) },
-		{ NearbyRoadsPos.East,  new Vector2Int(0, -1) },
-		{ NearbyRoadsPos.SouthEast,  new Vector2Int(-1, -1) },
-		{ NearbyRoadsPos.South, new Vector2Int(-1, 0) },
-		{ NearbyRoadsPos.SouthWest,  new Vector2Int(-1, 1) },
-		{ NearbyRoadsPos.West, new Vector2Int(0,1) },
-		{ NearbyRoadsPos.NortWest, new Vector2Int(1, 1) }
-	};
-
-	[Flags]
-	private enum NearbyRoadsPos
-	{
-		None			= 0,
-		North			= 1 << 0,
-		NorthEast		= 1 << 1,
-		East			= 1 << 2,
-		SouthEast		= 1 << 3,
-		South			= 1 << 4,
-		SouthWest		= 1 << 5,
-		West			= 1 << 6,
-		NortWest		= 1 << 7
-	}
 
 	protected override void Setup()
 	{

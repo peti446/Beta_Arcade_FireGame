@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public enum ETileType
 {
@@ -19,6 +22,10 @@ public class MapTile : MonoBehaviour {
 	[HideInInspector]
 	[SerializeField]
 	protected ETileType m_tileType = ETileType.Size1x1;
+
+	/// <summary>
+	/// The tile type of this tile
+	/// </summary>
 	public ETileType TileType
 	{
 		get
@@ -30,13 +37,47 @@ public class MapTile : MonoBehaviour {
 			m_tileType = value;
 		}
 	}
+
+	/// <summary>
+	/// Accessor to get the current grid x pos
+	/// </summary>
 	public int GridX
 	{
 		get { return m_gridX; }
 	}
+	/// <summary>
+	/// Accesor to get the current grid z pos
+	/// </summary>
 	public int GridZ
 	{
 		get { return m_gridZ; }
+	}
+
+
+	protected static readonly IDictionary<NearbyRoadsPos, Vector2Int> Directions = new Dictionary<NearbyRoadsPos, Vector2Int>()
+	{
+		{ NearbyRoadsPos.North, new Vector2Int(1, 0) },
+		{ NearbyRoadsPos.NorthEast, new Vector2Int(1, -1) },
+		{ NearbyRoadsPos.East,  new Vector2Int(0, -1) },
+		{ NearbyRoadsPos.SouthEast,  new Vector2Int(-1, -1) },
+		{ NearbyRoadsPos.South, new Vector2Int(-1, 0) },
+		{ NearbyRoadsPos.SouthWest,  new Vector2Int(-1, 1) },
+		{ NearbyRoadsPos.West, new Vector2Int(0,1) },
+		{ NearbyRoadsPos.NortWest, new Vector2Int(1, 1) }
+	};
+
+	[Flags]
+	protected enum NearbyRoadsPos
+	{
+		None = 0,
+		North = 1 << 0,
+		NorthEast = 1 << 1,
+		East = 1 << 2,
+		SouthEast = 1 << 3,
+		South = 1 << 4,
+		SouthWest = 1 << 5,
+		West = 1 << 6,
+		NortWest = 1 << 7
 	}
 
 	//To controll the setup
@@ -70,17 +111,12 @@ public class MapTile : MonoBehaviour {
 	/// <returns>The building/road game object</returns>
 	protected virtual GameObject GetTileObject(ProceduralMapManager proceduralManager)
 	{
-		//Current orientation for this tile
-		Vector2 orientation =Vector2.zero;
-
-
-		//Directions to search for roads
-		Vector2[] dirs = { new Vector2(1, 0), new Vector2(0, 1), new Vector2(-1, 0), new Vector2(0, -1) };
-		//Search in all directions
-		foreach (Vector2 base_dir in dirs)
+		//Current position of the road
+		NearbyRoadsPos roadsPos = NearbyRoadsPos.None;
+		//Try to figure out where roads are
+		foreach(KeyValuePair<NearbyRoadsPos, Vector2Int> dirs in Directions)
 		{
-			//multiply dir by the size to get the tiles next to us
-			Vector2 dir = new Vector3(base_dir.x * GetTileSize().x, base_dir.y * GetTileSize().y);
+			Vector2 dir = new Vector3(dirs.Value.x * GetTileSize().x, dirs.Value.y * GetTileSize().y);
 			//Get the position the position of the tile in the current direction
 			int newX = m_gridX + (int)dir.x;
 			int newZ = m_gridZ + (int)dir.y;
@@ -91,48 +127,92 @@ public class MapTile : MonoBehaviour {
 				if (e == ETileType.Road)
 				{
 					//We got a road so set orientation to the base dir so we can rotate it later
-					orientation = base_dir;
-					break;
+					roadsPos |= dirs.Key;
 				}
 			}
 		}
+		//Unset uneeded flags
+		roadsPos &= ~NearbyRoadsPos.NorthEast;
+		roadsPos &= ~NearbyRoadsPos.NortWest;
+		roadsPos &= ~NearbyRoadsPos.SouthEast;
+		roadsPos &= ~NearbyRoadsPos.SouthWest;
 
-		//If we do not have an orientation just return as the no road is nearby
-		if(orientation == Vector2.zero)
-		{
-			return null;
+		//Master Orientation
+		Vector2 orientation = Vector2.zero;
+		//Random orientation in each direction in case a sub tile needs to specialice
+		Vector2 xBasedOrientation = Vector2.zero;
+		Vector2 yBasedOrientation = Vector2.zero;
+
+		NearbyRoadsPos[] allFlags = Enum.GetValues(typeof(NearbyRoadsPos))
+											   .Cast<NearbyRoadsPos>()
+											   .Where(c => (roadsPos & c) == c && c != 0) 
+											   .ToArray();
+
+		//Get a randome orientation to a road
+		orientation = Directions[allFlags[Random.Range(0, allFlags.Length)]];
+		//Find a valid xbased orientation
+		if ((roadsPos & (NearbyRoadsPos.North | NearbyRoadsPos.South)) != 0) {
+			do
+			{
+				xBasedOrientation = Directions[allFlags[Random.Range(0, allFlags.Length)]];
+			} while (xBasedOrientation.y != 0);
+		}
+		//Find a valid ybased orientation
+		if ((roadsPos & (NearbyRoadsPos.West | NearbyRoadsPos.East)) != 0) {
+			do
+			{
+				yBasedOrientation = Directions[allFlags[Random.Range(0, allFlags.Length)]];
+			} while (yBasedOrientation.x != 0);
 		}
 
 		//Based on the tile type instanciate the correct object
-		GameObject o = null;
+		GameObject gameObjectToSpawn = null;
 		switch (m_tileType)
 		{
 			case ETileType.Size1x1:
-				if (proceduralManager.MapBuildingsScripteableObject.Buildings1x1.Length > 0)
+				if (proceduralManager.MapBuildingsScripteableObject.Buildings1x1 != null && proceduralManager.MapBuildingsScripteableObject.Buildings1x1.Length > 0)
 				{
-					o = Instantiate(proceduralManager.MapBuildingsScripteableObject.Buildings1x1[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings1x1.Length)]);
+					gameObjectToSpawn = proceduralManager.MapBuildingsScripteableObject.Buildings1x1[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings1x1.Length)];
 				}
+				break;
+			case ETileType.Size2x1:
+				if (proceduralManager.MapBuildingsScripteableObject.Buildings1x2 != null && proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length > 0)
+				{
+					gameObjectToSpawn = proceduralManager.MapBuildingsScripteableObject.Buildings1x2[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length)];
+				}
+				//Make sure to use correct orientation
+				orientation = yBasedOrientation;
 				break;
 			case ETileType.Size1x2:
-			case ETileType.Size2x1:
-				if (proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length > 0)
+				if (proceduralManager.MapBuildingsScripteableObject.Buildings1x2 != null && proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length > 0)
 				{
-					o = Instantiate(proceduralManager.MapBuildingsScripteableObject.Buildings1x2[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length)]);
+					gameObjectToSpawn = proceduralManager.MapBuildingsScripteableObject.Buildings1x2[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length)];
 				}
+				//Make sure to use correct orientation
+				orientation = xBasedOrientation;
 				break;
 			case ETileType.Size2x2:
-				if (proceduralManager.MapBuildingsScripteableObject.Buildings2x2.Length > 0)
+				if (proceduralManager.MapBuildingsScripteableObject.Buildings2x2 != null && proceduralManager.MapBuildingsScripteableObject.Buildings2x2.Length > 0)
 				{
-					o = Instantiate(proceduralManager.MapBuildingsScripteableObject.Buildings2x2[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings2x2.Length)]);
+					gameObjectToSpawn = proceduralManager.MapBuildingsScripteableObject.Buildings2x2[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings2x2.Length)];
 				}
 				break;
 			case ETileType.Firestation:
-				o = Instantiate(proceduralManager.MapBuildingsScripteableObject.FireStation);
+				if (proceduralManager.MapBuildingsScripteableObject.FireStation != null)
+					gameObjectToSpawn = proceduralManager.MapBuildingsScripteableObject.FireStation;
 				break;
 		}
-		if(o != null)
-			o.transform.rotation = Quaternion.FromToRotation(o.transform.right, new Vector3(orientation.x, 0, orientation.y));
-		return o;
+
+
+		GameObject spawnedObject = null;
+		//Spawn the object and set its values
+		if (gameObjectToSpawn != null)
+		{
+			spawnedObject = Instantiate(gameObjectToSpawn);
+			spawnedObject.transform.rotation = Quaternion.FromToRotation(spawnedObject.transform.right, new Vector3(orientation.x, 0, orientation.y));
+		}
+		//Return it
+		return spawnedObject;
 	}
 
 	/// <summary>
