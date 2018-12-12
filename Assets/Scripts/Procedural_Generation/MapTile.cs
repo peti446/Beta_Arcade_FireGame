@@ -246,6 +246,28 @@ public class MapTile : MonoBehaviour {
 			tileObject.tag = "PreviewBuilding";
 			//Set the position of the object to the tile one
 			tileObject.transform.position = transform.position;
+			//Get the building in the child
+			foreach (Transform child in tileObject.transform)
+			{
+				if (child.GetComponent<BuildingStatus>() != null)
+				{
+					//Get the renderer for the building
+					Renderer buildingRenderer = child.GetComponent<Renderer>();
+					if (buildingRenderer != null)
+					{
+						//Get the burning material
+						Material burningMaterial = buildingRenderer.material;
+						//Check if we have a burning material first
+						if (burningMaterial.HasProperty("_MaxBuildingTexturesCount") && burningMaterial.HasProperty("_BuildingTextureIndex"))
+						{
+							//Get the maximum
+							int maxTextureIndexExclusive = burningMaterial.GetInt("_MaxBuildingTexturesCount");
+							//Set the base colour
+							burningMaterial.SetInt("_BuildingTextureIndex", Random.Range(0, maxTextureIndexExclusive));
+						}
+					}
+				}
+			}
 		}
 	}
 	/// <summary>
@@ -280,6 +302,29 @@ public class MapTile : MonoBehaviour {
 
 			//Destroy the tile
 			Destroy(gameObject);
+
+			//Get the building in the child
+			foreach (Transform child in tileObject.transform)
+			{
+				if (child.GetComponent<BuildingStatus>() != null)
+				{
+					//Get the renderer for the building
+					Renderer buildingRenderer = child.GetComponent<Renderer>();
+					if (buildingRenderer != null)
+					{
+						//Get the burning material
+						Material burningMaterial = buildingRenderer.material;
+						//Check if we have a burning material first
+						if (burningMaterial.HasProperty("_MaxBuildingTexturesCount") && burningMaterial.HasProperty("_BuildingTextureIndex"))
+						{
+							//Get the maximum
+							int maxTextureIndexExclusive = burningMaterial.GetInt("_MaxBuildingTexturesCount");
+							//Set the base colour
+							burningMaterial.SetInt("_BuildingTextureIndex", Random.Range(0, maxTextureIndexExclusive));
+						}
+					}
+				}
+			}
 		}
 	}
 
