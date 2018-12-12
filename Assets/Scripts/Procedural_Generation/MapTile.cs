@@ -256,7 +256,19 @@ public class MapTile : MonoBehaviour {
 					if (buildingRenderer != null)
 					{
 						//Get the burning material
-						Material burningMaterial = buildingRenderer.material;
+						Material burningMaterial = null;
+#if UNITY_EDITOR
+						if (!EditorApplication.isPlaying)
+						{
+							burningMaterial = buildingRenderer.sharedMaterial;
+						}
+						else
+						{
+							burningMaterial = buildingRenderer.material;
+						}
+#else
+						burningMaterial = buildingRenderer.material;
+#endif
 						//Check if we have a burning material first
 						if (burningMaterial.HasProperty("_MaxBuildingTexturesCount") && burningMaterial.HasProperty("_BuildingTextureIndex"))
 						{
@@ -313,7 +325,18 @@ public class MapTile : MonoBehaviour {
 					if (buildingRenderer != null)
 					{
 						//Get the burning material
-						Material burningMaterial = buildingRenderer.material;
+						Material burningMaterial = null;
+#if UNITY_EDITOR
+						if (!EditorApplication.isPlaying)
+						{
+							burningMaterial = buildingRenderer.sharedMaterial;
+						} else
+						{
+							burningMaterial = buildingRenderer.material;
+						}
+#else
+						burningMaterial = buildingRenderer.material;
+#endif
 						//Check if we have a burning material first
 						if (burningMaterial.HasProperty("_MaxBuildingTexturesCount") && burningMaterial.HasProperty("_BuildingTextureIndex"))
 						{
