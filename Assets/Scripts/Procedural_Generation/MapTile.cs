@@ -111,7 +111,6 @@ public class MapTile : MonoBehaviour {
 				if (proceduralManager.MapBuildingsScripteableObject.Buildings1x1.Length > 0)
 				{
 					o = Instantiate(proceduralManager.MapBuildingsScripteableObject.Buildings1x1[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings1x1.Length)]);
-					o.transform.rotation = Quaternion.FromToRotation(-o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
 				}
 				break;
 			case ETileType.Size1x2:
@@ -119,21 +118,20 @@ public class MapTile : MonoBehaviour {
 				if (proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length > 0)
 				{
 					o = Instantiate(proceduralManager.MapBuildingsScripteableObject.Buildings1x2[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings1x2.Length)]);
-					o.transform.rotation = Quaternion.FromToRotation(-o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
 				}
 				break;
 			case ETileType.Size2x2:
 				if (proceduralManager.MapBuildingsScripteableObject.Buildings2x2.Length > 0)
 				{
 					o = Instantiate(proceduralManager.MapBuildingsScripteableObject.Buildings2x2[Random.Range(0, proceduralManager.MapBuildingsScripteableObject.Buildings2x2.Length)]);
-					o.transform.rotation = Quaternion.FromToRotation(-o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
 				}
 				break;
 			case ETileType.Firestation:
 				o = Instantiate(proceduralManager.MapBuildingsScripteableObject.FireStation);
-				o.transform.rotation = Quaternion.FromToRotation(-o.transform.right, o.transform.TransformDirection(new Vector3(orientation.x, 0, orientation.y)));
 				break;
 		}
+		if(o != null)
+			o.transform.rotation = Quaternion.FromToRotation(o.transform.right, new Vector3(orientation.x, 0, orientation.y));
 		return o;
 	}
 

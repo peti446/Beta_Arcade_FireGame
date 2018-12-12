@@ -110,7 +110,6 @@ public class RoadObject : MonoBehaviour
 				return;
 			}
 			//Rotate
-			Debug.Log(transform.name + " " + roadType.ToString() + " " + targetOrientation.ToString());
 			transform.rotation *= Quaternion.AngleAxis((ushort)targetOrientation * 90.0f, transform.up);
 		}
 	}
