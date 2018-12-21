@@ -97,8 +97,9 @@ public class Vehicle : NetworkBehaviour {
         Vector3 newMove = transform.forward * m_vehicleSpeed;
         newMove.y = m_vehicleRigibody.velocity.y;
         m_vehicleRigibody.velocity = newMove;
+        m_vehicleRigibody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
 
-    }
+  }
 
     /// <summary>
     /// Move the vehicle depends on horizontal and vertical inputs
