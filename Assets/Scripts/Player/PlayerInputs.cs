@@ -16,7 +16,6 @@ public class PlayerInputs : MonoBehaviour
 	void Update()
 	{
 
-
 		//Only exeute if moving
 		if(m_character.State == EPlayerStatus.Idle || m_character.State == EPlayerStatus.Moving)
 			m_character.SetInputs(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));

@@ -1,57 +1,4 @@
-﻿/*
- 
-                                      _                             
-                             _.      .' `-.                          
-                           .'  `-.::/_.    `.                        
-                          /   _.   .'        \                       
-                        .' .'\  `./      `.   \                      
-                     .-'  /   '.    .'.    \   ;                     
-                  .-'  .-'      \ .'   \    .  |                     
-               .-'   .'      .-._'_.-.  \    . :                     
-              /     /     .-'    '    `. '.     \         :          
-             :     :     /              `. '.    `.      /|          
-              \    |    /                /`. '-.   `-._.' ;          
-               ;   |  .;                :   \   '-.      /           
-       `.     /    :.'/      _       _   \   \     \  _.'            
-        \`._.'    // :    .s$$P     T$$s. '.  \     ; \              
-         `._.   .':  |  .dP'           `Tb. \  \    |  `.            
-            /  /  |  | dP  .-.       .-.  Tb ;  .   |    `-.         
-        `_.'  :   |  |'   'd$b       d$b`   `|` |   |     | `.       
-         '.   |   |  :   ':$$$       $$$:`   '\ |   '    /|   \      
-           `-'|   |  :` ; |T$P       T$P| : '  :|  /   .' ;    ;     
-              :   :   \\`-:__.       .__:-'/ .' |.'\_.'  /     |     
-              /\   \   .\        s        / :   /|      /      :     
-             .  '.  \  | \     .___.     /   \ : |    .'      /      
-           .'     \  'X   '.           .'\    '.\|\.-'      .'       
-         .'        \   '.  |`.       .'|  :      `.'.    .-'|        
-        /           '    '-:  `-._.-'; |   `.      \ '-.'   ;        
-       :             '      \       /  |--.._J.-.    '.  './    -.   
-        \             \      \     :         / . `-.  \   '.     \`. 
-         `.      .     ;      ;             /   `-. `-.;    \     : .
-           `-._.'      |      |          __/          /|     \._.'  '
-            .' .       ;      :     _.-"'.'         .: |      ;    / 
-           /   |\     /      /         .' .-'    .-'  \|      |   /  
-          /    : '._.'     .'.       .'  /    .-'     .'      : .'   
-         :      \        .'-. `.   .' .-'  .-'       /       /"'     
-     .:' |      |`-.__.-'`-. \_ `s'.-'  .-'         /      .'        
-   .'/   :      :           `._.' `._.-'           :    .-'          
- .' :     \      \             `._.'               |   (             
-.   :     /`.     `-.           ;|:                :    \            
-:    `._.'   `-._    `-.       , : .               |\    '.          
- `.               `.     `.     ;'. ;               ' `.    `-.__.   
-   `-._   _.'      ;\      `.   | : |              /    `*+.__.-'    
-   .'  `"'        /  ;       \  |.' |             '                  
-  /             .'   |        . : ` ;--._     _.-'                   
- /   :      _.-'     :        |  \ /                                 
-:    |\             /         ;   V                                  
-|    `.`.        _.'         /                                       
-:      \ `-.._.-'          .'                                        
-
-kony was here
- */
-
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Networking;
 
 public enum EPlayerStatus
@@ -248,23 +195,30 @@ public class Character : NetworkBehaviour
 	{
 		m_controllingPlayerID = id;
 	}
+  
+  /// <summary>
+  /// visual representation of the hose of the firefighter character. empty due to
+  /// the proper particle system not being available yet. placeholder particles
+  /// made by yours truly can still be called if necessary.
+  /// </summary>
+  /// <param name="open">either you are using the hose by holding down button or not</param>
+  public void ToggleHose(bool open)
+  {
+    if (open)
+    {
+      
+    }
+    else
+    {
 
-	public void ToggleHose(bool open)
-	{
-		if (open)
-		{
-			//hose.GetComponent<ParticleSystem>().enableEmission = true;
-			//hose.GetComponent<ParticleSystem>().Play();
-		}
-		else if (!open)
-		{
-			//hose.GetComponent<ParticleSystem>().enableEmission = false;
-		}
-	}
+    }
+  }
 
-	///TODO: JOE KONY COMENTA LAS COSDAS POR DIOS (FIRMADO KONY)
 	/// <summary>
-	/// 11
+	/// Raycast in client side from the player to the interactuable objects.
+  /// Works by calling the server interaction function as well and calling the
+  /// functions of the interactuable objects that all have the Interact script
+  /// in common.
 	/// </summary>
 	[Client]
 	public void InteractRay()
@@ -278,13 +232,16 @@ public class Character : NetworkBehaviour
 			{
 				CmdInteractServer();
 				hit.collider.GetComponent<Interact>().ClientInteract(this);
-				m_lastInteractedObj = hit.collider.gameObject;
-				
+				m_lastInteractedObj = hit.collider.gameObject;			
 			}
 		}
 	}
 
-	[Command]
+  /// <summary>
+  /// Raycast in server side from the player to the interactuable objects.
+  /// Called by the client's side version of this method.
+  /// </summary>
+  [Command]
 	private void CmdInteractServer()
 	{
 		Debug.DrawRay(transform.position, transform.forward * 10, Color.red);
@@ -300,6 +257,10 @@ public class Character : NetworkBehaviour
 		}
 	}
 
+  /// <summary>
+  /// Method to be called when the player's interaction with the interactuable gameobjects
+  /// should be stopped, on the client side. This works by calling said gameobject's stop interact event.
+  /// </summary>
 	[Client]
 	public void StopInteraction()
 	{
@@ -310,7 +271,11 @@ public class Character : NetworkBehaviour
 		}
 	}
 
-	[Command]
+  /// <summary>
+  /// Method to be called when the player's interaction with the interactuable gameobjects
+  /// should be stopped, on the server side. This works by calling said gameobject's stop interact event.
+  /// </summary>
+  [Command]
 	private void CmdServerStopInteract()
 	{
 		if (m_lastInteractedObj != null && m_lastInteractedObj.GetComponent<Interact>() != null)
