@@ -1,0 +1,269 @@
+fileFormatVersion: 2
+guid: 791e1f807ee4d334fa002ef3c1658363
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Bip001
+    100002: Bip001_Head
+    100004: Bip001_L_Calf
+    100006: Bip001_L_Clavicle
+    100008: Bip001_L_Finger0
+    100010: Bip001_L_Finger01
+    100012: Bip001_L_Finger1
+    100014: Bip001_L_Finger11
+    100016: Bip001_L_Foot
+    100018: Bip001_L_Foot2
+    100020: Bip001_L_Foot3
+    100022: Bip001_L_Forearm
+    100024: Bip001_L_Hand
+    100026: Bip001_L_Tight
+    100028: Bip001_L_Toe_Fingers001
+    100030: Bip001_L_UpperArm
+    100032: Bip001_Neck
+    100034: Bip001_Pelvis
+    100036: Bip001_R_Calf
+    100038: Bip001_R_Clavicle
+    100040: Bip001_R_Finger0
+    100042: Bip001_R_Finger01
+    100044: Bip001_R_Finger1
+    100046: Bip001_R_Finger11
+    100048: Bip001_R_Foot
+    100050: Bip001_R_Foot2
+    100052: Bip001_R_Foot3
+    100054: Bip001_R_Forearm
+    100056: Bip001_R_Hand
+    100058: Bip001_R_Tight
+    100060: Bip001_R_Toe_Fingers
+    100062: Bip001_R_UpperArm
+    100064: Bip001_Spine1
+    100066: Bip001_Spine2
+    100068: Box001
+    100070: Circle001
+    100072: Circle002
+    100074: Circle009
+    100076: Circle010
+    100078: //RootNode
+    100080: Hand Palm Bend Control
+    100082: IK Chain013
+    100084: IK Chain014
+    100086: IK Chain015
+    100088: IK Chain016
+    100090: IK Chain017
+    100092: IK Chain018
+    100094: L_Feet_Ankle_Control
+    100096: L_Feet_DummyTurn
+    100098: L_Feet_Heel_Control
+    100100: L_Feet_MainControl
+    100102: L_Foot_Fingers_Control
+    100104: L_Heel_Control
+    100106: L_Knee_Control
+    100108: L_Leg Control
+    100110: Left Hand Control
+    100112: Left Shoulder control
+    100114: Left Thumb Finger Bend Control
+    100116: Left Thumb Finger control
+    100118: Main Head Control
+    100120: Main HIP Control
+    100122: Main UpperBody Control
+    100124: Matchstick
+    100126: Model_Body
+    100128: Model_Eyes
+    100130: Model_Flame
+    100132: Model_Head
+    100134: Neck Control
+    100136: R_Feet_Ankle_Control
+    100138: R_Feet_DummyTurn
+    100140: R_Feet_Heel_Control
+    100142: R_Feet_MainControl
+    100144: R_Foot_Fingers_Control
+    100146: R_Heel_Control
+    100148: R_Knee_Control
+    100150: R_Leg Control
+    100152: Ragdoll001
+    100154: Right Hand Bend Control
+    100156: Right Hand Control
+    100158: Right Shoulder Control
+    100160: Right Thumb Control
+    100162: Right Thumb Finger Bend Control
+    100164: sliderManipulator001
+    100166: WholeBodyControl
+    400000: Bip001
+    400002: Bip001_Head
+    400004: Bip001_L_Calf
+    400006: Bip001_L_Clavicle
+    400008: Bip001_L_Finger0
+    400010: Bip001_L_Finger01
+    400012: Bip001_L_Finger1
+    400014: Bip001_L_Finger11
+    400016: Bip001_L_Foot
+    400018: Bip001_L_Foot2
+    400020: Bip001_L_Foot3
+    400022: Bip001_L_Forearm
+    400024: Bip001_L_Hand
+    400026: Bip001_L_Tight
+    400028: Bip001_L_Toe_Fingers001
+    400030: Bip001_L_UpperArm
+    400032: Bip001_Neck
+    400034: Bip001_Pelvis
+    400036: Bip001_R_Calf
+    400038: Bip001_R_Clavicle
+    400040: Bip001_R_Finger0
+    400042: Bip001_R_Finger01
+    400044: Bip001_R_Finger1
+    400046: Bip001_R_Finger11
+    400048: Bip001_R_Foot
+    400050: Bip001_R_Foot2
+    400052: Bip001_R_Foot3
+    400054: Bip001_R_Forearm
+    400056: Bip001_R_Hand
+    400058: Bip001_R_Tight
+    400060: Bip001_R_Toe_Fingers
+    400062: Bip001_R_UpperArm
+    400064: Bip001_Spine1
+    400066: Bip001_Spine2
+    400068: Box001
+    400070: Circle001
+    400072: Circle002
+    400074: Circle009
+    400076: Circle010
+    400078: //RootNode
+    400080: Hand Palm Bend Control
+    400082: IK Chain013
+    400084: IK Chain014
+    400086: IK Chain015
+    400088: IK Chain016
+    400090: IK Chain017
+    400092: IK Chain018
+    400094: L_Feet_Ankle_Control
+    400096: L_Feet_DummyTurn
+    400098: L_Feet_Heel_Control
+    400100: L_Feet_MainControl
+    400102: L_Foot_Fingers_Control
+    400104: L_Heel_Control
+    400106: L_Knee_Control
+    400108: L_Leg Control
+    400110: Left Hand Control
+    400112: Left Shoulder control
+    400114: Left Thumb Finger Bend Control
+    400116: Left Thumb Finger control
+    400118: Main Head Control
+    400120: Main HIP Control
+    400122: Main UpperBody Control
+    400124: Matchstick
+    400126: Model_Body
+    400128: Model_Eyes
+    400130: Model_Flame
+    400132: Model_Head
+    400134: Neck Control
+    400136: R_Feet_Ankle_Control
+    400138: R_Feet_DummyTurn
+    400140: R_Feet_Heel_Control
+    400142: R_Feet_MainControl
+    400144: R_Foot_Fingers_Control
+    400146: R_Heel_Control
+    400148: R_Knee_Control
+    400150: R_Leg Control
+    400152: Ragdoll001
+    400154: Right Hand Bend Control
+    400156: Right Hand Control
+    400158: Right Shoulder Control
+    400160: Right Thumb Control
+    400162: Right Thumb Finger Bend Control
+    400164: sliderManipulator001
+    400166: WholeBodyControl
+    2100000: 02 - Default
+    2100002: 07 - Default
+    2100004: 03 - Default
+    2300000: Box001
+    2300002: Model_Flame
+    3300000: Box001
+    3300002: Model_Flame
+    4300000: Model_Flame
+    4300002: Box001
+    4300004: Model_Body
+    4300006: Model_Head
+    4300008: Model_Eyes
+    9500000: //RootNode
+    13700000: Model_Body
+    13700002: Model_Eyes
+    13700004: Model_Head
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
