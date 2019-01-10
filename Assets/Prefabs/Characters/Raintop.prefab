@@ -1862,6 +1862,7 @@ GameObject:
   - component: {fileID: 54615040689381864}
   - component: {fileID: 114415544453117042}
   - component: {fileID: 114863631360994502}
+  - component: {fileID: 95695699554915690}
   m_Layer: 28
   m_Name: Raintop
   m_TagString: Untagged
@@ -4027,6 +4028,23 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!95 &95695699554915690
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1924839943697842}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 50c1b6d4f9d40e049a99bc1c68374af8, type: 3}
+  m_Controller: {fileID: 9100000, guid: 52b7791db7a1e534e841da0e5c51f0f2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 1
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &114007423612391874
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4091,6 +4109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f2e0aa0490fcc0459c198585d8f2aee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_animator: {fileID: 0}
   m_movingSpeed: 10
   m_movingRotationSpeed: 5
   m_cameraRotationSpeed: 2

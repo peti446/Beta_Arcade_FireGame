@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Burnling : Character {
 
+
+
 	// Use this for initialization
 	void Start () {
 		
