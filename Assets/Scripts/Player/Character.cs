@@ -8,7 +8,7 @@ public enum EPlayerStatus
 
 public class Character : NetworkBehaviour
 {
-  [SerializeField]
+  
   public Animator m_animator;
   [SerializeField]
 	private float m_movingSpeed = 8.5f;
@@ -104,6 +104,8 @@ public class Character : NetworkBehaviour
 
 
       //ANIMATOR
+      m_animator.SetBool("walkin", true);
+
       //END OF ANIMATOR
       m_cameraPivot.transform.rotation = transform.rotation;
 			m_cameraRotation = Vector2.SmoothDamp(m_cameraRotation, Vector2.zero, ref DampVelocityCamera, 0.2f, 99999, Time.deltaTime);
@@ -125,7 +127,6 @@ public class Character : NetworkBehaviour
 		//Update the position and rotation
 		m_cameraPivot.transform.position = Vector3.SmoothDamp(m_cameraPivot.transform.position, cameraTargetPos, ref DampVelocityPosition, 0.05f);
 		m_cameraPivot.transform.LookAt(gameObject.transform);
-    m_animator.SetFloat("speed", m_movingSpeed + m_rigidBodyComp.velocity.y);
   }
 
   //Init the player if it has valid values
