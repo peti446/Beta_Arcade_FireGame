@@ -20,6 +20,8 @@ public class GameUIHandler : MonoBehaviour
 	private VerticalLayoutGroup m_notificationLayout;
 	[SerializeField]
 	private TextMeshProUGUI m_InteractNotification;
+	[SerializeField]
+	private PlacingFireRadiecontroller m_settingFireController;
 
 	//Variable to control the update of this elements
 	private bool isSetup = false;
@@ -67,7 +69,10 @@ public class GameUIHandler : MonoBehaviour
 		//Update common ui variables
 		UpdateTime(GameManager._instance.GameSecondsLeft);
 
+		//Update the city burned value
+
 		//Update character specific info
+		//Update the resource bar
 		if(m_resourceCanvas.gameObject.activeSelf)
 		{
 			if (m_fireTruckRef != null)

@@ -201,9 +201,10 @@ public class GameManager : NetworkBehaviour
 	}
 
 	[Command]
-	private void CmdPlayerSettedUp(Character player)
+	private void CmdPlayerSettedUp(GameObject player)
 	{
-		m_characterList.Add(new GameManagerPlayerListSync() { character = player });
+		m_characterList.Add(new GameManagerPlayerListSync() { character = player.GetComponent<Character>() });
+		SpawnPlayer(player.GetComponent<Character>());
 	}
 
 	[Client]
@@ -215,7 +216,7 @@ public class GameManager : NetworkBehaviour
 		//Set the local player
 		LocalCharacter = localCharacteR;
 		//Send a command that the player is ready
-		CmdPlayerSettedUp(localCharacteR);
+		CmdPlayerSettedUp(localCharacteR.gameObject);
 	}
 
 	#region Network Events
