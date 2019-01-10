@@ -32,7 +32,7 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
-  - m_Name: moving_speed
+  - m_Name: speed
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -146,7 +146,7 @@ AnimatorStateTransition:
     m_ConditionEvent: is_turning
     m_EventTreshold: 0
   - m_ConditionMode: 3
-    m_ConditionEvent: moving_speed
+    m_ConditionEvent: speed
     m_EventTreshold: 20
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102116537552206924}
@@ -197,10 +197,10 @@ AnimatorStateTransition:
     m_ConditionEvent: is_turning
     m_EventTreshold: 0
   - m_ConditionMode: 4
-    m_ConditionEvent: moving_speed
+    m_ConditionEvent: speed
     m_EventTreshold: 20
   - m_ConditionMode: 3
-    m_ConditionEvent: moving_speed
+    m_ConditionEvent: speed
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102833187221121932}
@@ -341,7 +341,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 3
-    m_ConditionEvent: moving_speed
+    m_ConditionEvent: speed
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102833187221121932}
@@ -503,7 +503,7 @@ AnimatorStateTransition:
     m_ConditionEvent: is_jumping
     m_EventTreshold: 0
   - m_ConditionMode: 4
-    m_ConditionEvent: moving_speed
+    m_ConditionEvent: speed
     m_EventTreshold: 20
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102833187221121932}
@@ -527,7 +527,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 3
-    m_ConditionEvent: moving_speed
+    m_ConditionEvent: speed
     m_EventTreshold: 2
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102116537552206924}
@@ -551,7 +551,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 4
-    m_ConditionEvent: moving_speed
+    m_ConditionEvent: speed
     m_EventTreshold: 2
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102833187221121932}
@@ -602,7 +602,7 @@ AnimatorStateTransition:
     m_ConditionEvent: is_jumping
     m_EventTreshold: 0
   - m_ConditionMode: 3
-    m_ConditionEvent: moving_speed
+    m_ConditionEvent: speed
     m_EventTreshold: 20
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102116537552206924}
@@ -958,6 +958,6 @@ AnimatorStateMachine:
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 192, y: -120, z: 0}
   m_EntryPosition: {x: 180, y: 156, z: 0}
-  m_ExitPosition: {x: 648, y: -132, z: 0}
+  m_ExitPosition: {x: 648, y: -120, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: 1102066635703107258}

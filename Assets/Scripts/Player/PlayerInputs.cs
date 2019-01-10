@@ -19,16 +19,17 @@ public class PlayerInputs : MonoBehaviour
 		//Only exeute if moving
 		if(m_character.State == EPlayerStatus.Idle || m_character.State == EPlayerStatus.Moving)
 			m_character.SetInputs(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+    //Onlcy move camera if pressing the buggon
 
-		//Onlcy move camera if pressing the buggon
+    m_character.temp_m_axis = Input.GetAxis("Vertical");
+
 		if(Input.GetMouseButton(0))
 			m_character.RotatePlayer(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
 		if (Input.GetKeyDown(KeyCode.F))
 		{
 			m_character.ToggleHose(true);
-      m_character.m_animator.SetBool("using_hose", true);
-      Debug.Log("F");
+
 		}
 
 		if (Input.GetKeyDown(KeyCode.E))
@@ -44,8 +45,6 @@ public class PlayerInputs : MonoBehaviour
 		if (Input.GetKeyUp(KeyCode.F))
 		{
 			m_character.ToggleHose(false);
-      m_character.m_animator.SetBool("using_hose", false);
-
     }
   }
 }

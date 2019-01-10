@@ -9,7 +9,7 @@ public enum EPlayerStatus
 public class Character : NetworkBehaviour
 {
   
-  public Animator m_animator;
+  private Animator m_animator;
   [SerializeField]
 	private float m_movingSpeed = 8.5f;
 	[SerializeField]
@@ -22,6 +22,8 @@ public class Character : NetworkBehaviour
 	private GameObject m_graphics;
 	[SerializeField]
 	private GameObject m_collision;
+
+  public float temp_m_axis;
 
 	//Last object that has been interacted with
 	private GameObject m_lastInteractedObj;
@@ -81,7 +83,8 @@ public class Character : NetworkBehaviour
     }
   }
 
-	public override void OnStartAuthority()
+
+  public override void OnStartAuthority()
 	{
 		base.OnStartAuthority();
 		SetUpLocalPlayer();
@@ -101,10 +104,8 @@ public class Character : NetworkBehaviour
 			//Set the velocity, taking into account the gravity of the world
 			m_rigidBodyComp.velocity = (m_movingDirection * m_movingSpeed) + new Vector3(0, m_rigidBodyComp.velocity.y, 0);
 
-
-
       //ANIMATOR
-      m_animator.SetBool("walkin", true);
+      
 
       //END OF ANIMATOR
       m_cameraPivot.transform.rotation = transform.rotation;
