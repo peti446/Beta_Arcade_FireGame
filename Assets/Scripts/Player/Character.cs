@@ -23,8 +23,8 @@ public class Character : NetworkBehaviour
 	private GameObject m_graphics;
 	[SerializeField]
 	private GameObject m_collision;
-
-	public float temp_m_axis;
+	[SerializeField]
+	private GameObject m_minimapCameraPivot;
 
 	//Last object that has been interacted with
 	private GameObject m_lastInteractedObj;
@@ -83,14 +83,13 @@ public class Character : NetworkBehaviour
 		}
 	}
 
-
 	public override void OnStartAuthority()
 	{
 		base.OnStartAuthority();
 		SetUpLocalPlayer();
 	}
 
-	//Usless variables
+	//Usless variables just ignore as the functions require these :shrug: y.y
 	private Vector3 DampVelocityPosition;
 	private Vector2 DampVelocityCamera;
 	[ClientCallback]
@@ -104,8 +103,8 @@ public class Character : NetworkBehaviour
 			//Set the velocity, taking into account the gravity of the world
 			m_rigidBodyComp.velocity = (m_movingDirection * m_movingSpeed) + new Vector3(0, m_rigidBodyComp.velocity.y, 0);
 
-      //ANIMATOR
-      m_animator.SetFloat("speed", m_rigidBodyComp.velocity.y + m_movingSpeed);
+			  //ANIMATOR
+			  m_animator.SetFloat("speed", m_rigidBodyComp.velocity.y + m_movingSpeed);
 
 			//END OF ANIMATOR
 			m_cameraPivot.transform.rotation = transform.rotation;
@@ -128,6 +127,26 @@ public class Character : NetworkBehaviour
 		//Update the position and rotation
 		m_cameraPivot.transform.position = Vector3.SmoothDamp(m_cameraPivot.transform.position, cameraTargetPos, ref DampVelocityPosition, 0.05f);
 		m_cameraPivot.transform.LookAt(gameObject.transform);
+	}
+
+	[ClientCallback]
+	//Check if we can interact with an object or not
+	protected virtual void Update()
+	{
+		Debug.DrawRay(transform.position, transform.forward * 10, Color.red, 5.0f);
+		RaycastHit hit;
+		Physics.Raycast(transform.position + transform.up, transform.forward, out hit, 10);
+		if (hit.collider != null)
+		{
+			if (hit.collider.GetComponent<Interact>() != null)
+			{
+				GameUIHandler._instance.ShowInteractWarning(hit.collider.GetComponent<Interact>().CanClientInteract(this));
+			}
+		}
+		else
+		{
+			GameUIHandler._instance.ShowInteractWarning(false);
+		}
 	}
 
 	//Init the player if it has valid values
@@ -153,25 +172,28 @@ public class Character : NetworkBehaviour
 	[Client]
 	private void SetUpLocalPlayer()
 	{
-		if (m_autoritySet && !hasAuthority)
+		if (m_autoritySet || !hasAuthority)
 			return;
+
 		Debug.Log("Player got authority ID:" + m_controllingPlayerID);
+		//Set up main Camera
 		GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
 		camera.transform.SetParent(m_cameraPivot.transform, false);
 		camera.transform.localPosition = new Vector3(0, 0, 0);
+		//Set up minimap camera
+		GameObject minimapCamera = GameObject.FindGameObjectWithTag("MinimapCamera");
+		minimapCamera.transform.SetParent(m_minimapCameraPivot.transform, false);
+		minimapCamera.transform.localPosition = new Vector3(0, 0, 0);
+		minimapCamera.transform.rotation = Quaternion.Euler(90, 0, 0);
+		if (m_minimapCameraPivot.GetComponent<MinimapCameraRotationFix>() == null)
+			m_minimapCameraPivot.AddComponent<MinimapCameraRotationFix>();
+
+		//Enable the player Input and notify the server that we are ready
 		gameObject.GetComponent<PlayerInputs>().enabled = true;
-		CmdSpawn();
+		GameManager._instance.LocalPlayerSettetUp(this);
 		m_autoritySet = true;
 	}
-	/// <summary>
-	/// Asks the server to give a valid spawn location for this character
-	/// </summary>
-	[Command]
-	private void CmdSpawn()
-	{
-		//Pass it back to the game manager to spawn this object
-		GameManager._instance.SpawnPlayer(this);
-	}
+
 
 	/// <summary>
 	/// Spawns the player at the correct position.
@@ -181,6 +203,9 @@ public class Character : NetworkBehaviour
 	[TargetRpc]
 	public void TargetSpawnPlayerAt(NetworkConnection target, Vector3 pos)
 	{
+		//If we are spawned return
+		if (m_spawned)
+			return;
 		//Just in case make sure we do have authority
 		if (!hasAuthority)
 			return;
@@ -194,7 +219,6 @@ public class Character : NetworkBehaviour
 	private void OnPlayerIdChanged(int newID)
 	{
 		m_controllingPlayerID = newID;
-		Debug.Log("ID: " + m_controllingPlayerID);
 		InitPlayer();
 	}
 
@@ -206,24 +230,6 @@ public class Character : NetworkBehaviour
 	public void SetPlayerID(int id)
 	{
 		m_controllingPlayerID = id;
-	}
-
-	/// <summary>
-	/// visual representation of the hose of the firefighter character. empty due to
-	/// the proper particle system not being available yet. placeholder particles
-	/// made by yours truly can still be called if necessary.
-	/// </summary>
-	/// <param name="open">either you are using the hose by holding down button or not</param>
-	public void ToggleHose(bool open)
-	{
-		if (open)
-		{
-
-		}
-		else
-		{
-
-		}
 	}
 
 	/// <summary>
@@ -324,6 +330,13 @@ public class Character : NetworkBehaviour
 			camera.transform.SetParent(m_cameraPivot.transform, false);
 			camera.transform.position = m_cameraPivot.transform.position;
 			camera.transform.rotation = m_cameraPivot.transform.rotation;
+
+			GameObject minimapCamera = GameObject.FindGameObjectWithTag("MinimapCamera");
+			minimapCamera.transform.SetParent(m_minimapCameraPivot.transform, false);
+			minimapCamera.transform.localPosition = new Vector3(0, 0, 0);
+			minimapCamera.transform.rotation = Quaternion.Euler(90, 0, 0);
+			if(m_minimapCameraPivot.GetComponent<MinimapCameraRotationFix>() == null)
+				m_minimapCameraPivot.AddComponent<MinimapCameraRotationFix>();
 		}
 	}
 

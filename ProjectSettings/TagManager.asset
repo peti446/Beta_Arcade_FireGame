@@ -7,6 +7,7 @@ TagManager:
   - Building
   - Firetruck
   - PreviewBuilding
+  - MinimapCamera
   layers:
   - Default
   - TransparentFX
