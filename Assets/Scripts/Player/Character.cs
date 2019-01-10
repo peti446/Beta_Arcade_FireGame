@@ -8,7 +8,9 @@ public enum EPlayerStatus
 
 public class Character : NetworkBehaviour
 {
-	[SerializeField]
+  [SerializeField]
+  private Animator m_animator;
+  [SerializeField]
 	private float m_movingSpeed = 8.5f;
 	[SerializeField]
 	private float m_movingRotationSpeed = 2.5f;
@@ -64,7 +66,8 @@ public class Character : NetworkBehaviour
 	private void Awake()
 	{
 		m_rigidBodyComp = GetComponent<Rigidbody>();
-	}
+    m_animator = GetComponent<Animator>();
+  }
 
 	//Start function when object spawned, called on all client.
 	public override void OnStartClient()
@@ -95,8 +98,10 @@ public class Character : NetworkBehaviour
 			m_rigidBodyComp.MoveRotation(m_movingRotation);
 			//Set the velocity, taking into account the gravity of the world
 			m_rigidBodyComp.velocity = (m_movingDirection * m_movingSpeed) + new Vector3(0, m_rigidBodyComp.velocity.y, 0);
-
-			m_cameraPivot.transform.rotation = transform.rotation;
+      //ANIMATOR
+      m_animator.SetFloat("moving_speed", m_rigidBodyComp.velocity.y);
+      //END OF ANIMATOR
+      m_cameraPivot.transform.rotation = transform.rotation;
 			m_cameraRotation = Vector2.SmoothDamp(m_cameraRotation, Vector2.zero, ref DampVelocityCamera, 0.2f, 99999, Time.deltaTime);
 		}
 
@@ -334,12 +339,13 @@ public class Character : NetworkBehaviour
 		{
 			//Set the state to IDLE
 			State = EPlayerStatus.Idle;
+      m_animator.SetFloat("moving_speed", 0.0f);
 		}
 		else
 		{
 			//Set the state to moving as we are
 			State = EPlayerStatus.Moving;
-		}
+    }
 		/*Vector3 newFowardMove = transform.forward * m_playerSpeed * verticalInput;
 		Vector3 newSideMove = transform.right * m_playerSpeed * horizontalInput;
 		Vector3 newMove = newFowardMove + newSideMove;
@@ -358,14 +364,15 @@ public class Character : NetworkBehaviour
 		if(State == EPlayerStatus.Moving)
 		{
 			transform.Rotate(new Vector3(0, horizontalRotation * m_cameraRotationSpeed, 0));
-		}
-		//Move the camera
-		//Clamp the x rotation
-		m_cameraRotation += new Vector2(verticalRotation * m_cameraRotationSpeed, horizontalRotation * m_cameraRotationSpeed);
+    }
+  
+    //Move the camera
+    //Clamp the x rotation
+    m_cameraRotation += new Vector2(verticalRotation * m_cameraRotationSpeed, horizontalRotation * m_cameraRotationSpeed);
 		if (m_cameraRotation.x < -360)
 			m_cameraRotation.x += 360;
 		if (m_cameraRotation.x > 360)
 			m_cameraRotation.x -= 360;
 		m_cameraRotation.x = Mathf.Clamp(m_cameraRotation.x, -80, 80);
-	}
+  }
 }
