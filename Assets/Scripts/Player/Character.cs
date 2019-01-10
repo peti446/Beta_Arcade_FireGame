@@ -104,8 +104,8 @@ public class Character : NetworkBehaviour
 			//Set the velocity, taking into account the gravity of the world
 			m_rigidBodyComp.velocity = (m_movingDirection * m_movingSpeed) + new Vector3(0, m_rigidBodyComp.velocity.y, 0);
 
-			//ANIMATOR
-
+      //ANIMATOR
+      m_animator.SetFloat("speed", m_rigidBodyComp.velocity.y + m_movingSpeed);
 
 			//END OF ANIMATOR
 			m_cameraPivot.transform.rotation = transform.rotation;
