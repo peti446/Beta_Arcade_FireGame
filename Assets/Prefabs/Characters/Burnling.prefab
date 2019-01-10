@@ -750,6 +750,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1545000254865412
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4241162186304532}
+  m_Layer: 28
+  m_Name: CamaraPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1554057075459340
 GameObject:
   m_ObjectHideFlags: 1
@@ -1190,7 +1205,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4741664386816762}
   m_Layer: 28
-  m_Name: CamaraPivot
+  m_Name: MinimapPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1678,6 +1693,19 @@ Transform:
   m_Father: {fileID: 4470309122525670}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -1.1333193, y: 179.85872, z: -89.77252}
+--- !u!4 &4241162186304532
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1545000254865412}
+  m_LocalRotation: {x: 0.12821163, y: -0, z: -0, w: 0.9917469}
+  m_LocalPosition: {x: -0.03999996, y: 2.58, z: -2.552}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4356520341090258}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 14.733001, y: 0, z: 0}
 --- !u!4 &4246536097570260
 Transform:
   m_ObjectHideFlags: 1
@@ -1836,12 +1864,13 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1879709825057874}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20.22852, y: -1.6437602e-16, z: 6.83}
+  m_LocalPosition: {x: 3.9737868, y: -6.157591e-17, z: 2.773132}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4012281783191494}
   - {fileID: 4322380426913258}
   - {fileID: 4252966957305922}
+  - {fileID: 4241162186304532}
   - {fileID: 4741664386816762}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -2288,13 +2317,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1892361386709684}
-  m_LocalRotation: {x: 0.12821163, y: -0, z: -0, w: 0.9917469}
-  m_LocalPosition: {x: -0.03999996, y: 2.58, z: -2.552}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 60, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4356520341090258}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 14.733001, y: 0, z: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4756724065755184
 Transform:
   m_ObjectHideFlags: 1
@@ -2743,13 +2772,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 381aa106d03d7844dab280cc3a87bad2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_animator: {fileID: 0}
   m_movingSpeed: 10
   m_movingRotationSpeed: 5
   m_cameraRotationSpeed: 2
-  m_cameraPivot: {fileID: 1892361386709684}
+  m_cameraPivot: {fileID: 1545000254865412}
   m_graphics: {fileID: 0}
   m_collision: {fileID: 1673928604442136}
+  temp_m_axis: 0
 --- !u!114 &114838610745589382
 MonoBehaviour:
   m_ObjectHideFlags: 1
