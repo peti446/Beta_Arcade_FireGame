@@ -6,11 +6,12 @@ public enum EPlayerStatus
 	Idle, Moving, Interacting, Stunned, Dead
 }
 
+[RequireComponent(typeof(Animator))]
 public class Character : NetworkBehaviour
 {
-  
-  private Animator m_animator;
-  [SerializeField]
+
+	private Animator m_animator;
+	[SerializeField]
 	private float m_movingSpeed = 8.5f;
 	[SerializeField]
 	private float m_movingRotationSpeed = 2.5f;
@@ -23,7 +24,7 @@ public class Character : NetworkBehaviour
 	[SerializeField]
 	private GameObject m_collision;
 
-  public float temp_m_axis;
+	public float temp_m_axis;
 
 	//Last object that has been interacted with
 	private GameObject m_lastInteractedObj;
@@ -68,9 +69,8 @@ public class Character : NetworkBehaviour
 	private void Awake()
 	{
 		m_rigidBodyComp = GetComponent<Rigidbody>();
-    m_animator = gameObject.GetComponent<Animator>();
-
-  }
+		m_animator = gameObject.GetComponent<Animator>();
+	}
 
 	//Start function when object spawned, called on all client.
 	public override void OnStartClient()
@@ -80,11 +80,11 @@ public class Character : NetworkBehaviour
 		{
 			//Init the player
 			InitPlayer();
-    }
-  }
+		}
+	}
 
 
-  public override void OnStartAuthority()
+	public override void OnStartAuthority()
 	{
 		base.OnStartAuthority();
 		SetUpLocalPlayer();
@@ -97,18 +97,18 @@ public class Character : NetworkBehaviour
 	private void LateUpdate()
 	{
 
-    if (State == EPlayerStatus.Moving)
+		if (State == EPlayerStatus.Moving)
 		{
 			//Rotate the player
 			m_rigidBodyComp.MoveRotation(m_movingRotation);
 			//Set the velocity, taking into account the gravity of the world
 			m_rigidBodyComp.velocity = (m_movingDirection * m_movingSpeed) + new Vector3(0, m_rigidBodyComp.velocity.y, 0);
 
-      //ANIMATOR
-      
+			//ANIMATOR
 
-      //END OF ANIMATOR
-      m_cameraPivot.transform.rotation = transform.rotation;
+
+			//END OF ANIMATOR
+			m_cameraPivot.transform.rotation = transform.rotation;
 			m_cameraRotation = Vector2.SmoothDamp(m_cameraRotation, Vector2.zero, ref DampVelocityCamera, 0.2f, 99999, Time.deltaTime);
 		}
 
@@ -128,10 +128,10 @@ public class Character : NetworkBehaviour
 		//Update the position and rotation
 		m_cameraPivot.transform.position = Vector3.SmoothDamp(m_cameraPivot.transform.position, cameraTargetPos, ref DampVelocityPosition, 0.05f);
 		m_cameraPivot.transform.LookAt(gameObject.transform);
-  }
+	}
 
-  //Init the player if it has valid values
-  private void InitPlayer()
+	//Init the player if it has valid values
+	private void InitPlayer()
 	{
 		//Dont init the player again
 		if (m_isSetup || m_controllingPlayerID == -1)
@@ -162,11 +162,11 @@ public class Character : NetworkBehaviour
 		gameObject.GetComponent<PlayerInputs>().enabled = true;
 		CmdSpawn();
 		m_autoritySet = true;
-  }
-  /// <summary>
-  /// Asks the server to give a valid spawn location for this character
-  /// </summary>
-  [Command]
+	}
+	/// <summary>
+	/// Asks the server to give a valid spawn location for this character
+	/// </summary>
+	[Command]
 	private void CmdSpawn()
 	{
 		//Pass it back to the game manager to spawn this object
@@ -207,30 +207,30 @@ public class Character : NetworkBehaviour
 	{
 		m_controllingPlayerID = id;
 	}
-  
-  /// <summary>
-  /// visual representation of the hose of the firefighter character. empty due to
-  /// the proper particle system not being available yet. placeholder particles
-  /// made by yours truly can still be called if necessary.
-  /// </summary>
-  /// <param name="open">either you are using the hose by holding down button or not</param>
-  public void ToggleHose(bool open)
-  {
-    if (open)
-    {
-      
-    }
-    else
-    {
 
-    }
-  }
+	/// <summary>
+	/// visual representation of the hose of the firefighter character. empty due to
+	/// the proper particle system not being available yet. placeholder particles
+	/// made by yours truly can still be called if necessary.
+	/// </summary>
+	/// <param name="open">either you are using the hose by holding down button or not</param>
+	public void ToggleHose(bool open)
+	{
+		if (open)
+		{
+
+		}
+		else
+		{
+
+		}
+	}
 
 	/// <summary>
 	/// Raycast in client side from the player to the interactuable objects.
-  /// Works by calling the server interaction function as well and calling the
-  /// functions of the interactuable objects that all have the Interact script
-  /// in common.
+	/// Works by calling the server interaction function as well and calling the
+	/// functions of the interactuable objects that all have the Interact script
+	/// in common.
 	/// </summary>
 	[Client]
 	public void InteractRay()
@@ -244,16 +244,16 @@ public class Character : NetworkBehaviour
 			{
 				CmdInteractServer();
 				hit.collider.GetComponent<Interact>().ClientInteract(this);
-				m_lastInteractedObj = hit.collider.gameObject;			
+				m_lastInteractedObj = hit.collider.gameObject;
 			}
 		}
 	}
 
-  /// <summary>
-  /// Raycast in server side from the player to the interactuable objects.
-  /// Called by the client's side version of this method.
-  /// </summary>
-  [Command]
+	/// <summary>
+	/// Raycast in server side from the player to the interactuable objects.
+	/// Called by the client's side version of this method.
+	/// </summary>
+	[Command]
 	private void CmdInteractServer()
 	{
 		Debug.DrawRay(transform.position, transform.forward * 10, Color.red);
@@ -269,10 +269,10 @@ public class Character : NetworkBehaviour
 		}
 	}
 
-  /// <summary>
-  /// Method to be called when the player's interaction with the interactuable gameobjects
-  /// should be stopped, on the client side. This works by calling said gameobject's stop interact event.
-  /// </summary>
+	/// <summary>
+	/// Method to be called when the player's interaction with the interactuable gameobjects
+	/// should be stopped, on the client side. This works by calling said gameobject's stop interact event.
+	/// </summary>
 	[Client]
 	public void StopInteraction()
 	{
@@ -283,11 +283,11 @@ public class Character : NetworkBehaviour
 		}
 	}
 
-  /// <summary>
-  /// Method to be called when the player's interaction with the interactuable gameobjects
-  /// should be stopped, on the server side. This works by calling said gameobject's stop interact event.
-  /// </summary>
-  [Command]
+	/// <summary>
+	/// Method to be called when the player's interaction with the interactuable gameobjects
+	/// should be stopped, on the server side. This works by calling said gameobject's stop interact event.
+	/// </summary>
+	[Command]
 	private void CmdServerStopInteract()
 	{
 		if (m_lastInteractedObj != null && m_lastInteractedObj.GetComponent<Interact>() != null)
@@ -351,7 +351,7 @@ public class Character : NetworkBehaviour
 		{
 			//Set the state to moving as we are
 			State = EPlayerStatus.Moving;
-    }
+		}
 		/*Vector3 newFowardMove = transform.forward * m_playerSpeed * verticalInput;
 		Vector3 newSideMove = transform.right * m_playerSpeed * horizontalInput;
 		Vector3 newMove = newFowardMove + newSideMove;
@@ -365,20 +365,20 @@ public class Character : NetworkBehaviour
 	/// <param name="horizontalRotation">Mouse X</param>
 	/// <param name="verticalRotation">Mouse Y</param>
 	public void RotatePlayer(float horizontalRotation, float verticalRotation)
-	{ 
+	{
 		//If we are moving move the character
-		if(State == EPlayerStatus.Moving)
+		if (State == EPlayerStatus.Moving)
 		{
 			transform.Rotate(new Vector3(0, horizontalRotation * m_cameraRotationSpeed, 0));
-    }
-  
-    //Move the camera
-    //Clamp the x rotation
-    m_cameraRotation += new Vector2(verticalRotation * m_cameraRotationSpeed, horizontalRotation * m_cameraRotationSpeed);
+		}
+
+		//Move the camera
+		//Clamp the x rotation
+		m_cameraRotation += new Vector2(verticalRotation * m_cameraRotationSpeed, horizontalRotation * m_cameraRotationSpeed);
 		if (m_cameraRotation.x < -360)
 			m_cameraRotation.x += 360;
 		if (m_cameraRotation.x > 360)
 			m_cameraRotation.x -= 360;
 		m_cameraRotation.x = Mathf.Clamp(m_cameraRotation.x, -80, 80);
-  }
+	}
 }
