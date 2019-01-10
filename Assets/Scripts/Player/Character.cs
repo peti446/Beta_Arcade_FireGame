@@ -9,7 +9,7 @@ public enum EPlayerStatus
 public class Character : NetworkBehaviour
 {
   [SerializeField]
-  private Animator m_animator;
+  public Animator m_animator;
   [SerializeField]
 	private float m_movingSpeed = 8.5f;
 	[SerializeField]
@@ -66,7 +66,8 @@ public class Character : NetworkBehaviour
 	private void Awake()
 	{
 		m_rigidBodyComp = GetComponent<Rigidbody>();
-    m_animator = GetComponent<Animator>();
+    m_animator = gameObject.GetComponent<Animator>();
+
   }
 
 	//Start function when object spawned, called on all client.
@@ -77,8 +78,8 @@ public class Character : NetworkBehaviour
 		{
 			//Init the player
 			InitPlayer();
-		}
-	}
+    }
+  }
 
 	public override void OnStartAuthority()
 	{
@@ -92,14 +93,17 @@ public class Character : NetworkBehaviour
 	[ClientCallback]
 	private void LateUpdate()
 	{
-		if (State == EPlayerStatus.Moving)
+
+    if (State == EPlayerStatus.Moving)
 		{
 			//Rotate the player
 			m_rigidBodyComp.MoveRotation(m_movingRotation);
 			//Set the velocity, taking into account the gravity of the world
 			m_rigidBodyComp.velocity = (m_movingDirection * m_movingSpeed) + new Vector3(0, m_rigidBodyComp.velocity.y, 0);
+
+
+
       //ANIMATOR
-      m_animator.SetFloat("moving_speed", m_rigidBodyComp.velocity.y);
       //END OF ANIMATOR
       m_cameraPivot.transform.rotation = transform.rotation;
 			m_cameraRotation = Vector2.SmoothDamp(m_cameraRotation, Vector2.zero, ref DampVelocityCamera, 0.2f, 99999, Time.deltaTime);
@@ -121,10 +125,11 @@ public class Character : NetworkBehaviour
 		//Update the position and rotation
 		m_cameraPivot.transform.position = Vector3.SmoothDamp(m_cameraPivot.transform.position, cameraTargetPos, ref DampVelocityPosition, 0.05f);
 		m_cameraPivot.transform.LookAt(gameObject.transform);
-	}
+    m_animator.SetFloat("speed", m_movingSpeed + m_rigidBodyComp.velocity.y);
+  }
 
-	//Init the player if it has valid values
-	private void InitPlayer()
+  //Init the player if it has valid values
+  private void InitPlayer()
 	{
 		//Dont init the player again
 		if (m_isSetup || m_controllingPlayerID == -1)
@@ -155,11 +160,11 @@ public class Character : NetworkBehaviour
 		gameObject.GetComponent<PlayerInputs>().enabled = true;
 		CmdSpawn();
 		m_autoritySet = true;
-	}
-	/// <summary>
-	/// Asks the server to give a valid spawn location for this character
-	/// </summary>
-	[Command]
+  }
+  /// <summary>
+  /// Asks the server to give a valid spawn location for this character
+  /// </summary>
+  [Command]
 	private void CmdSpawn()
 	{
 		//Pass it back to the game manager to spawn this object
@@ -339,7 +344,6 @@ public class Character : NetworkBehaviour
 		{
 			//Set the state to IDLE
 			State = EPlayerStatus.Idle;
-      m_animator.SetFloat("moving_speed", 0.0f);
 		}
 		else
 		{

@@ -27,6 +27,8 @@ public class PlayerInputs : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.F))
 		{
 			m_character.ToggleHose(true);
+      m_character.m_animator.SetBool("using_hose", true);
+      Debug.Log("F");
 		}
 
 		if (Input.GetKeyDown(KeyCode.E))
@@ -42,6 +44,8 @@ public class PlayerInputs : MonoBehaviour
 		if (Input.GetKeyUp(KeyCode.F))
 		{
 			m_character.ToggleHose(false);
-		}
-	}
+      m_character.m_animator.SetBool("using_hose", false);
+
+    }
+  }
 }

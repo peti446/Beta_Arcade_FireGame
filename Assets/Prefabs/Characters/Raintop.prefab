@@ -4036,11 +4036,11 @@ Animator:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1924839943697842}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 50c1b6d4f9d40e049a99bc1c68374af8, type: 3}
+  m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 52b7791db7a1e534e841da0e5c51f0f2, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
