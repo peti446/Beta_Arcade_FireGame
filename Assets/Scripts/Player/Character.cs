@@ -120,7 +120,6 @@ public class Character : NetworkBehaviour
 		RaycastHit hit;
 		if (Physics.Linecast(gameObject.transform.position, cameraTargetPos, out hit, ~(1 << 29 | 1 << 28)))
 		{
-			Debug.Log(hit.transform.name);
 			cameraTargetPos = hit.point + hit.normal;
 		}
 
@@ -129,17 +128,20 @@ public class Character : NetworkBehaviour
 		m_cameraPivot.transform.LookAt(gameObject.transform);
 	}
 
-	[ClientCallback]
 	//Check if we can interact with an object or not
-	protected virtual void Update()
+	[ClientCallback]
+	private void Update()
 	{
-		Debug.DrawRay(transform.position, transform.forward * 10, Color.red, 5.0f);
 		RaycastHit hit;
 		Physics.Raycast(transform.position + transform.up, transform.forward, out hit, 10);
+		Debug.DrawRay(transform.position + transform.up, transform.forward, Color.black, 10f);
+		Debug.Log("Show-1w");
 		if (hit.collider != null)
 		{
+			Debug.Log("Show1");
 			if (hit.collider.GetComponent<Interact>() != null)
 			{
+				Debug.Log("Show");
 				GameUIHandler._instance.ShowInteractWarning(hit.collider.GetComponent<Interact>().CanClientInteract(this));
 			}
 		}
@@ -184,7 +186,7 @@ public class Character : NetworkBehaviour
 		GameObject minimapCamera = GameObject.FindGameObjectWithTag("MinimapCamera");
 		minimapCamera.transform.SetParent(m_minimapCameraPivot.transform, false);
 		minimapCamera.transform.localPosition = new Vector3(0, 0, 0);
-		minimapCamera.transform.rotation = Quaternion.Euler(90, 0, 0);
+		minimapCamera.transform.localRotation = Quaternion.identity;
 		if (m_minimapCameraPivot.GetComponent<MinimapCameraRotationFix>() == null)
 			m_minimapCameraPivot.AddComponent<MinimapCameraRotationFix>();
 
@@ -209,6 +211,8 @@ public class Character : NetworkBehaviour
 		//Just in case make sure we do have authority
 		if (!hasAuthority)
 			return;
+
+		GameUIHandler._instance.SetUpUIForCharacter();
 
 		//Set the pos and that we spawned
 		transform.position = pos;
@@ -241,7 +245,6 @@ public class Character : NetworkBehaviour
 	[Client]
 	public void InteractRay()
 	{
-		Debug.DrawRay(transform.position, transform.forward * 10, Color.red, 5.0f);
 		RaycastHit hit;
 		Physics.Raycast(transform.position + transform.up, transform.forward, out hit, 10);
 		if (hit.collider != null)
@@ -262,7 +265,6 @@ public class Character : NetworkBehaviour
 	[Command]
 	private void CmdInteractServer()
 	{
-		Debug.DrawRay(transform.position, transform.forward * 10, Color.red);
 		RaycastHit hit;
 		Physics.Raycast(transform.position + transform.up, transform.forward, out hit, 10);
 		if (hit.collider != null)
@@ -334,7 +336,7 @@ public class Character : NetworkBehaviour
 			GameObject minimapCamera = GameObject.FindGameObjectWithTag("MinimapCamera");
 			minimapCamera.transform.SetParent(m_minimapCameraPivot.transform, false);
 			minimapCamera.transform.localPosition = new Vector3(0, 0, 0);
-			minimapCamera.transform.rotation = Quaternion.Euler(90, 0, 0);
+			minimapCamera.transform.localRotation = Quaternion.identity;
 			if(m_minimapCameraPivot.GetComponent<MinimapCameraRotationFix>() == null)
 				m_minimapCameraPivot.AddComponent<MinimapCameraRotationFix>();
 		}

@@ -4142,9 +4142,9 @@ MonoBehaviour:
   m_movingRotationSpeed: 5
   m_cameraRotationSpeed: 2
   m_cameraPivot: {fileID: 1754893127703390}
-  m_graphics: {fileID: 0}
+  m_graphics: {fileID: 1761855675725400}
   m_collision: {fileID: 1616385435326438}
-  temp_m_axis: 0
+  m_minimapCameraPivot: {fileID: 1516355305443346}
 --- !u!114 &114863631360994502
 MonoBehaviour:
   m_ObjectHideFlags: 1

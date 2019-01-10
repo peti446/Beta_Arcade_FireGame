@@ -136,6 +136,19 @@ public class GameUIHandler : MonoBehaviour
 	}
 
 	/// <summary>
+	/// Sets the planting fire radiel for the crazy people
+	/// </summary>
+	/// <param name="secondsLeft">Seconds left to catch fire</param>
+	/// <param name="porcent">The porcent compleated</param>
+	public void UpdateSettingFire(int secondsLeft, float porcent)
+	{
+		if(MainNetworkManager._instance.LocalPlayer.Player_Team == ETeams.CrazyPeople)
+		{
+			m_settingFireController.SetFiller(secondsLeft, porcent);
+		}
+	}
+
+	/// <summary>
 	/// Shows the interaction warning to the user
 	/// </summary>
 	/// <param name="show">Hide(<c>false</c>) or show(<c>true</c>) the warning</param>

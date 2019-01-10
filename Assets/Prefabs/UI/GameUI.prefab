@@ -494,13 +494,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 139ec46a0b0457e4d9860a143d721ac4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_NotificationObjectPrefab: {fileID: 0}
-  m_resourceCanvas: {fileID: 0}
+  m_NotificationObjectPrefab: {fileID: 1871462551226798}
+  m_resourceCanvas: {fileID: 224336433224381896}
   m_progressBars: {fileID: 114098875858680386}
   m_gameTime: {fileID: 114881686301639276}
   m_notificationLayout: {fileID: 114376508129015792}
   m_InteractNotification: {fileID: 114242803842334804}
-  m_settingFireController: {fileID: 0}
+  m_settingFireController: {fileID: 114463157116627198}
 --- !u!114 &114242803842334804
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -711,9 +711,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a549a703bb5e9548bb8f1abe4c23a07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_text: {fileID: 0}
-  m_fillerImage: {fileID: 0}
-  m_backgroundFiller: {fileID: 0}
+  m_text: {fileID: 114914463948154786}
+  m_fillerImage: {fileID: 114631207211565916}
+  m_backgroundFiller: {fileID: 114527600514351032}
 --- !u!114 &114527600514351032
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -97,7 +97,9 @@ public class GameManager : NetworkBehaviour
 		}
 		//Set the state
 		State = EGameState.WaitingForPlayers;
-    }
+		m_timeGameStarted = Time.time;
+
+	}
 
 	private void OnDestroy()
 	{

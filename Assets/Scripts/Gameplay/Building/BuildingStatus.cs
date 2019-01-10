@@ -24,13 +24,6 @@ public class BuildingStatus : NetworkBehaviour
     private Image C_WetBarBg;
     #endregion
 
-    #region UI Elements - Each client controls their
-    [SerializeField]
-    private Image C_SettingBarBg;
-    [SerializeField]
-    private Image C_SettingBar;
-    #endregion
-
     #region All Cients Variables
     //Material for the building
     private Material mC_material;
@@ -80,8 +73,6 @@ public class BuildingStatus : NetworkBehaviour
 	{
 		C_HealthBar.enabled = false;
 		C_HealthBarBg.enabled = false;
-		C_SettingBar.enabled = false;
-		C_SettingBarBg.enabled = false;
 		C_WetBar.enabled = false;
 		C_WetBarBg.enabled = false;
 	}
@@ -91,6 +82,7 @@ public class BuildingStatus : NetworkBehaviour
 		base.OnStartClient();
         GetComponent<Interact>().ClientInteraction.AddListener(EmulateStartingFire);
 		GetComponent<Interact>().ClientStopInteract.AddListener(EmulateStopSettingFire);
+		GetComponent<Interact>().SetCanInteractCheckFunction((character)=> { return MainNetworkManager._instance.PlayersConnected[character.playerControllerId].Player_Team == ETeams.CrazyPeople; });
     }
 
     public override void OnStartServer()
@@ -209,7 +201,8 @@ public class BuildingStatus : NetworkBehaviour
 			//Add local timer for setting fire
 			mC_startingFireTime += Time.deltaTime;
 			//Set the fill for the setting
-			C_SettingBar.fillAmount = mC_startingFireTime / m_timeToStartFire;
+			//ShowUI
+			GameUIHandler._instance.UpdateSettingFire(Mathf.FloorToInt(m_timeToStartFire - mC_startingFireTime), mC_startingFireTime / m_timeToStartFire);
 
 			if (mC_startingFireTime > m_timeToStartFire)
 			{
@@ -243,9 +236,7 @@ public class BuildingStatus : NetworkBehaviour
 			mC_startingFireTime = 0;
 			mC_isStartingFire = true;
 			//ShowUI
-			C_SettingBar.enabled = true;
-			C_SettingBarBg.enabled = true;
-			C_SettingBar.fillAmount = mC_startingFireTime / m_timeToStartFire;
+			GameUIHandler._instance.UpdateSettingFire(Mathf.FloorToInt(m_timeToStartFire - mC_startingFireTime), mC_startingFireTime / m_timeToStartFire);
 		}
     }
 
@@ -270,8 +261,7 @@ public class BuildingStatus : NetworkBehaviour
 	private void LocaStopSettingFire()
 	{
 		//Disable the setting
-		C_SettingBar.enabled = false;
-		C_SettingBarBg.enabled = false;
+		GameUIHandler._instance.UpdateSettingFire(-1, 0);
 		//Set the fire starting to 0
 		mC_startingFireTime = 0;
 		mC_isStartingFire = false;

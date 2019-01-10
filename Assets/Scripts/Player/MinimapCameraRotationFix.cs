@@ -7,6 +7,6 @@ public class MinimapCameraRotationFix : MonoBehaviour
 	private void LateUpdate()
 	{
 		//Make sure the rotation is always 90 no matter what
-		gameObject.transform.rotation = Quaternion.Euler(90, 0, 0);
+		gameObject.transform.rotation = Quaternion.LookRotation(transform.position - Vector3.up);
 	}
 }

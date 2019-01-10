@@ -301,8 +301,6 @@ GameObject:
   m_Component:
   - component: {fileID: 291073968}
   - component: {fileID: 291073967}
-  - component: {fileID: 291073966}
-  - component: {fileID: 291073965}
   m_Layer: 0
   m_Name: MinimapCamera
   m_TagString: MinimapCamera
@@ -310,20 +308,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &291073965
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 291073964}
-  m_Enabled: 1
---- !u!124 &291073966
-Behaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 291073964}
-  m_Enabled: 1
 --- !u!20 &291073967
 Camera:
   m_ObjectHideFlags: 0
@@ -343,8 +327,8 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
-  orthographic size: 5
+  orthographic: 1
+  orthographic size: 10
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -1237,6 +1221,16 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114914463948154786, guid: 9ac2b511fa879e14588735808d6b147d,
+        type: 2}
+      propertyPath: m_havePropertiesChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114914463948154786, guid: 9ac2b511fa879e14588735808d6b147d,
+        type: 2}
+      propertyPath: m_isInputParsingRequired
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 114881686301639276, guid: 9ac2b511fa879e14588735808d6b147d,
         type: 2}
       propertyPath: m_havePropertiesChanged
@@ -1247,15 +1241,40 @@ Prefab:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114914463948154786, guid: 9ac2b511fa879e14588735808d6b147d,
+    - target: {fileID: 224650850264905636, guid: 9ac2b511fa879e14588735808d6b147d,
         type: 2}
-      propertyPath: m_havePropertiesChanged
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224650850264905636, guid: 9ac2b511fa879e14588735808d6b147d,
+        type: 2}
+      propertyPath: m_SizeDelta.x
+      value: 575
+      objectReference: {fileID: 0}
+    - target: {fileID: 224650850264905636, guid: 9ac2b511fa879e14588735808d6b147d,
+        type: 2}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 224650850264905636, guid: 9ac2b511fa879e14588735808d6b147d,
+        type: 2}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 224650850264905636, guid: 9ac2b511fa879e14588735808d6b147d,
+        type: 2}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224650850264905636, guid: 9ac2b511fa879e14588735808d6b147d,
+        type: 2}
+      propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114914463948154786, guid: 9ac2b511fa879e14588735808d6b147d,
+    - target: {fileID: 224650850264905636, guid: 9ac2b511fa879e14588735808d6b147d,
         type: 2}
-      propertyPath: m_isInputParsingRequired
-      value: 1
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9ac2b511fa879e14588735808d6b147d, type: 2}

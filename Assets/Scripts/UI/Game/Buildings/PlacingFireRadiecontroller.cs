@@ -13,12 +13,17 @@ public class PlacingFireRadiecontroller : MonoBehaviour
 	[SerializeField]
 	private Image m_backgroundFiller;
 
+	private void Start()
+	{
+		m_backgroundFiller.gameObject.SetActive(false);
+	}
+
 	public void SetFiller(int secondsLeft, float porcent)
 	{
 		m_backgroundFiller.gameObject.SetActive(true);
 		m_fillerImage.fillAmount = porcent;
 		m_text.text = string.Format("Building will be on fire in {0} sec", secondsLeft);
-		if(porcent >= 1.0f)
+		if(porcent >= 1.0f || secondsLeft < 0 || porcent < 0.0f)
 		{
 			m_backgroundFiller.gameObject.SetActive(false);
 		}
