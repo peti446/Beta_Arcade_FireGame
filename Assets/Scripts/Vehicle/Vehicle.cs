@@ -58,7 +58,13 @@ public class Vehicle : NetworkBehaviour {
         }
     }
 
-    private void FixedUpdate()
+	public void OnDestroy()
+	{
+		if(MainNetworkManager.Is_Server)
+			GameManager._instance.TruckDestroyed(gameObject);
+	}
+
+	private void FixedUpdate()
     {
         UpdateVehicleVelocity();
     }
