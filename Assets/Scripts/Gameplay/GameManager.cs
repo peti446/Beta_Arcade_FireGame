@@ -229,6 +229,10 @@ public class GameManager : NetworkBehaviour
 					//Check if we finished the game
 					if (m_gameTimeLeft <= 0 || m_porcentInAshes >= 0.60f)
 					{
+						foreach(GameObjectListObject o in m_characterList)
+						{
+							o.o.GetComponent<Character>().RpcDisableInput();
+						}
 						m_timeEndGameStart = Time.time;
 						State = EGameState.GameEnded;
 						GameUIHandler._instance.SetUpEndGameUI();
