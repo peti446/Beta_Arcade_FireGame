@@ -99,21 +99,21 @@ public class Character : NetworkBehaviour
 			m_rigidBodyComp.MoveRotation(m_movingRotation);
 			//Set the velocity, taking into account the gravity of the world
 			m_rigidBodyComp.velocity = (m_movingDirection * m_movingSpeed) + new Vector3(0, m_rigidBodyComp.velocity.y, 0);
+      m_animator.SetFloat("speed", m_rigidBodyComp.velocity.y + m_movingSpeed);
 
-			  //ANIMATOR
-			  m_animator.SetFloat("speed", m_rigidBodyComp.velocity.y + m_movingSpeed);
-
-			//END OF ANIMATOR
-			m_cameraPivot.transform.rotation = transform.rotation;
+      m_cameraPivot.transform.rotation = transform.rotation;
 			m_cameraRotation = Vector2.SmoothDamp(m_cameraRotation, Vector2.zero, ref DampVelocityCamera, 0.2f, 99999, Time.deltaTime);
 
 			//Stop any interactions
 			StopInteraction();
 		}
+    ///ANIMATION
+    m_animator.SetFloat("speed", m_rigidBodyComp.velocity.y + m_movingSpeed);
 
+    ///END OFANIMATION
 
-		//Update camera rotation and position for the 3 person
-		Quaternion rot = Quaternion.Euler(m_cameraRotation.x, m_cameraRotation.y, 0);
+    //Update camera rotation and position for the 3 person
+    Quaternion rot = Quaternion.Euler(m_cameraRotation.x, m_cameraRotation.y, 0);
 		Vector3 cameraTargetPos = (transform.position + transform.up * 8) - rot * transform.forward * 15;//(gameObject.transform.position + gameObject.transform.up * 8) + newRotation * new Vector3(0, 0, -10);
 
 		//Check if a object would block the camera
