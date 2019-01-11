@@ -82,8 +82,14 @@ public class BuildingStatus : NetworkBehaviour
 		base.OnStartClient();
         GetComponent<Interact>().ClientInteraction.AddListener(EmulateStartingFire);
 		GetComponent<Interact>().ClientStopInteract.AddListener(EmulateStopSettingFire);
-		GetComponent<Interact>().SetCanInteractCheckFunction((character)=> { return MainNetworkManager._instance.PlayersConnected[character.playerControllerId].Player_Team == ETeams.CrazyPeople; });
+		GetComponent<Interact>().SetCanInteractCheckFunction(CanUserInteract);
     }
+	
+	[Client]
+	private bool CanUserInteract(Character character)
+	{
+		return MainNetworkManager._instance.PlayersConnected[character.ControllingPlayerID].Player_Team == ETeams.CrazyPeople;
+	}
 
     public override void OnStartServer()
     {
@@ -202,7 +208,7 @@ public class BuildingStatus : NetworkBehaviour
 			mC_startingFireTime += Time.deltaTime;
 			//Set the fill for the setting
 			//ShowUI
-			GameUIHandler._instance.UpdateSettingFire(Mathf.FloorToInt(m_timeToStartFire - mC_startingFireTime), mC_startingFireTime / m_timeToStartFire);
+			GameUIHandler._instance.UpdateSettingFire(Mathf.CeilToInt(m_timeToStartFire - mC_startingFireTime), mC_startingFireTime / m_timeToStartFire);
 
 			if (mC_startingFireTime > m_timeToStartFire)
 			{
@@ -236,7 +242,7 @@ public class BuildingStatus : NetworkBehaviour
 			mC_startingFireTime = 0;
 			mC_isStartingFire = true;
 			//ShowUI
-			GameUIHandler._instance.UpdateSettingFire(Mathf.FloorToInt(m_timeToStartFire - mC_startingFireTime), mC_startingFireTime / m_timeToStartFire);
+			GameUIHandler._instance.UpdateSettingFire(Mathf.CeilToInt(m_timeToStartFire - mC_startingFireTime), mC_startingFireTime / m_timeToStartFire);
 		}
     }
 

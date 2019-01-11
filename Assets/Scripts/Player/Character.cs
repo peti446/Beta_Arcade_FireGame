@@ -76,11 +76,8 @@ public class Character : NetworkBehaviour
 	public override void OnStartClient()
 	{
 		base.OnStartClient();
-		if (!m_isSetup && m_controllingPlayerID != -1)
-		{
-			//Init the player
-			InitPlayer();
-		}
+		//Init the player
+		InitPlayer();
 	}
 
 	public override void OnStartAuthority()
@@ -129,19 +126,14 @@ public class Character : NetworkBehaviour
 	}
 
 	//Check if we can interact with an object or not
-	[ClientCallback]
 	private void Update()
 	{
 		RaycastHit hit;
 		Physics.Raycast(transform.position + transform.up, transform.forward, out hit, 10);
-		Debug.DrawRay(transform.position + transform.up, transform.forward, Color.black, 10f);
-		Debug.Log("Show-1w");
 		if (hit.collider != null)
 		{
-			Debug.Log("Show1");
 			if (hit.collider.GetComponent<Interact>() != null)
 			{
-				Debug.Log("Show");
 				GameUIHandler._instance.ShowInteractWarning(hit.collider.GetComponent<Interact>().CanClientInteract(this));
 			}
 		}
@@ -158,14 +150,15 @@ public class Character : NetworkBehaviour
 		if (m_isSetup || m_controllingPlayerID == -1)
 			return;
 
+
+		//Set the character script to be settet up
+		m_isSetup = true;
+
 		//Set camera and enable input
 		if (hasAuthority)
 		{
 			SetUpLocalPlayer();
 		}
-
-		//Set the character script to be settet up
-		m_isSetup = true;
 	}
 
 	/// <summary>
@@ -174,7 +167,7 @@ public class Character : NetworkBehaviour
 	[Client]
 	private void SetUpLocalPlayer()
 	{
-		if (m_autoritySet || !hasAuthority)
+		if (m_autoritySet || !hasAuthority || !m_isSetup)
 			return;
 
 		Debug.Log("Player got authority ID:" + m_controllingPlayerID);
