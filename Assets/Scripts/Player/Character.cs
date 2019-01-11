@@ -133,6 +133,11 @@ public class Character : NetworkBehaviour
 		m_cameraPivot.transform.LookAt(gameObject.transform);
 	}
 
+  [ClientRpc]
+  public void RpcDisableInput()
+  {
+    GetComponent<PlayerInputs>().enabled = false;
+  }
 	//Check if we can interact with an object or not
 	private void Update()
 	{
