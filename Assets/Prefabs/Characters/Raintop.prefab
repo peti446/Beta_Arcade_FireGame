@@ -3043,7 +3043,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1975659365213766}
   m_LocalRotation: {x: -0.008726465, y: -0, z: -0, w: 0.999962}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 11.12, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4297573116230076}
@@ -4145,6 +4145,7 @@ MonoBehaviour:
   m_graphics: {fileID: 1761855675725400}
   m_collision: {fileID: 1616385435326438}
   m_minimapCameraPivot: {fileID: 1516355305443346}
+  m_hoseWater: {fileID: 198194218922512622}
 --- !u!114 &114863631360994502
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -32,6 +32,17 @@ public class PlayerInputs : MonoBehaviour
 		if (Input.GetKeyUp(KeyCode.F))
 		{
 			m_character.StopInteraction();
-		}	
+		}
+
+    if (Input.GetKeyDown(KeyCode.E))
+    {
+      m_character.UseHose(true);
+    }
+
+    if (Input.GetKeyUp(KeyCode.E))
+    {
+      m_character.UseHose(false);
+    }
+
   }
 }

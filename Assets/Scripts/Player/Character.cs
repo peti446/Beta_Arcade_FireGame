@@ -25,9 +25,12 @@ public class Character : NetworkBehaviour
 	private GameObject m_collision;
 	[SerializeField]
 	private GameObject m_minimapCameraPivot;
+  [SerializeField]
+  private ParticleSystem m_hoseWater;
 
-	//Last object that has been interacted with
-	private GameObject m_lastInteractedObj;
+
+  //Last object that has been interacted with
+  private GameObject m_lastInteractedObj;
 	//Quick acces for the rigid body
 	private Rigidbody m_rigidBodyComp;
 
@@ -194,6 +197,8 @@ public class Character : NetworkBehaviour
 		//Enable the player Input and notify the server that we are ready
 		GameManager._instance.LocalPlayerSettetUp(this);
 		m_autoritySet = true;
+
+    m_hoseWater.transform.position = new Vector3 (this.transform.position.x, 2.68f, this.transform.position.z);
 	}
 
 
@@ -367,13 +372,19 @@ public class Character : NetworkBehaviour
 			//Set the state to moving as we are
 			State = EPlayerStatus.Moving;
 		}
-		/*Vector3 newFowardMove = transform.forward * m_playerSpeed * verticalInput;
-		Vector3 newSideMove = transform.right * m_playerSpeed * horizontalInput;
-		Vector3 newMove = newFowardMove + newSideMove;
-		newMove.y = m_rigidBodyComp.velocity.y;
-		m_rigidBodyComp.velocity = newMove;*/
-
 	}
+
+
+  public void UseHose(bool hoseOpen)
+  {
+    if (hoseOpen)
+      m_hoseWater.Play();
+    if (!hoseOpen)
+    {
+      m_hoseWater.Stop();
+    }
+  }
+
 	/// <summary>
 	/// Rotate Player depends on Mouse Inputs
 	/// </summary>
