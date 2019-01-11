@@ -73,7 +73,10 @@ public class Character : NetworkBehaviour
 	{
 		m_rigidBodyComp = GetComponent<Rigidbody>();
 		m_animator = gameObject.GetComponent<Animator>();
-	}
+    m_animator.enabled = false;
+    m_animator.enabled = true;
+
+  }
 
 	//Start function when object spawned, called on all client.
 	public override void OnStartClient()
@@ -102,7 +105,6 @@ public class Character : NetworkBehaviour
 			m_rigidBodyComp.MoveRotation(m_movingRotation);
 			//Set the velocity, taking into account the gravity of the world
 			m_rigidBodyComp.velocity = (m_movingDirection * m_movingSpeed) + new Vector3(0, m_rigidBodyComp.velocity.y, 0);
-      m_animator.SetFloat("speed", m_rigidBodyComp.velocity.y + m_movingSpeed);
 
       m_cameraPivot.transform.rotation = transform.rotation;
 			m_cameraRotation = Vector2.SmoothDamp(m_cameraRotation, Vector2.zero, ref DampVelocityCamera, 0.2f, 99999, Time.deltaTime);
@@ -111,7 +113,7 @@ public class Character : NetworkBehaviour
 			StopInteraction();
 		}
     ///ANIMATION
-    m_animator.SetFloat("speed", m_rigidBodyComp.velocity.y + m_movingSpeed);
+    m_animator.SetFloat("speed", m_rigidBodyComp.velocity.magnitude + m_movingSpeed);
 
     ///END OFANIMATION
 
