@@ -106,6 +106,9 @@ public class Character : NetworkBehaviour
 			//END OF ANIMATOR
 			m_cameraPivot.transform.rotation = transform.rotation;
 			m_cameraRotation = Vector2.SmoothDamp(m_cameraRotation, Vector2.zero, ref DampVelocityCamera, 0.2f, 99999, Time.deltaTime);
+
+			//Stop any interactions
+			StopInteraction();
 		}
 
 
@@ -128,6 +131,11 @@ public class Character : NetworkBehaviour
 	//Check if we can interact with an object or not
 	private void Update()
 	{
+		if (m_lastInteractedObj != null)
+		{
+			GameUIHandler._instance.ShowInteractWarning(false);
+			return;
+		}
 		RaycastHit hit;
 		Physics.Raycast(transform.position + transform.up, transform.forward, out hit, 10);
 		if (hit.collider != null)
@@ -184,7 +192,6 @@ public class Character : NetworkBehaviour
 			m_minimapCameraPivot.AddComponent<MinimapCameraRotationFix>();
 
 		//Enable the player Input and notify the server that we are ready
-		gameObject.GetComponent<PlayerInputs>().enabled = true;
 		GameManager._instance.LocalPlayerSettetUp(this);
 		m_autoritySet = true;
 	}
@@ -198,15 +205,13 @@ public class Character : NetworkBehaviour
 	[TargetRpc]
 	public void TargetSpawnPlayerAt(NetworkConnection target, Vector3 pos)
 	{
-		//If we are spawned return
-		if (m_spawned)
+		//If we are spawned return or do not have autority
+		if (m_spawned || !hasAuthority)
 			return;
-		//Just in case make sure we do have authority
-		if (!hasAuthority)
-			return;
+
 
 		GameUIHandler._instance.SetUpUIForCharacter();
-
+		gameObject.GetComponent<PlayerInputs>().enabled = true;
 		//Set the pos and that we spawned
 		transform.position = pos;
 		m_spawned = true;
@@ -279,8 +284,9 @@ public class Character : NetworkBehaviour
 	{
 		if (m_lastInteractedObj != null && m_lastInteractedObj.GetComponent<Interact>() != null)
 		{
-			CmdServerStopInteract();
 			m_lastInteractedObj.GetComponent<Interact>().ClientStopInteract.Invoke(this);
+			CmdServerStopInteract();
+			m_lastInteractedObj = null;
 		}
 	}
 
@@ -294,6 +300,7 @@ public class Character : NetworkBehaviour
 		if (m_lastInteractedObj != null && m_lastInteractedObj.GetComponent<Interact>() != null)
 		{
 			m_lastInteractedObj.GetComponent<Interact>().ServerStopInteract.Invoke(this);
+			m_lastInteractedObj = null;
 		}
 	}
 

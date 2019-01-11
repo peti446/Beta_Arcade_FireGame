@@ -154,7 +154,7 @@ public class ProceduralMapManager : MonoBehaviour {
 	/// <summary>
 	/// Generates a static city
 	/// </summary>
-	private void GenerateCity()
+	public void GenerateCity()
 	{
 		//Refreshes the list and then spawn the buildings
 		RefreshTileList();

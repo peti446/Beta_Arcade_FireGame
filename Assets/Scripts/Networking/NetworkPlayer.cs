@@ -186,6 +186,7 @@ public class NetworkPlayer : NetworkBehaviour {
     {
         m_ready = false;
     }
+
     #endregion
 
     #region Commands, Called on the client and executed on the server
@@ -361,6 +362,15 @@ public class NetworkPlayer : NetworkBehaviour {
             MatchSettings._instance.SetTeamFromIds(teamPlayersId2, ETeams.FireFighters);
         }
     }
+
+	[ClientRpc]
+	public void RpcMapInfoChanged(string info)
+	{
+		if (!MainNetworkManager.Is_Server)
+		{
+			MatchSettings._instance.SetMap(info);
+		}
+	}
     #endregion
 
     #region Target Client RPC
@@ -392,11 +402,21 @@ public class NetworkPlayer : NetworkBehaviour {
             ls.Show();
         }
     }
-    #endregion
 
-    #region Sync var changed functions
-    //All functions are called on the clients with reference to this object when the servers variable change, so in effect its only a setter but over the network
-    private void OnNameChanged(string name)
+	/// <summary>
+	/// Disconects the user from the server
+	/// </summary>
+	/// <param name="target"></param>
+	[TargetRpc]
+	public void TargetrDisconnectClient(NetworkConnection target)
+	{
+		MainNetworkManager._instance.OnStopClient();
+	}
+	#endregion
+
+	#region Sync var changed functions
+	//All functions are called on the clients with reference to this object when the servers variable change, so in effect its only a setter but over the network
+	private void OnNameChanged(string name)
     {
         m_Name = name;
         OnNetworkPlayerDataUpdated();

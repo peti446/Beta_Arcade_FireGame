@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MatchSettings : MonoBehaviour {
+
+	[SerializeField]
+	private MapInfo m_defaultMap;
     #region Instance handling
     public static MatchSettings _instance;
     private void Awake()
@@ -14,7 +17,7 @@ public class MatchSettings : MonoBehaviour {
         _instance = this;
         DontDestroyOnLoad(gameObject);
 
-        MapID = "Map1";
+		MapID = m_defaultMap.name;
     }
 
     private void OnDestroy()
@@ -49,14 +52,33 @@ public class MatchSettings : MonoBehaviour {
         }
     }
 
+	/// <summary>
+	/// Event called when the info of the map is changed
+	/// </summary>
+	public event Action MapInfoChanged;
+
     /// <summary>
-    /// TODO: Make this variable change based on selected map
+    /// Make this variable change based on selected map
     /// </summary>
     public string MapID
     {
         get;
         private set;
     }
+
+	/// <summary>
+	/// Sets the new data
+	/// </summary>
+	/// <param name="info">The map Info</param>
+	public void SetMap(string info)
+	{
+		MapID = info;
+		if(MapInfoChanged != null)
+		{
+			MapInfoChanged.Invoke();
+		}
+	}
+
 
     /// <summary>
     /// Invoked when any team changed

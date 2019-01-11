@@ -51,6 +51,14 @@ public class BuildingStatus : NetworkBehaviour
 	private float BuildingHealth;
 	[SyncVar(hook = "OnBuildingCurrenMaxHPUpdate")]
 	private float CurrentBuildingMaxHealth = 100;
+
+	public bool IsAlive
+	{
+		get
+		{
+			return BuildingHealth > 0;
+		}
+	}
 	#endregion
 
 	#region Server only variables
@@ -96,6 +104,7 @@ public class BuildingStatus : NetworkBehaviour
         base.OnStartServer();
         GetComponent<Interact>().ServerInteraction.AddListener(ServerStartingFire);
 		GetComponent<Interact>().ServerStopInteract.AddListener(ServerStopStartingFire);
+		GameManager._instance.RegisterBuilding(this);
 		NetworkServer.Spawn(gameObject);
     }
 
@@ -167,9 +176,12 @@ public class BuildingStatus : NetworkBehaviour
 				//Reduce Max HP
 				CurrentBuildingMaxHealth = Mathf.Max(0, CurrentBuildingMaxHealth - (mS_ablazeDPS * Time.deltaTime));
 				//If we are at 0 set the building not on fire as it should be destroyed, so we otimise the network not needing to regen all the time
-				if(CurrentBuildingMaxHealth == 0)
+				if(CurrentBuildingMaxHealth == 0 || BuildingHealth == 0)
 				{
+					CurrentBuildingMaxHealth = 0;
+					BuildingHealth = 0;
 					OnFire = false;
+					GameManager._instance.BuildingDestroyed(this);
 				}
 			}
 		}

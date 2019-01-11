@@ -22,7 +22,11 @@ public class GameUIHandler : MonoBehaviour
 	private TextMeshProUGUI m_InteractNotification;
 	[SerializeField]
 	private PlacingFireRadiecontroller m_settingFireController;
-
+	[SerializeField]
+	private RectTransform m_minimap;
+	[SerializeField]
+	private GameDialog m_WaitingDialog;
+	
 	//Variable to control the update of this elements
 	private bool isSetup = false;
 
@@ -51,6 +55,8 @@ public class GameUIHandler : MonoBehaviour
 		m_gameTime.gameObject.SetActive(false);
 		m_notificationLayout.gameObject.SetActive(false);
 		m_InteractNotification.gameObject.SetActive(false);
+		m_minimap.gameObject.SetActive(false);
+		m_WaitingDialog.gameObject.SetActive(true);
 	}
 
 	public void OnDestroy()
@@ -64,12 +70,16 @@ public class GameUIHandler : MonoBehaviour
 	{
 		//Dont update if we are not setup
 		if (!isSetup)
+		{
+			m_WaitingDialog.SetDialogContent("Waiting for Players...", string.Format("The game will start in {0} seconds!|\n Be ready!", GameManager._instance.WaitingTimeLeft));
 			return;
+		}
 
 		//Update common ui variables
 		UpdateTime(GameManager._instance.GameSecondsLeft);
 
 		//Update the city burned value
+		m_progressBars.SetBurnedCityPorcent(GameManager._instance.PorcentBurned);
 
 		//Update character specific info
 		//Update the resource bar
@@ -100,6 +110,8 @@ public class GameUIHandler : MonoBehaviour
 		m_gameTime.gameObject.SetActive(true);
 		m_notificationLayout.gameObject.SetActive(true);
 		m_InteractNotification.gameObject.SetActive(false);
+		m_WaitingDialog.gameObject.SetActive(false);
+		m_minimap.gameObject.SetActive(true);
 
 		m_fireTruckRef = null;
 		isSetup = true;
@@ -164,6 +176,6 @@ public class GameUIHandler : MonoBehaviour
 	private void UpdateTime(float secondsPassed)
 	{
 		TimeSpan time = TimeSpan.FromSeconds(secondsPassed);
-		m_gameTime.text = string.Format("{0:D2}:{1:D2}", time.Hours, time.Seconds);
+		m_gameTime.text = string.Format("{0:D2}:{1:D2}", time.Minutes, time.Seconds);
 	}
 }

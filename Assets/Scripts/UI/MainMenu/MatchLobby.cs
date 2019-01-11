@@ -15,9 +15,11 @@ public class MatchLobby : MonoBehaviour {
     private RectTransform m_PayerList_Team2;
     [SerializeField]
     private Button m_readyButton;
-    #endregion
+	[SerializeField]
+	private SelectionHandler m_selectionHandler;
+	#endregion
 
-    private void OnEnable()
+	private void OnEnable()
     {
         //Ready button is controlled by the local player
         m_readyButton.interactable = false;
@@ -32,9 +34,11 @@ public class MatchLobby : MonoBehaviour {
         }
         //Set the match title
         m_MatchTitle.text = MainNetworkManager._instance.matchName;
+		m_selectionHandler.m_left.gameObject.SetActive(false);
+		m_selectionHandler.m_right.gameObject.SetActive(false);
 
-        //Add events from the network manager so we can handle exceptions correctly
-        MainNetworkManager._instance.ClientErrorHappend += OnClientErrorHappened;
+		//Add events from the network manager so we can handle exceptions correctly
+		MainNetworkManager._instance.ClientErrorHappend += OnClientErrorHappened;
         MainNetworkManager._instance.ServerErrorHappend += OnServerErrorHappened;
         MainNetworkManager._instance.ClientDisconected += OnClientDisconected;
         MainNetworkManager._instance.ConnectionDroped += OnConnectionDropped;
@@ -63,6 +67,7 @@ public class MatchLobby : MonoBehaviour {
     {
         //Sets the reference to button and adds it to the correct team panel
         player.SetReadyButtonReference(m_readyButton);
+		player.SetMapSwitchButtonReference(m_selectionHandler.m_left, m_selectionHandler.m_right);
         switch(player.Team)
         {
             case ETeams.CrazyPeople:

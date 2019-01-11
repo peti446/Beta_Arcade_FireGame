@@ -27,6 +27,8 @@ public class MatchLobbyPlayer : MonoBehaviour {
     private NetworkPlayer m_NetworkPlayer;
     //This button is always, if the player is the local player on the mashine it will contain the ready button
     private Button m_readyButton;
+	private Button m_leftMap;
+	private Button m_rightMap;
     /// <summary>
     /// Returns the current team the player is on
     /// </summary>
@@ -43,9 +45,12 @@ public class MatchLobbyPlayer : MonoBehaviour {
         {
             MainNetworkManager._instance.NetworkPlayerAdded -= PlayerJoined;
             MainNetworkManager._instance.NetworkPlayerRemoved -= PlayerLeft;
-        }
-        if(MatchSettings._instance != null)
-            MatchSettings._instance.TeamsChanged -= MatchTeamsChanged;
+			MatchSettings._instance.MapInfoChanged -= MapInfoChanged;
+		}
+		if (MatchSettings._instance != null)
+		{
+			MatchSettings._instance.TeamsChanged -= MatchTeamsChanged;
+		}
     }
 
     /// <summary>
@@ -68,8 +73,8 @@ public class MatchLobbyPlayer : MonoBehaviour {
         MainNetworkManager._instance.NetworkPlayerRemoved += PlayerLeft;
         MatchSettings._instance.TeamsChanged += MatchTeamsChanged;
 
-        //By default the player is not the local one
-        m_readyText.gameObject.SetActive(false);
+		//By default the player is not the local one
+		m_readyText.gameObject.SetActive(false);
         m_switchTeamButton.gameObject.SetActive(false);
         m_ShowChangeNameButton.gameObject.SetActive(false);
         m_nameInputfield.gameObject.SetActive(false);
@@ -87,7 +92,8 @@ public class MatchLobbyPlayer : MonoBehaviour {
         //If we have the autority of the player enable buttons to chage their players data
         if (m_NetworkPlayer.hasAuthority)
         {
-            m_name.color = Color.blue;
+			MatchSettings._instance.MapInfoChanged -= MapInfoChanged;
+			m_name.color = Color.blue;
             m_switchTeamButton.onClick.AddListener(OnSwitchTeamClicked);
             m_ShowChangeNameButton.onClick.AddListener(OnShowNameInputClicked);
             m_nameInputfield.onEndEdit.AddListener(OnEndEditChangeName);
@@ -131,8 +137,27 @@ public class MatchLobbyPlayer : MonoBehaviour {
         UpdateButtonState();
     }
 
-    //Logic for the swithc team click
-    private void OnSwitchTeamClicked()
+	/// <summary>
+	/// Sets the map switch button reference if it is the local player only
+	/// </summary>
+	/// <param name="readyB">The ready button from the UI</param>
+	public void SetMapSwitchButtonReference(Button left, Button Right)
+	{
+		//We dont have authority
+		if (!m_NetworkPlayer.hasAuthority)
+		{
+			return;
+		}
+		//Set the reference and update the UI status
+		left.gameObject.SetActive(true);
+		m_leftMap = left;
+		Right.gameObject.SetActive(true);
+		m_rightMap = Right;
+		UpdateButtonState();
+	}
+
+	//Logic for the swithc team click
+	private void OnSwitchTeamClicked()
     {
         m_NetworkPlayer.CmdSwitchTeam();
     }
@@ -193,6 +218,12 @@ public class MatchLobbyPlayer : MonoBehaviour {
             }
         }
 
+		if (m_rightMap != null && m_leftMap!= null)
+		{
+			m_rightMap.gameObject.SetActive(!m_NetworkPlayer.Is_ready);
+			m_leftMap.gameObject.SetActive(!m_NetworkPlayer.Is_ready);
+		}
+
         //As every instance of lobby player has these buttons we need to check if we have authority over ti
         if (m_NetworkPlayer.hasAuthority)
         {
@@ -223,5 +254,10 @@ public class MatchLobbyPlayer : MonoBehaviour {
     {
         UpdateButtonState();
     }
-    #endregion
+
+	private void MapInfoChanged()
+	{
+		m_NetworkPlayer.RpcMapInfoChanged(MatchSettings._instance.MapID);
+	}
+	#endregion
 }

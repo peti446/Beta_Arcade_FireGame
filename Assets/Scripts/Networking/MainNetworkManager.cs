@@ -472,9 +472,10 @@ public class MainNetworkManager : NetworkManager
             p.TargetEnableLoadingScreen(p.connectionToClient);
         }
 
-        //Get the match scene name
-        string name = MatchSettings._instance.MapID;
-        Debug.Log(name);
+		matchMaker.SetMatchAttributes(matchInfo.networkId, false, 0, (success, info) => Debug.Log("Match hidden"));
+
+		//Get the match scene name
+		string name = MatchSettings._instance.MapID;
         if(name != string.Empty && name != null)
         {
             //Load the scene
@@ -489,6 +490,17 @@ public class MainNetworkManager : NetworkManager
         //Update state
         State = ENetworkState.Playing;
     }
+
+	/// <summary>
+	/// Disconnects a player 
+	/// </summary>
+	/// <param name="player"></param>
+	public void DisconnectPlayer(NetworkPlayer player)
+	{
+		player.TargetrDisconnectClient(player.connectionToClient);
+	}
+
+
     #endregion
 
     #region Private helpers function
