@@ -10,7 +10,7 @@ public enum EPlayerStatus
 public class Character : NetworkBehaviour
 {
 
-	private Animator m_animator;
+	public Animator m_animator;
 	[SerializeField]
 	private float m_movingSpeed = 8.5f;
 	[SerializeField]
@@ -385,7 +385,10 @@ public class Character : NetworkBehaviour
   public void UseHose(bool hoseOpen)
   {
     if (hoseOpen)
+    {
       m_hoseWater.Play();
+      m_animator.SetTrigger("hosing");
+    }
     if (!hoseOpen)
     {
       m_hoseWater.Stop();
@@ -404,7 +407,7 @@ public class Character : NetworkBehaviour
 		{
 			transform.Rotate(new Vector3(0, horizontalRotation * m_cameraRotationSpeed, 0));
 		}
-
+    m_animator.SetTrigger("turn");
 		//Move the camera
 		//Clamp the x rotation
 		m_cameraRotation += new Vector2(verticalRotation * m_cameraRotationSpeed, horizontalRotation * m_cameraRotationSpeed);

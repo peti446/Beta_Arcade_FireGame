@@ -114,6 +114,7 @@ public class Vehicle : NetworkBehaviour {
     /// <param name="verticalInput">Foward Move</param>
     public void SetInputs(float horizontalInput, float verticalInput)
     {
+    GameManager._instance.GetCharacter(m_controllingPlayerID).m_animator.SetBool("driving", true);
         if (verticalInput > 0)
         {
             State = EVehicleStatus.AcceleratingFoward;
@@ -163,7 +164,9 @@ public class Vehicle : NetworkBehaviour {
     [Client]
     public void ExitVehicle()
     {
-        GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
+    GameManager._instance.GetCharacter(m_controllingPlayerID).m_animator.SetBool("driving", false);
+
+    GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
         camera.transform.SetParent(null);
         CmdPlayerExit();
     }

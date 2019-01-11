@@ -101,6 +101,18 @@ public class GameManager : NetworkBehaviour
 		}
 	}
 
+  public Character GetCharacter(int id)
+  {
+    foreach(GameObjectListObject lo in m_characterList)
+    {
+      if(lo.o.GetComponent<Character>().ControllingPlayerID == id)
+      {
+        return lo.o.GetComponent<Character>();
+      }
+    }
+    return null;
+  }
+
 	/// <summary>
 	/// Current state of the game
 	/// </summary>
