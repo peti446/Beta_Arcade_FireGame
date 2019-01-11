@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Text;
 
 public class GameUIHandler : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class GameUIHandler : MonoBehaviour
 	
 	//Variable to control the update of this elements
 	private bool isSetup = false;
+	private bool isEndGame = false;
 
 	//Vehicle object reference if it is set update based on the info from it
 	private Vehicle m_fireTruckRef;
@@ -68,6 +70,22 @@ public class GameUIHandler : MonoBehaviour
 
 	public void Update()
 	{
+		//If we are at end game we want a special update
+		if (isEndGame)
+		{
+			StringBuilder msg;
+			if (GameManager._instance.WinningTeam == ETeams.CrazyPeople)
+			{
+				msg.AppendLine("Burnlings Win!");
+				msg.AppendLine (string.Format("They managed to burn {0}% of the city!", Mathf.CeilToInt(GameManager._instance.PorcentBurned*100)));
+			}
+			else
+			{
+				msg.AppendLine("Reintops Win!");
+				msg.AppendLine (string.Format("They managed to defend the city! Only {0}% has been burned!", Mathf.CeilToInt(GameManager._instance.PorcentBurned*100)));
+			}
+			m_WaitingDialog.SetDialogContent("Game Over!", msg);
+		}
 		//Dont update if we are not setup
 		if (!isSetup)
 		{
@@ -124,6 +142,22 @@ public class GameUIHandler : MonoBehaviour
 	public void SetUpUIForVehicle(Vehicle vheicleInfo)
 	{
 		m_fireTruckRef = vheicleInfo;
+	}
+
+
+	/// <summary>
+	/// Sets upt the ui for end game
+	/// </summary>
+	public void SetUpEndGameUI()
+	{
+		isEndGame = true;
+		m_resourceCanvas.gameObject.SetActive(false);
+		m_progressBars.gameObject.SetActive(false);
+		m_gameTime.gameObject.SetActive(false);
+		m_notificationLayout.gameObject.SetActive(false);
+		m_InteractNotification.gameObject.SetActive(false);
+		m_minimap.gameObject.SetActive(false);
+		m_WaitingDialog.gameObject.SetActive(true);
 	}
 
 	/// <summary>

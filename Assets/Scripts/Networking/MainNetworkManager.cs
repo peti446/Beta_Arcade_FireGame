@@ -302,6 +302,18 @@ public class MainNetworkManager : NetworkManager
         }
     }
 
+	public void Restart()
+	{
+		ClientDisconected =+ ReturnToMenu;
+		Disconect();
+	}
+
+	private void ReturnToMenu()
+	{
+		SceneManager.LoadScene(0);
+		ClientDisconected -= ReturnToMenu;
+	}
+
     /// <summary>
     /// Adds a NetworkPlayer to the networks manager pool of clients and sets the ID, also the manager will hook to some player events to be able to manage it on state changes.
     /// </summary>

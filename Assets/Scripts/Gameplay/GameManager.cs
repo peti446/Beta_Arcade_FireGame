@@ -233,8 +233,13 @@ public class GameManager : NetworkBehaviour
 					//Check if we finished the game
 					if (m_gameTimeLeft <= 0 || m_porcentInAshes >= 0.60f)
 					{
+						foreach(GameObjectListObject o in m_characterList)
+						{
+							o.o.GetComponent<Character>().RpcDisableInput();
+						}
 						m_timeEndGameStart = Time.time;
 						State = EGameState.GameEnded;
+						GameUIHandler._instance.SetUpEndGameUI();
 					}
 				}
 				break;
@@ -280,10 +285,8 @@ public class GameManager : NetworkBehaviour
 	[Server]
 	public void RegisterBuilding(BuildingStatus bs)
 	{
-		Debug.Log("Yes3");
 		if (!m_AliveBuildings.Contains(bs) && !m_destroyedBuilding.Contains(bs))
 		{
-			Debug.Log("Yes4");
 			m_AliveBuildings.Add(bs);
 		}
 	}
@@ -295,12 +298,10 @@ public class GameManager : NetworkBehaviour
 	[Server]
 	public void BuildingDestroyed(BuildingStatus bs)
 	{
-		Debug.Log("Yes");
 		if(m_AliveBuildings.Contains(bs) && !bs.IsAlive)
 		{
 			m_AliveBuildings.Remove(bs);
 			m_destroyedBuilding.Add(bs);
-			Debug.Log("Yes2");
 			m_porcentInAshes = (float)m_destroyedBuilding.Count / (float)m_AliveBuildings.Count; 
 		}
 	}
@@ -397,20 +398,17 @@ public class GameManager : NetworkBehaviour
 	#region Network Events
 	private void OnDisconnect(NetworkConnection conn)
 	{
-		MainNetworkManager._instance.Disconect();
-		SceneManager.LoadScene(0);
+		MainNetworkManager._instance.Restart();
 	}
 
 	private void OnDrop()
 	{
-		MainNetworkManager._instance.Disconect();
-		SceneManager.LoadScene(0);
+		MainNetworkManager._instance.Restart();
 	}
 
 	private void OnError(NetworkConnection conn, int code)
 	{
-		MainNetworkManager._instance.Disconect();
-		SceneManager.LoadScene(0);
+		MainNetworkManager._instance.Restart();
 	}
 	#endregion
 }
