@@ -96,7 +96,7 @@ public class BuildingStatus : NetworkBehaviour
 	[Client]
 	private bool CanUserInteract(Character character)
 	{
-		return MainNetworkManager._instance.PlayersConnected[character.ControllingPlayerID].Player_Team == ETeams.CrazyPeople;
+		return MainNetworkManager._instance.PlayersConnected[character.ControllingPlayerID].Player_Team == ETeams.CrazyPeople && IsAlive;
 	}
 
     public override void OnStartServer()
