@@ -73,7 +73,7 @@ public class GameUIHandler : MonoBehaviour
 		//If we are at end game we want a special update
 		if (isEndGame)
 		{
-			StringBuilder msg;
+			StringBuilder msg = new StringBuilder();
 			if (GameManager._instance.WinningTeam == ETeams.CrazyPeople)
 			{
 				msg.AppendLine("Burnlings Win!");
@@ -84,7 +84,7 @@ public class GameUIHandler : MonoBehaviour
 				msg.AppendLine("Reintops Win!");
 				msg.AppendLine (string.Format("They managed to defend the city! Only {0}% has been burned!", Mathf.CeilToInt(GameManager._instance.PorcentBurned*100)));
 			}
-			m_WaitingDialog.SetDialogContent("Game Over!", msg);
+			m_WaitingDialog.SetDialogContent("Game Over!", msg.ToString());
 		}
 		//Dont update if we are not setup
 		if (!isSetup)

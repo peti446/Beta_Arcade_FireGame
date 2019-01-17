@@ -142,12 +142,17 @@ public class GameManager : NetworkBehaviour
         get;
         private set;
     }
+ 
+  public ETeams WinningTeam{
+    get { return m_porcentInAshes > 0.66f ? ETeams.CrazyPeople : ETeams.FireFighters; }
+  }
+
 
     /// <summary>
     /// Keeps the GameManager object alive throughout the whole game
     /// and prevents it from being duplicated
     /// </summary>
-    private void Awake()
+  private void Awake()
 	{
 		if (_instance == null)
 			_instance = this;

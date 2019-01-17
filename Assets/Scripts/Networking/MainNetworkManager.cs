@@ -304,11 +304,11 @@ public class MainNetworkManager : NetworkManager
 
 	public void Restart()
 	{
-		ClientDisconected =+ ReturnToMenu;
+		ClientDisconected += ReturnToMenu;
 		Disconect();
 	}
-
-	private void ReturnToMenu()
+  
+	private void ReturnToMenu(NetworkConnection conn)
 	{
 		SceneManager.LoadScene(0);
 		ClientDisconected -= ReturnToMenu;
