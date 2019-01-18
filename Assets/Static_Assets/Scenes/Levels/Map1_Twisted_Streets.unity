@@ -8612,7 +8612,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4486742752729504, guid: 3d1724fc1d08b7c4e856e9316f66705a, type: 2}
       propertyPath: m_RootOrder
-      value: 29
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 1837359864982274, guid: 3d1724fc1d08b7c4e856e9316f66705a, type: 2}
       propertyPath: m_Name
@@ -16220,7 +16220,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4678005727874072, guid: edd65c8fb874880498602ecdc5f8e4cd, type: 2}
       propertyPath: m_RootOrder
-      value: 85
+      value: 86
       objectReference: {fileID: 0}
     - target: {fileID: 114394686888767112, guid: edd65c8fb874880498602ecdc5f8e4cd,
         type: 2}
@@ -28909,7 +28909,7 @@ Light:
   serializedVersion: 8
   m_Type: 1
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Intensity: 1.6
   m_Range: 10
   m_SpotAngle: 30
   m_CookieSize: 10
